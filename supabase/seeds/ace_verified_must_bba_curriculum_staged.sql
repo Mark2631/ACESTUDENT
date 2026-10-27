@@ -2,7 +2,7 @@
 -- Source: MUST School of Business & Economics published BBA course structure:
 -- https://www.must.ac.ke/sbe/comment-page-1/
 -- The published historical curriculum covers Years 1-3, not Year 4. Do not invent Year 4 modules.
--- Finance and project specializations are included without claiming every student studies both.
+-- This seed contains only common courses. Finance and project specialization\n-- units are intentionally excluded until a pathway-to-course schema exists.
 -- Once a separate Ace Student Supabase project is selected, apply academic taxonomy migration first.
 WITH programme AS (
  SELECT p.id FROM public.ace_programmes p JOIN public.ace_institutions i ON i.id=p.institution_id
@@ -43,18 +43,9 @@ FROM programme CROSS JOIN (VALUES
  (3,1,'BFB3301','Environmental Issues in Business'),
  (3,1,'BFB3302','Behavioural Science'),
  (3,1,'BFB3465','Motivation and Stress Management'),
- (3,1,'BFC3225','Advanced Accounting I'),
- (3,1,'BFC3330','Financial Management'),
- (3,1,'BFC3332','Financial Institutions and Markets'),
- (3,1,'SMB3300','Statistics for Project Managers'),
- (3,1,'BFB3212','Project Planning and Scheduling'),
- (3,1,'BFB3313','Project Costing and Control'),
  (3,2,'EMP3350','Research Methodology'),
  (3,2,'BFC3327','Financial Accounting Theory'),
  (3,2,'BFC3329','Advanced Taxation'),
- (3,2,'BFB3462','Project Management Decision Making Models'),
- (3,2,'BFB3463','Projects Organization, Management and Leadership'),
- (3,2,'BFB3464','Global Project Management')
 ) AS v(yr,sem,code,title)
 ON CONFLICT(programme_id,code) DO UPDATE SET title=excluded.title;
 -- The existing table has no specialization/pathway field. Introduce an explicit
@@ -63,10 +54,12 @@ ON CONFLICT(programme_id,code) DO UPDATE SET title=excluded.title;
 -- Verified direct PDFs from MUST's own exam archive; these are past papers,
 -- not user-uploaded notes or model-written exam content.
 INSERT INTO public.ace_open_resources(title,subject,kind,provider,url,attribution,description,related_codes)
-VALUES
+SELECT v.title,v.subject,v.kind,v.provider,v.url,v.attribution,v.description,v.related_codes
+FROM (VALUES
  ('Business Law, January 2026','BFB3201','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2026/03/BFB-3201-BUSINESS-LAW.pdf','Meru University of Science and Technology','Official published university exam paper',ARRAY['BFB3201']::text[]),
  ('Business Law, December 2023','BFB3201','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2024/03/BFB-3201-BUSINESS-LAW.pdf','Meru University of Science and Technology','Official published university exam paper',ARRAY['BFB3201']::text[]),
  ('Strategic Management, April 2024','BFB3350','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2024/06/BFB-3350-STRATEGIC-MANAGEMENT-.pdf','Meru University of Science and Technology','Official published university exam paper',ARRAY['BFB3350']::text[]),
  ('Strategic Management, April 2023','BFB3350','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2024/03/BFB-3350-STRATEGIC-MANAGEMENT-1.pdf','Meru University of Science and Technology','Official published university exam paper',ARRAY['BFB3350']::text[]),
  ('Financial Accounting I, April 2024','BFC3125','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2024/06/BFC-3125-FINANCIAL-ACCOUNTING-I-.pdf','Meru University of Science and Technology','Official published university exam paper',ARRAY['BFC3125']::text[])
-ON CONFLICT DO NOTHING;
+) AS v(title,subject,kind,provider,url,attribution,description,related_codes)
+WHERE NOT EXISTS (SELECT 1 FROM public.ace_open_resources r WHERE r.url=v.url);
