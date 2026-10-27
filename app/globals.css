@@ -28,3 +28,5 @@ html,body{background:var(--bg);color:var(--ink)}.side,.bottom,.card,.upload,.sig
 .bottom .mobile-nav.create-nav .create-circle{display:grid;place-items:center;width:47px;height:47px;border-radius:14px;background:var(--button);color:#fff;margin:-18px auto 0;border:3px solid var(--surface)}
 .bottom .mobile-nav.create-nav.active{background:transparent}
 @media(min-width:701px){.create-overlay{align-items:center}.create-sheet{margin:auto}}
+
+.my-uploads{display:grid;gap:10px;margin-top:13px}.my-upload{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:16px}.my-upload b{font-size:14px}.my-upload .small{margin:8px 0 0}.upload-status{display:flex;align-items:center;gap:15px}.upload-status>span{text-transform:capitalize;font-size:12px;font-weight:750;padding:6px 10px;border-radius:999px;background:var(--soft);color:var(--accent)}.upload-status>.submission-approved{background:#183e30;color:#79ddb1}.upload-status>.submission-rejected{background:#462626;color:#ff9f9f}@media(max-width:700px){.my-upload{flex-direction:column;align-items:flex-start}.upload-status{width:100%;justify-content:space-between}}
