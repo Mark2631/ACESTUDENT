@@ -2,6 +2,7 @@
 import {useEffect,useState} from "react";
 import {BookOpen,ExternalLink,Trophy,Users,Plus,ArrowRight,CheckCircle2,Medal,Link2,MessageCircle,Share2,RefreshCw,ArrowLeft} from "lucide-react";
 import {supabase} from "@/lib/supabase";
+import ChallengeRunner from "./challenge-runner";
 import type {User} from "@supabase/supabase-js";
 type OpenResource={id:string,title:string,subject:string,provider:string,kind:string,url:string,attribution:string,description:string|null};
 type Quiz={id:string,title:string,course_code:string,description:string|null};
