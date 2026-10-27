@@ -45,7 +45,7 @@ FROM programme CROSS JOIN (VALUES
  (3,1,'BFB3465','Motivation and Stress Management'),
  (3,2,'EMP3350','Research Methodology'),
  (3,2,'BFC3327','Financial Accounting Theory'),
- (3,2,'BFC3329','Advanced Taxation'),
+ (3,2,'BFC3329','Advanced Taxation')
 ) AS v(yr,sem,code,title)
 ON CONFLICT(programme_id,code) DO UPDATE SET title=excluded.title;
 -- The existing table has no specialization/pathway field. Introduce an explicit
