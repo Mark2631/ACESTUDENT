@@ -48,9 +48,9 @@ Required public environment variables: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBL
 
 ## Testing and limitations
 
-The production compilation and TypeScript checks are run by Vercel. Database security assertions are in `supabase/tests/ace_security_smoke.sql`. Automated browser testing with registered accounts is still required. In particular, complete Google OAuth, password signup confirmation, PDF upload, reviewer approval, and peer challenges with at least two real tester accounts before a general launch.
+The production compilation and TypeScript checks are run by Vercel. Database security assertions are in `supabase/tests/ace_security_smoke.sql`. Automated browser testing with registered accounts is still required. Database rollback integration tests cover grading, XP anti-fraud, independent peer competition attempts, learning groups, material withdrawal and spaced repetition. Still complete Google OAuth, password signup confirmation, a real PDF upload, reviewer approval, and student-to-student challenges with at least two real tester accounts before a general launch.
 
-An individual can only submit one official scored attempt for each published question set. This protects XP integrity but means competitions currently use a shared question bank and a participant's existing score may count; timed live head-to-head matchmaking, isolated per-competition attempts, spaced-repetition review, notifications and native offline downloads are further engineering stages. 
+Practice quizzes allow one XP-earning attempt per question set. Each peer competition separately allows one server-graded attempt per participant **for that event**, even if they previously practiced the questions. Event results do not award more practice XP. Missed practice questions automatically generate scheduled spaced-repetition flashcards. Live synchronized head-to-head timers, push notifications and offline PDF downloads are not yet implemented. 
 The Vercel GitHub integration has not been linked; updates from GitHub will not automatically deploy until this is repaired.
 
 See [full scope and release plan](docs/FULL_SCOPE_AND_RELEASE_PLAN.md).
