@@ -2,12 +2,12 @@
   "id": "/",
   "name": "Ace Student",
   "short_name": "Ace Student",
-  "description": "Study smarter, together.",
+  "description": "Learn. Practice. Excel.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#f8f9fb",
-  "theme_color": "#f8f9fb",
+  "background_color": "#0c1018",
+  "theme_color": "#101e36",
   "icons": [
     {
       "src": "/icon.svg",
