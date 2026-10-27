@@ -35,3 +35,5 @@ html,body{background:var(--bg);color:var(--ink)}.side,.bottom,.card,.upload,.sig
 @media(max-width:700px){.academic-selectors,.course-grid,.home-activity{grid-template-columns:1fr}}
 
 .review-card h3{margin:8px 0}.review-card .eyebrow{margin-top:0}.review-card>.btn{margin:10px 0}.review-check{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--sub);padding:12px 0}.review-check input{width:18px;height:18px;accent-color:var(--button)}.review-actions{display:flex;gap:10px;margin-top:12px}
+
+.review-deck>.panel{margin-top:16px}.flashcard h3{font-size:18px;line-height:1.55;max-width:680px}.flashcard-answer{padding:18px;margin:18px 0;background:var(--surface2);border-radius:13px}.flashcard-answer .eyebrow{margin:0 0 11px}.flashcard-answer b{font-size:17px}.flashcard-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:18px}.flashcard .eyebrow{margin-top:0}@media(max-width:700px){.flashcard{padding:17px}.flashcard-actions button{flex:1;padding:11px 7px;font-size:12px}}
