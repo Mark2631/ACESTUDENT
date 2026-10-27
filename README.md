@@ -1,31 +1,56 @@
 # Ace Student
 
-A student-powered academic learning web app (installable PWA), built for active learning, course-specific resources, and peer collaboration.
+Ace Student is a dark-first, phone-first academic learning application. Students discover legitimate study resources, contribute moderated PDFs, practice authentic course quizzes, earn XP and badges, host peer competitions, and collaborate in Study Spaces.
 
-## Current build (v0.1)
+## Implemented
 
-- Mobile-first application shell with desktop sidebar and mobile bottom navigation
-- Public library of **reviewed** student materials, with search and type filters
-- Google OAuth and passwordless email sign-in interfaces (provider and redirect allowlist must be configured in Supabase)
-- Authenticated PDF submission from mobile or desktop, limited to 15 MB
-- Review queue represented by `pending` records, private storage and strict RLS
-- Installable web manifest; a dedicated offline service worker is not yet implemented
+- First-visit account registration/sign-in, optional institution/programme/year, editable student profile
+- Real publisher-hosted OpenStax textbooks and MIT OpenCourseWare past exams, notes and assignments, clearly attributed
+- Academic institution/programme/course directory: seven Kenyan institutions and a verified-input MUST BBA pilot
+- User-owned PDF uploads (15 MB), moderation queue, status and withdrawal
+- Reviewer-only document approval/rejection console with rights/privacy checklist; only explicitly designated users can review
+- Original human-authored economics/accounting quizzes with server-authoritative grading, result explanations, one official attempt per question set, XP and badges
+- Shareable course quiz competitions, verified participant standings
+- Student-created Study Spaces, discussions, learning-resource links, Google Meet/Zoom/Teams links
+- Mobile navigation with prominent Create action, light/dark theme switch and responsive design
+- Row-level security and restrictive table grants; CI build checks and SQL security assertions
 
-**Not yet complete:** question bank, quiz scoring, peer arenas, study spaces, moderation dashboard, notification system, offline document support and automated acceptance tests. No fabricated content has been seeded.
+## Content and safety
 
-## Local setup
+Source books and exams link to their publishers; third-party PDFs are **not copied into Supabase**. MIT exams are explicitly MIT materials, not Meru University exam papers. User-submitted documents are private until reviewed. No manufactured student accounts, grades or social activity have been inserted. No download paywall is active.
 
-1. `npm install`
-2. Copy `.env.example` to `.env.local` and add the project's public Supabase URL and publishable key
-3. Apply `supabase/migrations/20261027_ace_student_resources.sql` exactly once to a database with Supabase Auth and Storage enabled
-4. `npm run dev`
+## Supabase configuration
 
-See [the product and research foundation](docs/PRODUCT.md) for design principles, research links and rollout strategy.
+This project currently shares the Nexus Supabase instance with unrelated projects. All tables are prefixed `ace_`, with a private `ace-submissions` storage bucket. Apply migrations in `supabase/migrations` in filename order. Run seed scripts in `supabase/seeds` in date order. Never publish secret/service-role keys in the browser.
 
-## Moderation
+Password registration uses Supabase Auth. Hosted projects usually require email confirmation. That configuration is **project-wide**, not toggled by changing this app's login UI. Because the database is shared, carefully review other applications before disabling Confirm Email in Supabase Auth providers. Google OAuth also requires the provider and redirect allowlist to be configured.
 
-Only approved materials appear publicly. An authorized project operator can review the submission metadata in Supabase Dashboard and set its status to `approved` or `rejected`. This temporary operational workflow must be replaced with an audited staff moderation interface before scale. Respect intellectual-property rights and remove prohibited/private materials.
+To appoint a reviewer **after that person has registered**, the project owner may execute a privileged SQL statement in the Supabase SQL Editor:
 
-## Deployment
+```sql
+insert into public.ace_reviewers(user_id)
+select id from auth.users where email = 'verified-owner-email@example.com'
+on conflict do nothing;
+```
 
-The first Vercel deployment is directly uploaded from source because the Nexus Vercel team has no active GitHub login connection. Connect `Mark2631/ACESTUDENT` in Vercel to enable automatic CI builds and preview deployments on future commits. Required Vercel variables: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Never publish service-role keys.
+Replace the example with the intended account's verified email; never allow users to self-appoint. Only authorized reviewers can approve uploaded files. Moderators must inspect the PDF and ensure rights/privacy compliance.
+
+## Develop
+
+```bash
+npm install
+cp .env.example .env.local
+npm run dev
+npm run build
+```
+
+Required public environment variables: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`. Copy their values from the matching connected project. 
+
+## Testing and limitations
+
+The production compilation and TypeScript checks are run by Vercel. Database security assertions are in `supabase/tests/ace_security_smoke.sql`. Automated browser testing with registered accounts is still required. In particular, complete Google OAuth, password signup confirmation, PDF upload, reviewer approval, and peer challenges with at least two real tester accounts before a general launch.
+
+An individual can only submit one official scored attempt for each published question set. This protects XP integrity but means competitions currently use a shared question bank and a participant's existing score may count; timed live head-to-head matchmaking, isolated per-competition attempts, spaced-repetition review, notifications and native offline downloads are further engineering stages. 
+The Vercel GitHub integration has not been linked; updates from GitHub will not automatically deploy until this is repaired.
+
+See [full scope and release plan](docs/FULL_SCOPE_AND_RELEASE_PLAN.md).
