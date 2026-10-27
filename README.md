@@ -11,12 +11,13 @@ Ace Student is a dark-first, phone-first academic learning application. Students
 - Reviewer-only document approval/rejection console with rights/privacy checklist; only explicitly designated users can review
 - Original human-authored economics/accounting quizzes with server-authoritative grading, result explanations, one official attempt per question set, XP and badges
 - Shareable course quiz competitions, verified participant standings
-- Student-created Study Spaces, live discussions, learning-resource links, Google Meet/Zoom/Teams links
-- Saved OpenStax and MIT learning resources, reporting for harmful/broken material, and a reviewer-only reports inbox
+- Student-created Study Spaces, live discussions, learning-resource links, scheduled online meetings with RSVP, and vetted Google Meet/Zoom/Teams links
+- Saved, course-code-mapped OpenStax, Saylor and MIT learning resources, reporting for harmful/broken material, and a reviewer-only reports inbox with removal actions
 - Spaced-repetition flashcards automatically created from missed quiz answers
 - Independent per-competition attempts and event leaderboards, with protected scoring
 - Mobile navigation with prominent Create action, light/dark theme switch and responsive design
 - Row-level security and restrictive table grants; CI build checks and SQL security assertions
+- Student achievement cabinet, real event activity and upcoming sessions on home
 
 ## Content and safety
 
@@ -54,6 +55,6 @@ Required public environment variables: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBL
 The production compilation and TypeScript checks are run by Vercel. Database security assertions are in `supabase/tests/ace_security_smoke.sql`. Automated browser testing with registered accounts is still required. Database rollback integration tests cover grading, XP anti-fraud, independent peer competition attempts, learning groups, material withdrawal and spaced repetition. Still complete Google OAuth, password signup confirmation, a real PDF upload, reviewer approval, and student-to-student challenges with at least two real tester accounts before a general launch.
 
 Practice quizzes allow one XP-earning attempt per question set. Each peer competition separately allows one server-graded attempt per participant **for that event**, even if they previously practiced the questions. Event results do not award more practice XP. Missed practice questions automatically generate scheduled spaced-repetition flashcards. Live synchronized head-to-head timers, push notifications and offline PDF downloads are not yet implemented. 
-The Vercel GitHub integration has not been linked; GitHub commits cannot auto-deploy yet. As of October 27, 2026, Vercel reported an account-level daily API deployment limit, so commits after the last READY deployment are not necessarily live. Check GitHub Actions and the Vercel deployment state separately.
+The Vercel GitHub integration is now connected to `Mark2631/ACESTUDENT`. On October 27, 2026, Vercel reached the Hobby deployment limit of 100 deployments per 24 hours; newer commits may pass GitHub CI yet remain undeployed. Verify the latest deployment SHA before treating new changes as live. Avoid per-file deploy-triggering commits while quota is limited.
 
 See [full scope and release plan](docs/FULL_SCOPE_AND_RELEASE_PLAN.md).
