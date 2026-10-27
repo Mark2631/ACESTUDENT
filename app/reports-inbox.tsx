@@ -1,0 +1,14 @@
+"use client";
+import {useEffect,useState} from "react";
+import {Flag,RefreshCw} from "lucide-react";
+import {supabase} from "@/lib/supabase";
+import type {User} from "@supabase/supabase-js";
+type Case={id:string,reason:string,details:string,state:string,created_at:string,document_id:string|null,resource_id:string|null,space_id:string|null,post_id:string|null};
+export default function ReportsInbox({user}:{user:User}){
+ const[allowed,setAllowed]=useState(false),[reports,setReports]=useState<Case[]>([]),[busy,setBusy]=useState(""),[notice,setNotice]=useState("");
+ async function load(){if(!supabase)return;const{data,error}=await supabase.from("ace_content_reports").select("id,reason,details,state,created_at,document_id,resource_id,space_id,post_id").eq("state","open").order("created_at",{ascending:true}).limit(100);if(error)setNotice("Could not load reports.");else setReports(data??[])}
+ useEffect(()=>{if(!supabase)return;void supabase.from("ace_reviewers").select("user_id").eq("user_id",user.id).maybeSingle().then(({data})=>{if(data){setAllowed(true);void load()}})},[user.id]);
+ async function resolve(id:string,state:"resolved"|"dismissed"){if(!supabase||busy)return;setBusy(id);setNotice("");const{error}=await supabase.rpc("ace_resolve_report",{p_report:id,p_resolution:state});if(error)setNotice(error.message);else await load();setBusy("")}
+ if(!allowed)return null;
+ return <section className="section"><div className="row"><h2><Flag size={18}/> Content reports</h2><button className="text-link" onClick={()=>void load()}><RefreshCw size={15}/> Refresh</button></div><p className="muted">Review reported material and take appropriate action. Resolving a report acknowledges the issue; removing harmful content requires a separate moderator action.</p>{reports.length===0?<div className="panel"><p className="muted">No open reports.</p></div>:<div className="my-uploads">{reports.map(r=><article key={r.id} className="panel"><div className="eyebrow">{r.reason} · {new Date(r.created_at).toLocaleString()}</div><p className="muted">Reported item: {r.document_id?"Uploaded document":r.resource_id?"Free resource":r.post_id?"Discussion post":"Study space"}</p><p>{r.details||"No additional details provided."}</p><p className="small">Reference: {r.document_id||r.resource_id||r.post_id||r.space_id}</p><div className="review-actions"><button className="btn" disabled={busy===r.id} onClick={()=>void resolve(r.id,"resolved")}>Mark addressed</button><button className="btn secondary" disabled={busy===r.id} onClick={()=>void resolve(r.id,"dismissed")}>Dismiss</button></div></article>)}</div>}{notice&&<div role="status" className="status">{notice}</div>}</section>
+}
