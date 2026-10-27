@@ -11,7 +11,10 @@ Ace Student is a dark-first, phone-first academic learning application. Students
 - Reviewer-only document approval/rejection console with rights/privacy checklist; only explicitly designated users can review
 - Original human-authored economics/accounting quizzes with server-authoritative grading, result explanations, one official attempt per question set, XP and badges
 - Shareable course quiz competitions, verified participant standings
-- Student-created Study Spaces, discussions, learning-resource links, Google Meet/Zoom/Teams links
+- Student-created Study Spaces, live discussions, learning-resource links, Google Meet/Zoom/Teams links
+- Saved OpenStax and MIT learning resources, reporting for harmful/broken material, and a reviewer-only reports inbox
+- Spaced-repetition flashcards automatically created from missed quiz answers
+- Independent per-competition attempts and event leaderboards, with protected scoring
 - Mobile navigation with prominent Create action, light/dark theme switch and responsive design
 - Row-level security and restrictive table grants; CI build checks and SQL security assertions
 
@@ -21,7 +24,7 @@ Source books and exams link to their publishers; third-party PDFs are **not copi
 
 ## Supabase configuration
 
-This project currently shares the Nexus Supabase instance with unrelated projects. All tables are prefixed `ace_`, with a private `ace-submissions` storage bucket. Apply migrations in `supabase/migrations` in filename order. Run seed scripts in `supabase/seeds` in date order. Never publish secret/service-role keys in the browser.
+This project currently shares the Nexus Supabase instance with unrelated projects. All tables are prefixed `ace_`, with a private `ace-submissions` storage bucket. Apply migrations in the explicit dependency order documented in [Database Migrations](docs/DATABASE_MIGRATIONS.md), not alphabetical order. Run seed scripts in that documented order. Never publish secret/service-role keys in the browser.
 
 Password registration uses Supabase Auth. Hosted projects usually require email confirmation. That configuration is **project-wide**, not toggled by changing this app's login UI. Because the database is shared, carefully review other applications before disabling Confirm Email in Supabase Auth providers. Google OAuth also requires the provider and redirect allowlist to be configured.
 
@@ -51,6 +54,6 @@ Required public environment variables: `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBL
 The production compilation and TypeScript checks are run by Vercel. Database security assertions are in `supabase/tests/ace_security_smoke.sql`. Automated browser testing with registered accounts is still required. Database rollback integration tests cover grading, XP anti-fraud, independent peer competition attempts, learning groups, material withdrawal and spaced repetition. Still complete Google OAuth, password signup confirmation, a real PDF upload, reviewer approval, and student-to-student challenges with at least two real tester accounts before a general launch.
 
 Practice quizzes allow one XP-earning attempt per question set. Each peer competition separately allows one server-graded attempt per participant **for that event**, even if they previously practiced the questions. Event results do not award more practice XP. Missed practice questions automatically generate scheduled spaced-repetition flashcards. Live synchronized head-to-head timers, push notifications and offline PDF downloads are not yet implemented. 
-The Vercel GitHub integration has not been linked; updates from GitHub will not automatically deploy until this is repaired.
+The Vercel GitHub integration has not been linked; GitHub commits cannot auto-deploy yet. As of October 27, 2026, Vercel reported an account-level daily API deployment limit, so commits after the last READY deployment are not necessarily live. Check GitHub Actions and the Vercel deployment state separately.
 
 See [full scope and release plan](docs/FULL_SCOPE_AND_RELEASE_PLAN.md).
