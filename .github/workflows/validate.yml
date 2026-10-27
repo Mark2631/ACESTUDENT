@@ -1,0 +1,29 @@
+name: Validate Ace Student
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: TypeScript and production build
+        run: npm run build
+      - name: Verify no accidental secrets committed
+        run: |
+          if find . -path './node_modules' -prune -o -path './.next' -prune -o -name '.env.local' -print | grep -q .; then
+            echo "Do not commit .env.local"
+            exit 1
+          fi
