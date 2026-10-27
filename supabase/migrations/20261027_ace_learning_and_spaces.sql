@@ -1,0 +1,42 @@
+create table if not exists public.ace_open_resources(id uuid primary key default gen_random_uuid(),title text not null,subject text not null,kind text not null,provider text not null,url text not null unique check(url ~ '^https://'),attribution text not null,description text,created_at timestamptz default now());alter table public.ace_open_resources enable row level security;create policy ace_open_read on public.ace_open_resources for select to authenticated using(true);grant select on public.ace_open_resources to authenticated;
+create table public.ace_quizzes(id uuid primary key default gen_random_uuid(),title text not null,course_code text not null,description text,status text not null default 'published' check(status in('published','draft')),created_at timestamptz default now());
+create table public.ace_questions(id uuid primary key default gen_random_uuid(),quiz_id uuid not null references public.ace_quizzes on delete cascade,prompt text not null,options jsonb not null check(jsonb_typeof(options)='array' and jsonb_array_length(options)=4),correct_index smallint not null check(correct_index between 0 and 3),explanation text not null,sort_order smallint not null,unique(quiz_id,sort_order));
+create table public.ace_quiz_attempts(id uuid primary key default gen_random_uuid(),user_id uuid not null references auth.users on delete cascade,quiz_id uuid not null references public.ace_quizzes on delete cascade,answers jsonb not null,correct_count int not null,total_count int not null,xp_awarded int not null,submitted_at timestamptz default now(),unique(user_id,quiz_id));
+create table public.ace_xp(user_id uuid primary key references auth.users on delete cascade,xp int not null default 0 check(xp>=0),updated_at timestamptz default now());
+alter table public.ace_quizzes enable row level security;alter table public.ace_questions enable row level security;alter table public.ace_quiz_attempts enable row level security;alter table public.ace_xp enable row level security;
+create policy ace_quizzes_read on public.ace_quizzes for select to authenticated using(status='published');
+create policy ace_attempt_self on public.ace_quiz_attempts for select to authenticated using(user_id=(select auth.uid()));
+create policy ace_xp_self on public.ace_xp for select to authenticated using(user_id=(select auth.uid()));
+grant select on public.ace_quizzes,public.ace_quiz_attempts,public.ace_xp to authenticated;revoke all on public.ace_questions from anon,authenticated;
+create function public.ace_get_questions(p_quiz uuid) returns table(id uuid,quiz_id uuid,prompt text,options jsonb,sort_order smallint) language sql stable security definer set search_path='' as $$ select q.id,q.quiz_id,q.prompt,q.options,q.sort_order from public.ace_questions q join public.ace_quizzes z on z.id=q.quiz_id where z.status='published' and z.id=p_quiz and auth.uid() is not null order by q.sort_order $$;
+revoke all on function public.ace_get_questions(uuid) from public,anon;grant execute on function public.ace_get_questions(uuid) to authenticated;
+create function public.ace_submit_quiz(p_quiz uuid,p_answers jsonb) returns table(correct_count integer,total_count integer,xp_awarded integer,explanations jsonb) language plpgsql security definer set search_path='' as $$
+declare v_user uuid:=auth.uid();v_correct int:=0;v_total int:=0;v_xp int:=0;v_details jsonb:='[]'::jsonb;v_q record;v_selected text;
+begin
+ if v_user is null then raise exception 'Sign in required';end if;
+ if jsonb_typeof(p_answers) is distinct from 'object' then raise exception 'Answers must be an object';end if;
+ if not exists(select 1 from public.ace_quizzes where id=p_quiz and status='published') then raise exception 'Quiz not found';end if;
+ if exists(select 1 from public.ace_quiz_attempts where user_id=v_user and quiz_id=p_quiz) then raise exception 'Quiz already submitted';end if;
+ for v_q in select q.id,q.correct_index,q.explanation from public.ace_questions q where q.quiz_id=p_quiz order by q.sort_order loop
+  v_total:=v_total+1;v_selected:=p_answers->>v_q.id::text;
+  if v_selected is null or v_selected !~ '^[0-3]$' then raise exception 'Answer every question';end if;
+  if v_selected::int=v_q.correct_index then v_correct:=v_correct+1;end if;
+  v_details:=v_details||jsonb_build_array(jsonb_build_object('id',v_q.id,'correct_index',v_q.correct_index,'explanation',v_q.explanation));
+ end loop;
+ if v_total=0 or (select count(*) from jsonb_object_keys(p_answers))<>v_total then raise exception 'Invalid answer set';end if;
+ v_xp:=v_correct*10+case when v_correct=v_total then 20 else 0 end;
+ insert into public.ace_quiz_attempts(user_id,quiz_id,answers,correct_count,total_count,xp_awarded) values(v_user,p_quiz,p_answers,v_correct,v_total,v_xp);
+ insert into public.ace_xp(user_id,xp) values(v_user,v_xp) on conflict(user_id) do update set xp=public.ace_xp.xp+excluded.xp,updated_at=now();
+ return query select v_correct,v_total,v_xp,v_details;
+end $$;
+revoke all on function public.ace_submit_quiz(uuid,jsonb) from public,anon;grant execute on function public.ace_submit_quiz(uuid,jsonb) to authenticated;
+create table public.ace_spaces(id uuid primary key default gen_random_uuid(),owner_id uuid not null references auth.users on delete cascade,title text not null check(char_length(trim(title)) between 4 and 100),course_code text not null,description text not null default '',meeting_url text check(meeting_url is null or meeting_url ~ '^https://(meet\.google\.com/|[a-zA-Z0-9.-]*zoom\.us/|teams\.microsoft\.com/)'),created_at timestamptz default now());
+create table public.ace_space_posts(id uuid primary key default gen_random_uuid(),space_id uuid not null references public.ace_spaces on delete cascade,author_id uuid not null references auth.users on delete cascade,body text not null check(char_length(trim(body)) between 2 and 1500),link_url text check(link_url is null or link_url ~ '^https://'),created_at timestamptz default now());
+alter table public.ace_spaces enable row level security;alter table public.ace_space_posts enable row level security;
+create policy ace_spaces_read on public.ace_spaces for select to authenticated using(true);
+create policy ace_spaces_insert on public.ace_spaces for insert to authenticated with check(owner_id=(select auth.uid()));
+create policy ace_spaces_delete on public.ace_spaces for delete to authenticated using(owner_id=(select auth.uid()));
+create policy ace_posts_read on public.ace_space_posts for select to authenticated using(true);
+create policy ace_posts_insert on public.ace_space_posts for insert to authenticated with check(author_id=(select auth.uid()) and exists(select 1 from public.ace_spaces s where s.id=space_id));
+create policy ace_posts_delete on public.ace_space_posts for delete to authenticated using(author_id=(select auth.uid()) or exists(select 1 from public.ace_spaces s where s.id=space_id and s.owner_id=(select auth.uid())));
+grant select,insert,delete on public.ace_spaces,public.ace_space_posts to authenticated;
