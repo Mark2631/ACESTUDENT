@@ -1,0 +1,19 @@
+{
+  "id": "/",
+  "name": "Ace Student",
+  "short_name": "Ace Student",
+  "description": "Study smarter, together.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f8f9fb",
+  "theme_color": "#f8f9fb",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
