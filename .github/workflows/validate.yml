@@ -9,7 +9,7 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,6 +21,10 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: TypeScript and production build
         run: npm run build
+      - name: Install Chromium for browser smoke tests
+        run: npx playwright install --with-deps chromium
+      - name: First-visit and mobile UI tests
+        run: npm run test:e2e
       - name: Verify no accidental secrets committed
         run: |
           if find . -path './node_modules' -prune -o -path './.next' -prune -o -name '.env.local' -print | grep -q .; then
