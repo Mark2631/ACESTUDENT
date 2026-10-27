@@ -17,6 +17,9 @@ Supabase project: the isolated Ace Student tables live in the existing shared Ne
 13. `20261027_ace_spaced_repetition.sql`
 14. `20261027_ace_bookmarks_and_reports.sql`
 15. `20261027_ace_report_item_removal.sql`
+16. `20261027_ace_scheduled_study_sessions.sql`
+17. `20261027_ace_safe_meeting_url_constraints.sql`
+18. `20261027_ace_verified_business_resources_and_mapping.sql`
 
 Then run these seed scripts once, in order:
 
