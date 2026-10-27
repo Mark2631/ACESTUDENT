@@ -27,7 +27,9 @@ Then run these seed scripts once, in order:
 2. `20261027_ace_verified_ocw.sql` — MIT OpenCourseWare links and corrected OpenStax URLs.
 3. `20261027_ace_academic_catalog.sql` — institutions and MUST BBA course codes.
 4. `20261027_ace_bba_question_sets.sql` — independently authored BBA revision quizzes.
-5. Any later verified resource seed scripts.
+5. `20261027_ace_direct_mit_exam_pdfs.sql` — verified individual MIT exam PDFs.
+6. `20261027_ace_business_law_pr_quizzes.sql` — original additional practice questions; educator review needed.
+7. Any later verified resource seed scripts.
 
 Test with SQL in `supabase/tests`. Transactional integration scripts use `BEGIN` / `ROLLBACK` and must leave no test accounts, attempts, groups, or reported content.
 

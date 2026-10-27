@@ -9,7 +9,7 @@ This scope reconciles the user's original Ace Student / AcaFlux / eStudent descr
 ## Full intended experience
 1. **Academic graph:** Country → Institution → School → Programme → Year → Semester → Course / Unit → Topic. These filters are optional at signup but help personalize learning later.
 2. **Learning library:** User-contributed lecture notes, textbooks only when sharing is permitted, past papers, assignments for study (not plagiarism), slides, curated YouTube tutorials, PDF reading and downloads subject to rights. Moderation, reporting and removal are essential.
-3. **Study tools:** Flashcards, topic quizzes, past-paper practice, revision plans, spaced repetition and review of missed questions. Human-authored/verified content first; no paid AI integration for the initial pilot.
+3. **Study tools:** Flashcards, topic quizzes, past-paper practice, revision plans, spaced repetition and review of missed questions. Initial questions are assistant-drafted, with human academic verification required before institutional rollout; no paid AI integration at runtime.
 4. **Peer competition:** Course-based challenges between real students, async first, verified scores, XP, provisional leaderboards and later university competitions. Do not trust browser-submitted scores or reveal answer keys before completion.
 5. **Study Spaces:** Course communities, topic discussions, student and lecturer-led sessions using externally provided Google Meet/Zoom links. Moderation and consent before open group sharing.
 6. **Progress:** Learning activity, weak topics, question accuracy, study consistency and goal setting; XP rewards meaningful learning rather than indiscriminate uploading.
@@ -33,7 +33,7 @@ The shared Nexus Supabase project may serve other apps. Removing Ace Student's e
 3. [ ] Verify password auth and OAuth redirects with a test user; test signup/confirmation requirements
 4. [ ] Student profile persistence for Google-auth users; robust profile editing
 5. [ ] Moderation dashboard, content report flow, copyright policy, searchable academic taxonomy
-6. [ ] Human-reviewed question authoring, timed attempts and server-authoritative scoring
+6. [x] Database-side practice scoring and separated competition scoring; [ ] independent educator review and reliable timed exams
 7. [ ] Asynchronous student challenges, verified scores and XP
 8. [ ] Study Spaces, discussion permissions and session scheduling
 9. [ ] Analytics, automated QA, performance/accessibility audit and pilot

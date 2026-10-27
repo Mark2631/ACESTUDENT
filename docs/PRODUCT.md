@@ -15,13 +15,13 @@ Help students become excellent learners through discovery, active recall and sup
 2. Explore content before signing in; require sign-in only for contributions, saved material or practice progress.
 3. Short loop: Find course → open resource → practice recall → review explanation → share or return.
 4. Context at all times: university, course code, topic, content type, uploader and moderation status.
-5. Separate *documents uploaded by students* from *practice questions authored and reviewed by people*. No paid AI inference in MVP.
+5. Separate *documents uploaded by students* from *practice questions drafted for learning and later checked by educators*. Initial question sets are assistant-drafted and have not received independent academic review. No paid AI inference is used at runtime.
 6. Student contribution on mobile, with PDF upload, clear consent, review, report and removal. Never publish unchecked copyrighted or private material by default.
 
 ## MVP vertical slice
 - Real publicly browsable approved resources with search, course/type filter and empty states.
 - Email sign-in, permissioned PDF upload, queued moderation.
-- Human-authored practice prompts with immediate answer reveal after attempt; no client-visible competitive answer bank.
+- Original course-practice questions with server-authoritative grading and post-attempt explanations; educator review is required before general academic reliance.
 - Study Spaces and head-to-head arenas are subsequent authenticated vertical slices; don't pretend they work yet.
 - Installable PWA manifest; offline document caching is deferred until privacy and quota handling are in place.
 

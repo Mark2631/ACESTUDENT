@@ -9,7 +9,7 @@ Ace Student is a dark-first, phone-first academic learning application. Students
 - Academic institution/programme/course directory: seven Kenyan institutions and a verified-input MUST BBA pilot
 - User-owned PDF uploads (15 MB), moderation queue, status and withdrawal
 - Reviewer-only document approval/rejection console with rights/privacy checklist; only explicitly designated users can review
-- Original human-authored economics/accounting quizzes with server-authoritative grading, result explanations, one official attempt per question set, XP and badges
+- Original assistant-drafted introductory practice questions (not yet educator-reviewed) with server-authoritative grading, result explanations, one official attempt per question set, XP and badges
 - Shareable course quiz competitions, verified participant standings
 - Student-created Study Spaces, live discussions, learning-resource links, scheduled online meetings with RSVP, and vetted Google Meet/Zoom/Teams links
 - Saved, course-code-mapped OpenStax, Saylor and MIT learning resources, reporting for harmful/broken material, and a reviewer-only reports inbox with removal actions
@@ -21,7 +21,7 @@ Ace Student is a dark-first, phone-first academic learning application. Students
 
 ## Content and safety
 
-Source books and exams link to their publishers; third-party PDFs are **not copied into Supabase**. MIT exams are explicitly MIT materials, not Meru University exam papers. User-submitted documents are private until reviewed. No manufactured student accounts, grades or social activity have been inserted. No download paywall is active.
+Source books and exams link to their publishers; third-party PDFs are **not copied into Supabase**. MIT exams are explicitly MIT materials, not Meru University exam papers. User-submitted documents are private until reviewed. No manufactured student accounts, grades or social activity have been inserted. No download paywall is active. Initial quiz questions were drafted during AI-assisted development and still require educator review; do not present them as officially validated examination questions.
 
 ## Supabase configuration
 
