@@ -1,0 +1,5 @@
+insert into public.ace_open_resources(title,subject,kind,provider,url,attribution,description) values
+('Principles of Finance · OpenStax','Finance','Textbook','OpenStax','https://openstax.org/books/principles-finance/pages/1-why-it-matters','OpenStax; check CC BY-NC-SA license before reuse','Accessible introduction to financial decision-making, markets and time value.'),
+('MIT Financial and Managerial Accounting · 2004 Final Exam','Accounting','Past paper','MIT OpenCourseWare','https://ocw.mit.edu/courses/15-501-introduction-to-financial-and-managerial-accounting-spring-2004/resources/final_exam_s04/','MIT OCW, Spring 2004; publisher hosts original downloadable 347 kB PDF','A genuine three-part accounting final examination from MIT, not a Meru University paper.'),
+('MIT Financial and Managerial Accounting · Exam Collection','Accounting','Past paper','MIT OpenCourseWare','https://ocw.mit.edu/courses/15-501-introduction-to-financial-and-managerial-accounting-spring-2004/resources/exams/','MIT OCW, Spring 2004; reuse subject to MIT OpenCourseWare terms','A browsable series of genuine accounting exams and exam-solution PDFs.')
+on conflict(url) do nothing;
