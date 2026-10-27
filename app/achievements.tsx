@@ -1,0 +1,20 @@
+"use client";
+import {useEffect,useState} from "react";
+import {Medal,Trophy,ArrowRight,BookOpen,Star} from "lucide-react";
+import type {User} from "@supabase/supabase-js";
+import {supabase} from "@/lib/supabase";
+type Event={id:string,title:string,course_code:string,ends_at:string,quiz_id:string,created_at:string};
+type Attempt={id:string,challenge_id:string,correct_count:number,total_count:number,submitted_at:string};
+const tiers=[{name:"Starter",threshold:0,detail:"Joined the learning journey"},{name:"Learner",threshold:50,detail:"Earned 50 learning XP"},{name:"Scholar",threshold:120,detail:"Earned 120 learning XP"},{name:"Ace Champion",threshold:250,detail:"Earned 250 learning XP"}];
+export function BadgeCabinet({user}:{user:User}){
+ const[xp,setXp]=useState(0),[totalQuizzes,setTotalQuizzes]=useState(0),[loading,setLoading]=useState(true);
+ useEffect(()=>{if(!supabase)return;void Promise.all([supabase.from("ace_xp").select("xp").eq("user_id",user.id).maybeSingle(),supabase.from("ace_quiz_attempts").select("id",{count:"exact",head:true}).eq("user_id",user.id)]).then(([a,b])=>{setXp(a.data?.xp??0);setTotalQuizzes(b.count??0);setLoading(false)})},[user.id]);
+ const current=[...tiers].reverse().find(x=>xp>=x.threshold)??tiers[0];
+ const next=tiers.find(x=>x.threshold>xp);
+ return <section className="section badge-cabinet"><div className="row"><h2><Medal size={19}/> Your achievements</h2><span className="xp-pill">{xp} XP</span></div><p className="muted">Ace Student badges reflect learning activity within this app. They are not official university awards.</p><div className="badge-current panel"><div className="badge-emblem"><Star size={30}/></div><div><div className="eyebrow">CURRENT BADGE</div><h3>{loading?"Loading…":current.name}</h3><p className="muted">{totalQuizzes} completed practice quizzes</p>{next?<><div className="badge-bar" aria-label={xp+" out of "+next.threshold+" XP toward "+next.name}><span style={{width:Math.min(100,Math.round(100*xp/next.threshold))+"%"}}/></div><p className="small">{next.threshold-xp} XP until {next.name}</p></>:<p className="small">Highest learning badge earned</p>}</div></div><div className="badge-grid">{tiers.map(t=><div className={`badge-tile ${xp>=t.threshold?"earned":""}`} key={t.name}><div className="badge-icon"><Medal size={20}/></div><b>{t.name}</b><span>{t.detail}</span><small>{xp>=t.threshold?"Earned":t.threshold+" XP required"}</small></div>)}</div></section>
+}
+export function CompetitionHighlights({user,onArena}:{user:User,onArena:()=>void}){
+ const[events,setEvents]=useState<Event[]>([]),[scores,setScores]=useState<Attempt[]>([]),[loading,setLoading]=useState(true);
+ useEffect(()=>{if(!supabase)return;const client=supabase;void Promise.all([client.from("ace_challenges").select("id,title,quiz_id,ends_at,created_at").gte("ends_at",new Date().toISOString()).order("created_at",{ascending:false}).limit(4),client.from("ace_challenge_attempts").select("id,challenge_id,correct_count,total_count,submitted_at").eq("user_id",user.id).order("submitted_at",{ascending:false}).limit(4)]).then(([e,a])=>{setEvents((e.data??[]).map(x=>({...x,course_code:""})));setScores(a.data??[]);setLoading(false)})},[user.id]);
+ return <section className="section"><div className="row"><h2><Trophy size={19}/> Competition activity</h2><button className="text-link" onClick={onArena}>Open Arena <ArrowRight size={15}/></button></div>{loading?<p className="muted">Loading competitions…</p>:<div className="home-activity"><div className="panel"><h3>Open challenges</h3>{events.length?events.map(e=><p className="muted" key={e.id}><b>{e.title}</b> · closes {new Date(e.ends_at).toLocaleDateString()}</p>):<p className="muted">No competitions are active. You can host a challenge in the Arena.</p>}</div><div className="panel"><h3>Your recent event scores</h3>{scores.length?scores.map(x=><p className="muted" key={x.id}><Trophy size={13}/> {x.correct_count}/{x.total_count} correct · {new Date(x.submitted_at).toLocaleDateString()}</p>):<p className="muted">Join a challenge and submit your answers to appear here.</p>}</div></div>}</section>
+}
