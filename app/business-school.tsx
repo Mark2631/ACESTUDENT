@@ -6,6 +6,7 @@ import {supabase} from "@/lib/supabase";
 type Course={id:string,programme_id:string,code:string,title:string,year_of_study:number|null,semester:number|null};
 type Resource={id:string,title:string,subject:string,kind:string,related_codes:string[]};
 type Quiz={id:string,title:string,course_code:string,description:string|null};
+type StudentMaterial={id:string,course_code:string};
 export default function BusinessSchoolWorkspace({user,onCourse}:{user:User,onCourse:(code:string)=>void}){
  const[schoolName,setSchoolName]=useState("Business School"),[schoolSub,setSchoolSub]=useState("Bachelor of Business Administration"),[institutionName,setInstitutionName]=useState(""),[courses,setCourses]=useState<Course[]>([]),[resources,setResources]=useState<Resource[]>([]),[quizzes,setQuizzes]=useState<Quiz[]>([]),[attempts,setAttempts]=useState<{quiz_id:string}[]>([]),[year,setYear]=useState("all"),[search,setSearch]=useState(""),[loading,setLoading]=useState(true),[notice,setNotice]=useState(""),[myYear,setMyYear]=useState<number|null>(null);
  useEffect(()=>{if(!supabase){setNotice("The academic database is not connected.");setLoading(false);return}const db=supabase;let alive=true;
@@ -17,21 +18,22 @@ export default function BusinessSchoolWorkspace({user,onCourse}:{user:User,onCou
   if(!alive)return;
   if(programmeError||!programme){setInstitutionName(institution.name);setCourses([]);setNotice("The BBA programme has not been added to the academic catalogue.");setLoading(false);return}
   setInstitutionName(institution.name);setSchoolSub(programme.name);setSchoolName(programme.school||"Business School");
-  const [courseResult,resourceResult,quizResult,attemptResult,profileResult]=await Promise.all([
+  const [courseResult,resourceResult,quizResult,attemptResult,profileResult,studentResult]=await Promise.all([
    db.from("ace_course_catalog").select("id,programme_id,code,title,year_of_study,semester").eq("programme_id",programme.id).order("year_of_study").order("semester").order("code"),
    db.from("ace_open_resources").select("id,title,subject,kind,related_codes").eq("hidden",false),
    db.from("ace_quizzes").select("id,title,course_code,description").eq("status","published"),
    db.from("ace_quiz_attempts").select("quiz_id").eq("user_id",user.id),
-   db.from("ace_student_profiles").select("year_of_study").eq("user_id",user.id).maybeSingle()
+   db.from("ace_student_profiles").select("year_of_study").eq("user_id",user.id).maybeSingle(),
+   db.from("ace_resources").select("id,course_code").eq("status","approved")
   ]);
-  if(!alive)return;setCourses(courseResult.data??[]);setResources(resourceResult.data??[]);setQuizzes(quizResult.data??[]);setAttempts(attemptResult.data??[]);setMyYear(profileResult.data?.year_of_study??null);
-  if(courseResult.error||resourceResult.error||quizResult.error||attemptResult.error)setNotice("Some course information could not be loaded.");
+  if(!alive)return;setCourses(courseResult.data??[]);setResources(resourceResult.data??[]);setStudentMaterials(studentResult.data??[]);setQuizzes(quizResult.data??[]);setAttempts(attemptResult.data??[]);setMyYear(profileResult.data?.year_of_study??null);
+  if(courseResult.error||resourceResult.error||quizResult.error||attemptResult.error||studentResult.error)setNotice("Some course information could not be loaded.");
   setLoading(false);
  }
  void load();return()=>{alive=false}
  },[user.id]);
- const rows=useMemo(()=>courses.filter(c=>(year==="all"||String(c.year_of_study)===year)&&[c.code,c.title,""].join(" ").toLowerCase().includes(search.trim().toLowerCase())).map(c=>{const rs=resources.filter(r=>(r.related_codes??[]).includes(c.code));const qs=quizzes.filter(q=>q.course_code.replace(/\s/g,"").toUpperCase()===c.code.replace(/\s/g,"").toUpperCase());return {...c,resourceCount:rs.length,quizCount:qs.length,completed:qs.filter(q=>attempts.some(a=>a.quiz_id===q.id)).length}}),[courses,resources,quizzes,attempts,year,search]);
- const summary={units:courses.length,resources:resources.filter(r=>courses.some(c=>(r.related_codes??[]).includes(c.code))).length,quizzes:quizzes.filter(q=>courses.some(c=>c.code===q.course_code)).length,completed:attempts.filter(a=>quizzes.some(q=>q.id===a.quiz_id&&courses.some(c=>c.code===q.course_code))).length};
+ const rows=useMemo(()=>courses.filter(c=>(year==="all"||String(c.year_of_study)===year)&&[c.code,c.title,""].join(" ").toLowerCase().includes(search.trim().toLowerCase())).map(c=>{const rs=resources.filter(r=>(r.related_codes??[]).includes(c.code));const qs=quizzes.filter(q=>q.course_code.replace(/\s/g,"").toUpperCase()===c.code.replace(/\s/g,"").toUpperCase());return {...c,resourceCount:rs.length+studentMaterials.filter(r=>r.course_code===c.code).length,quizCount:qs.length,completed:qs.filter(q=>attempts.some(a=>a.quiz_id===q.id)).length}}),[courses,resources,studentMaterials,quizzes,attempts,year,search]);
+ const summary={units:courses.length,resources:resources.filter(r=>courses.some(c=>(r.related_codes??[]).includes(c.code))).length+studentMaterials.filter(r=>courses.some(c=>c.code===r.course_code)).length,quizzes:quizzes.filter(q=>courses.some(c=>c.code===q.course_code)).length,completed:attempts.filter(a=>quizzes.some(q=>q.id===a.quiz_id&&courses.some(c=>c.code===q.course_code))).length};
  const yearCounts=[1,2,3,4].map(y=>({year:y,count:courses.filter(c=>c.year_of_study===y).length}));
  return <section className="school-workspace">
   <div className="school-breadcrumb"><span>ACE STUDENT</span><ChevronRight size={14}/><span>BUSINESS SCHOOL</span><span className="workspace-status"><i/> Academic catalogue</span></div>
