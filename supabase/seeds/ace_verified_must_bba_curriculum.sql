@@ -157,3 +157,27 @@ FROM (VALUES
  ('Research Methods · Introduction to Sociology 3e','Research Methodology','Lecture notes','OpenStax','https://openstax.org/books/introduction-sociology-3e/pages/2-2-research-methods','OpenStax','Free overview of research design and methods. Adapt concepts to business research requirements and the lecturer’s methodology guide.',ARRAY['EMP3350']::text[])
 ) AS v(title,subject,kind,provider,url,attribution,description,related_codes)
 WHERE NOT EXISTS (SELECT 1 FROM public.ace_open_resources r WHERE r.url=v.url);
+
+-- Additional open texts for marketing, ethics/CSR and project-specialization units.
+INSERT INTO public.ace_open_resources(title,subject,kind,provider,url,attribution,description,related_codes)
+SELECT v.title,v.subject,v.kind,v.provider,v.url,v.attribution,v.description,v.related_codes
+FROM (VALUES
+ ('Principles of Marketing · OpenStax','Marketing','Textbook','OpenStax','https://openstax.org/books/principles-marketing/pages/1-unit-introduction','OpenStax','Free undergraduate marketing textbook on customer value, segmentation, marketing research and the marketing mix. Use Kenyan market examples when applying concepts.',ARRAY['BFB3151']::text[]),
+ ('BUS203 Principles of Marketing · Saylor','Marketing','Open course','Saylor University','https://learn.saylor.org/course/view.php?id=1250','Saylor University','Free self-paced marketing course covering segmentation, targeting, positioning, pricing, distribution, promotion and marketing plans.',ARRAY['BFB3151']::text[]),
+ ('Business Ethics · OpenStax','Business Ethics','Textbook','OpenStax','https://openstax.org/books/business-ethics/pages/1-introduction','OpenStax','Free introduction to ethical reasoning and business responsibility. Use as a conceptual supplement, not as a source of Kenyan legal rules.',ARRAY['UCU3101','BFB3301','BFB3351','BFB3451','BFB3202']::text[]),
+ ('The Ten Principles of the UN Global Compact','Corporate Responsibility','Policy reference','United Nations Global Compact','https://unglobalcompact.org/what-is-gc/mission/principles','United Nations Global Compact','International principles covering human rights, labour, environment and anti-corruption. A global framework, not a substitute for Kenyan law or reporting requirements.',ARRAY['BFB3301','BFB3351','BFB3451']::text[]),
+ ('Project Management · 2nd Edition','Project Management','Textbook','BCcampus Open Education','https://opentextbc.ca/projectmanagement/','Adrienne Watt and contributors','Free open textbook covering project initiation, planning, execution, control, stakeholders and closeout. Published in 2014, so supplement with current standards and tools.',ARRAY['BFB3250','BFB3361','BFB3362','BFB3363','BFB3411','BFB3412','BFB3413','BFB3462','BFB3463','BFB3464']::text[]),
+ ('Project Management Fundamentals · updated 2025','Project Management','Textbook','Open Textbook Library','https://open.umn.edu/opentextbooks/textbooks/1914','Shelly Morris and Karla Murtescu','Open introductory project-management textbook updated in 2025, covering selection, initiation, planning, execution, monitoring and closure.',ARRAY['BFB3250','BFB3361','BFB3362','BFB3363','BFB3411','BFB3412','BFB3413','BFB3462','BFB3463','BFB3464']::text[])
+) AS v(title,subject,kind,provider,url,attribution,description,related_codes)
+WHERE NOT EXISTS (SELECT 1 FROM public.ace_open_resources r WHERE r.url=v.url);
+
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFC3226','BFC3277','BFC3429','BFC3479','BFC3381','BFB3150']::text[]
+WHERE url='https://openstax.org/books/principles-finance/pages/1-why-it-matters';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3200','BFB3203','BFB3251','BFB3302','BFB3401','BFB3402']::text[]
+WHERE url='https://openstax.org/books/organizational-behavior/pages/1-introduction';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3465','BFB3469','BFB3200','BFB3251','BFB3302']::text[]
+WHERE url='https://openstax.org/books/organizational-behavior/pages/18-introduction';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFC3125','BFC3175','BFC3327','BFC3426']::text[]
+WHERE url='https://openstax.org/books/principles-financial-accounting/pages/1-why-it-matters';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['EMP3350']::text[]
+WHERE url='https://openstax.org/books/introduction-sociology-3e/pages/2-2-research-methods';
