@@ -1,10 +1,12 @@
-# Academic content coverage · 27 October 2026
+# Academic content coverage · 30 October 2026
 
 ## Pilot: Meru University Bachelor of Business Administration
 
-The following six unit codes came from the pilot programme and are distinct from the general introductory quiz codes. The course directory contains the six units under MUST BBA Year 2, Semester 1.
+The production catalogue has **40 mapped BBA course records across Years 1–4**. Year 1 has 15 entries, Year 2 has 14, Year 3 has 7 and Year 4 has 4. This is a **partially mapped catalogue, not a claim that the current official BBA curriculum is complete**. The common Year 1–3 entries follow the BBA course structure published on the MUST School of Business & Economics site; additional Year 3–4 entries were only added where MUST's official examination archive explicitly identifies a BBA year/semester. The public curriculum page is historical and must be checked with the department before treating it as the current approved syllabus.
 
-| Unit | Title | Original practice quizzes | Original practice questions |
+The six initial Year 2 Semester 1 units remain the original pilot focus:
+
+| Unit | Title | Original pilot quizzes | Original pilot questions |
 | --- | --- | ---: | ---: |
 | BFB3200 | Human Resource Management | 2 | 10 |
 | BFB3201 | Business Law | 2 | 10 |
@@ -13,13 +15,15 @@ The following six unit codes came from the pilot programme and are distinct from
 | BFB3205 | Public Relations | 2 | 10 |
 | BFC3227 | Cost Accounting | 2 | 10 |
 
-Additionally: **ACC 101** (general introductory financial accounting) and **ECO 101** (general introductory microeconomics), two quizzes and ten questions each. These are generic topic labels, **not verified official university course codes**.
+Fourteen additional BBA course-specific practice quizzes now cover Introduction to Accounting I, Microeconomics, Constitution and Governance, Principles of Management, Principles of Marketing, Macroeconomics, Project Management, Organizational Behaviour, Financial Management, Strategic Management, International Business Management, Business Planning, Company Law and Computerized Accounting. Each has five original multiple-choice questions with explanations. These are explicitly **Ace Student practice questions**, not official MUST exam questions and not a replacement for lecturer notes or the approved syllabus.
 
-Total: **16 quizzes, 80 original multiple-choice questions**, across six pilot BBA units and two general foundational subject areas. Each question has four answers, an answer index, and an explanation. Practice scores and XP are graded in trusted SQL functions, not by browser-submitted marks.
+Additionally, **ACC 101** (general introductory financial accounting) and **ECO 101** (general introductory microeconomics) remain general foundational quiz labels, **not verified official university course codes**.
+
+Current content totals: **40 mapped course records, 30 published quizzes, 150 original multiple-choice questions, and 9 links to official MUST examination-archive papers**. This includes the initial 16 quizzes / 80 questions plus 14 newly seeded quizzes / 70 questions. Question answers remain server-side; grading and XP are handled by trusted SQL functions, not browser-submitted marks. The quiz seed is idempotent: rerunning it does not duplicate quizzes or questions.
 
 ## Resource sourcing
 
-The library contains publisher-hosted resources (OpenStax, MIT OpenCourseWare, Saylor University) mapped to applicable unit codes. The catalogue includes original MIT past-paper PDFs, lecture notes, exercises, textbooks and open courses. **MIT papers are not Meru University examinations**. A book or resource being tagged with a unit indicates topical relevance, not verification against that lecturer's exact unit outline.
+The library contains publisher-hosted resources (OpenStax, MIT OpenCourseWare, Saylor University) mapped to applicable unit codes. The catalogue includes publisher-hosted textbooks, lecture notes, exercises and open courses. **MIT papers are not Meru University examinations**. The nine resources attributed to the MUST examination archive link to official university-hosted past-paper PDFs; papers may cover multiple programmes, and their stated programme/year/semester should be checked before use. A resource tagged to a unit indicates topical relevance, not confirmation against that lecturer's exact unit outline.
 
 Editorial research references:
 
@@ -43,4 +47,4 @@ Academic directory → select university/programme/unit → **Course Hub** → v
 5. Automated link-health checks and media accessibility audits.
 6. Larger question banks, detailed worked solutions and topic-level mastery data to support sustainable revision.
 
-The source content and SQL seed scripts are versioned under `supabase/seeds/`; they should remain reproducible and auditable. Avoid inserting fake students, scores, or social engagement for visual effect.
+The source content and SQL seed scripts are versioned under `supabase/seeds/`. `ace_verified_must_bba_curriculum.sql` seeds the mapped catalogue and official archive links; `ace_original_bba_practice.sql` seeds original quizzes and explanations. Both scripts are designed to be idempotent and should remain reproducible and auditable. Avoid inserting fake students, scores, or social engagement for visual effect.
