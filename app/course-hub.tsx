@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useState} from "react";
-import {ArrowLeft,ArrowRight,BookOpen,ClipboardList,ExternalLink,GraduationCap,Trophy,CheckCircle2,Bookmark} from "lucide-react";
+import {ArrowLeft,ArrowRight,BookOpen,ClipboardList,ExternalLink,GraduationCap,Trophy,CheckCircle2,Bookmark,Users} from "lucide-react";
 import {supabase} from "@/lib/supabase";
 import ReportAction from "./report-action";
 import type {User} from "@supabase/supabase-js";
