@@ -40,6 +40,8 @@ FROM programme CROSS JOIN (VALUES
  (2,2,'BFC3226','Introduction to Financial Management'),
  (2,2,'CIT3251','Management Information System'),
  (2,2,'CIT3477','E-Commerce'),
+ (2,2,'BFC3277','Business Finance'),
+ (2,2,'BFC3278','Auditing and Assurance'),
  (3,1,'BFB3301','Environmental Issues in Business'),
  (3,1,'BFB3302','Behavioural Science'),
  (3,1,'BFB3465','Motivation and Stress Management'),
@@ -69,6 +71,9 @@ FROM (VALUES
  ('Company Law, January 2025','BFC3400','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2025/09/BFB-3400-COMPANY-LAW.docx.pdf','Meru University of Science and Technology','Official published BBA Year 4 Semester 1 examination paper',ARRAY['BFC3400']::text[]),
  ('Computerized Accounting, January 2025','BFC3428','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2025/04/BFC-3428-COMPUTERIZED-ACCOUNTING.pdf','Meru University of Science and Technology','Official published BBA Year 4 Semester 1 examination paper',ARRAY['BFC3428']::text[]),
  ('International Business Management, January 2026','BFB3366','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2026/03/BFB-3366-BFB-3300-INTERNATIONAL-BUSINESS-MANAGEMENT.pdf','Meru University of Science and Technology','Official published BBA Year 4 Semester 1 examination paper; paper also identifies BFB 3300',ARRAY['BFB3366']::text[]),
- ('Business Planning, April 2024','BFB3452','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2024/06/BFB-3452-BUSINESS-PLANNING-.pdf','Meru University of Science and Technology','Official published BBA Year 4 Semester 2 examination paper',ARRAY['BFB3452']::text[])
+ ('Business Planning, April 2024','BFB3452','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2024/06/BFB-3452-BUSINESS-PLANNING-.pdf','Meru University of Science and Technology','Official published BBA Year 4 Semester 2 examination paper',ARRAY['BFB3452']::text[]),
+ ('Business Finance, January 2025','BFC3277','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2025/04/BFC-3277-BUSINESS-FINANCE.pdf','Meru University of Science and Technology','Official published BBA Year 2 Semester 2 examination paper',ARRAY['BFC3277']::text[]),
+ ('Auditing and Assurance, January 2025','BFC3278','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2025/04/BFC-3278-AUDITING-AND-ASSURANCE.pdf','Meru University of Science and Technology','Official published BBA Year 2 Semester 2 examination paper',ARRAY['BFC3278']::text[]),
+ ('Financial Systems, January 2025','BFC3334','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2025/04/BFC-3334-FINANCIAL-SYSTEMS.pdf','Meru University of Science and Technology','Official published BBA Year 3 Semester 1 examination paper',ARRAY['BFC3334']::text[])
 ) AS v(title,subject,kind,provider,url,attribution,description,related_codes)
 WHERE NOT EXISTS (SELECT 1 FROM public.ace_open_resources r WHERE r.url=v.url);
