@@ -23,7 +23,7 @@ Current content totals: **65 mapped course records, 34 published quizzes, 170 or
 
 ## Resource sourcing
 
-The library contains publisher-hosted resources (OpenStax, MIT OpenCourseWare, Saylor University) mapped to applicable unit codes. The catalogue includes publisher-hosted textbooks, lecture notes, exercises and open courses. **MIT papers are not Meru University examinations**. The thirteen resources attributed to the MUST examination archive link to official university-hosted past-paper PDFs; papers may cover multiple programmes, and their stated programme/year/semester should be checked before use. A resource tagged to a unit indicates topical relevance, not confirmation against that lecturer's exact unit outline.
+The live library now has **41 mapped resource records**: 13 MUST examination-archive papers, 9 MIT OpenCourseWare items, 14 OpenStax items and 5 Saylor University open courses. All visible resource records are linked to at least one course code. The catalogue includes publisher-hosted textbooks, lecture notes, exercises and open courses. The mapping is topical rather than a claim that an external source exactly matches the MUST lecturer's syllabus. **MIT papers are not Meru University examinations**. The thirteen resources attributed to the MUST examination archive link to official university-hosted past-paper PDFs; papers may cover multiple programmes, and their stated programme/year/semester should be checked before use. OpenStax and Saylor business-law materials are marked as non-Kenyan legal contexts and should not replace Kenyan statutes or case law. A resource tagged to a unit indicates topical relevance, not confirmation against that lecturer's exact unit outline.
 
 Editorial research references:
 
