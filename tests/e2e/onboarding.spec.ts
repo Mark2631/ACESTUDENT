@@ -12,7 +12,7 @@ test("sign-in is focused and supports recovery",async({page})=>{
  await page.getByRole("button",{name:"Back to sign in"}).click();
  await expect(page.locator("#password")).toBeVisible();
 });
-test("registration is minimal with four academic years",async({page})=>{
+test("a reset query parameter cannot bypass the recovery session",async({page})=>{\n await page.goto("/?reset");\n await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();\n await expect(page.getByRole("heading",{name:"Choose a new password"})).toHaveCount(0);\n});\ntest("registration is minimal with four academic years",async({page})=>{
  await page.getByRole("button",{name:"Create account",exact:true}).click();
  await expect(page.getByRole("heading",{name:"Create account"})).toBeVisible();
  await expect(page.locator("#fullName")).toBeVisible();
