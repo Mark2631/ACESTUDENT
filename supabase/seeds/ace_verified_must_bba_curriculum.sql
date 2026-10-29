@@ -46,6 +46,7 @@ FROM programme CROSS JOIN (VALUES
  (3,1,'BFB3302','Behavioural Science'),
  (3,1,'BFB3465','Motivation and Stress Management'),
  (3,2,'EMP3350','Research Methodology'),
+ (3,1,'BFC3334','Financial Systems'),
  (4,2,'BFC3327','Financial Accounting Theory'),
  (4,2,'BFC3329','Advanced Taxation'),
  (3,2,'BFB3350','Strategic Management'),
