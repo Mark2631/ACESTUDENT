@@ -2,7 +2,7 @@
 
 ## Pilot: Meru University Bachelor of Business Administration
 
-The production catalogue has **40 mapped BBA course records across Years 1–4**. Year 1 has 15 entries, Year 2 has 14, Year 3 has 7 and Year 4 has 4. This is a **partially mapped catalogue, not a claim that the current official BBA curriculum is complete**. The common Year 1–3 entries follow the BBA course structure published on the MUST School of Business & Economics site; additional Year 3–4 entries were only added where MUST's official examination archive explicitly identifies a BBA year/semester. The public curriculum page is historical and must be checked with the department before treating it as the current approved syllabus.
+The production catalogue has **62 mapped BBA course records across Years 1–4**: Year 1 has 15 entries, Year 2 has 14, Year 3 has 12 and Year 4 has 21. This is a **partially mapped catalogue, not a claim that the current official BBA curriculum is complete**. It contains 45 common-core records, 8 Finance & Accounting option records and 9 Project Management option records. The common Year 1–3 entries follow the BBA course structure published on the MUST School of Business & Economics site; additional Year 3–4 entries were only added where MUST's official examination archive explicitly identifies a BBA year/semester. The public curriculum page is historical and must be checked with the department before treating it as the current approved syllabus. Source conflicts were found: the older course-structure page lists Company Law as BFB 3400 while the official 2024/25 exam PDF labels it BFC 3400; it also lists BFC 3429 for different Finance-option subjects in different semesters. The catalogue uses BFC3400 from the exam paper and maps BFC3429 once, with these discrepancies flagged for academic verification.
 
 The six initial Year 2 Semester 1 units remain the original pilot focus:
 
@@ -19,7 +19,7 @@ Fourteen additional BBA course-specific practice quizzes now cover Introduction 
 
 Additionally, **ACC 101** (general introductory financial accounting) and **ECO 101** (general introductory microeconomics) remain general foundational quiz labels, **not verified official university course codes**.
 
-Current content totals: **40 mapped course records, 30 published quizzes, 150 original multiple-choice questions, and 9 links to official MUST examination-archive papers**. This includes the initial 16 quizzes / 80 questions plus 14 newly seeded quizzes / 70 questions. Question answers remain server-side; grading and XP are handled by trusted SQL functions, not browser-submitted marks. The quiz seed is idempotent: rerunning it does not duplicate quizzes or questions.
+Current content totals: **62 mapped course records, 30 published quizzes, 150 original multiple-choice questions, and 9 links to official MUST examination-archive papers**. This includes the initial 16 quizzes / 80 questions plus 14 newly seeded quizzes / 70 questions. Question answers remain server-side; grading and XP are handled by trusted SQL functions, not browser-submitted marks. The quiz seed is idempotent: rerunning it does not duplicate quizzes or questions.
 
 ## Resource sourcing
 
