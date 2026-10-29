@@ -19,11 +19,11 @@ Eighteen additional BBA course-specific practice quizzes now cover Introduction 
 
 Additionally, **ACC 101** (general introductory financial accounting) and **ECO 101** (general introductory microeconomics) remain general foundational quiz labels, **not verified official university course codes**.
 
-Current content totals: **65 mapped course records, 33 published quizzes, 165 original multiple-choice questions, and 12 links to official MUST examination-archive papers**. This includes the initial 16 quizzes / 80 questions plus 18 newly seeded quizzes / 90 questions. Question answers remain server-side; grading and XP are handled by trusted SQL functions, not browser-submitted marks. The quiz seed is idempotent: rerunning it does not duplicate quizzes or questions.
+Current content totals: **65 mapped course records, 34 published quizzes, 170 original multiple-choice questions, and 13 links to official MUST examination-archive papers**. This includes the initial 16 quizzes / 80 questions plus 18 newly seeded quizzes / 90 questions. Question answers remain server-side; grading and XP are handled by trusted SQL functions, not browser-submitted marks. The quiz seed is idempotent: rerunning it does not duplicate quizzes or questions.
 
 ## Resource sourcing
 
-The library contains publisher-hosted resources (OpenStax, MIT OpenCourseWare, Saylor University) mapped to applicable unit codes. The catalogue includes publisher-hosted textbooks, lecture notes, exercises and open courses. **MIT papers are not Meru University examinations**. The nine resources attributed to the MUST examination archive link to official university-hosted past-paper PDFs; papers may cover multiple programmes, and their stated programme/year/semester should be checked before use. A resource tagged to a unit indicates topical relevance, not confirmation against that lecturer's exact unit outline.
+The library contains publisher-hosted resources (OpenStax, MIT OpenCourseWare, Saylor University) mapped to applicable unit codes. The catalogue includes publisher-hosted textbooks, lecture notes, exercises and open courses. **MIT papers are not Meru University examinations**. The thirteen resources attributed to the MUST examination archive link to official university-hosted past-paper PDFs; papers may cover multiple programmes, and their stated programme/year/semester should be checked before use. A resource tagged to a unit indicates topical relevance, not confirmation against that lecturer's exact unit outline.
 
 Editorial research references:
 
