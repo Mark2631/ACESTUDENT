@@ -12,7 +12,7 @@ test("sign-in is focused and supports recovery",async({page})=>{
  await page.getByRole("button",{name:"Back to sign in"}).click();
  await expect(page.locator("#password")).toBeVisible();
 });
-test("a reset query parameter cannot bypass the recovery session",async({page})=>{\n await page.goto("/?reset");\n await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();\n await expect(page.getByRole("heading",{name:"Choose a new password"})).toHaveCount(0);\n});\ntest("registration is minimal with four academic years",async({page})=>{
+test("production PWA registers its offline-safe service worker",async({page})=>{\n await page.goto("/");\n await expect.poll(()=>page.evaluate(async()=>Boolean(await navigator.serviceWorker?.getRegistration("/"))),{timeout:10000}).toBe(true);\n const manifest=await page.evaluate(async()=>fetch("/manifest.webmanifest").then(r=>r.json()));\n expect(manifest.name).toBe("Ace Student");\n expect(manifest.display).toBe("standalone");\n});\ntest("a reset query parameter cannot bypass the recovery session",async({page})=>{\n await page.goto("/?reset");\n await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();\n await expect(page.getByRole("heading",{name:"Choose a new password"})).toHaveCount(0);\n});\ntest("registration is minimal with four academic years",async({page})=>{
  await page.getByRole("button",{name:"Create account",exact:true}).click();
  await expect(page.getByRole("heading",{name:"Create account"})).toBeVisible();
  await expect(page.locator("#fullName")).toBeVisible();
