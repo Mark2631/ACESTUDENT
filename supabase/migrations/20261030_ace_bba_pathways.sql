@@ -23,7 +23,7 @@ FROM programme CROSS JOIN (VALUES
  (4,1,'BFC3426','Advanced Accounting II', 'finance_accounting'),
  (3,2,'BFC3381','Project Appraisal', 'finance_accounting'),
  (3,2,'BFC3479','Financial Risk Management', 'finance_accounting'),
- (4,1,'BFC3429','Financial Information Systems', 'finance_accounting'),
+ (4,2,'BFC3429','International Finance', 'finance_accounting'),
  (4,1,'BFC3425','Management Accounting', 'finance_accounting'),
  (3,2,'BFB3361','Project Risk Analysis and Management', 'project_management'),
  (3,2,'BFB3362','Decision Making in Projects', 'project_management'),
