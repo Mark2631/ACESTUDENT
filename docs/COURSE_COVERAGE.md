@@ -15,11 +15,11 @@ The six initial Year 2 Semester 1 units remain the original pilot focus:
 | BFB3205 | Public Relations | 2 | 10 |
 | BFC3227 | Cost Accounting | 2 | 10 |
 
-Seventeen additional BBA course-specific practice quizzes now cover Introduction to Accounting I, Microeconomics, Constitution and Governance, Principles of Management, Principles of Marketing, Macroeconomics, Project Management, Organizational Behaviour, Financial Management, Strategic Management, International Business Management, Business Planning, Company Law and Computerized Accounting, Business Finance, Auditing and Assurance, and Financial Systems. Each has five original multiple-choice questions with explanations. These are explicitly **Ace Student practice questions**, not official MUST exam questions and not a replacement for lecturer notes or the approved syllabus.
+Eighteen additional BBA course-specific practice quizzes now cover Introduction to Accounting I, Microeconomics, Constitution and Governance, Principles of Management, Principles of Marketing, Macroeconomics, Project Management, Organizational Behaviour, Financial Management, Strategic Management, International Business Management, Business Planning, Company Law and Computerized Accounting, Business Finance, Auditing and Assurance, Financial Systems, and International Finance. Each has five original multiple-choice questions with explanations. These are explicitly **Ace Student practice questions**, not official MUST exam questions and not a replacement for lecturer notes or the approved syllabus.
 
 Additionally, **ACC 101** (general introductory financial accounting) and **ECO 101** (general introductory microeconomics) remain general foundational quiz labels, **not verified official university course codes**.
 
-Current content totals: **65 mapped course records, 33 published quizzes, 165 original multiple-choice questions, and 12 links to official MUST examination-archive papers**. This includes the initial 16 quizzes / 80 questions plus 17 newly seeded quizzes / 85 questions. Question answers remain server-side; grading and XP are handled by trusted SQL functions, not browser-submitted marks. The quiz seed is idempotent: rerunning it does not duplicate quizzes or questions.
+Current content totals: **65 mapped course records, 33 published quizzes, 165 original multiple-choice questions, and 12 links to official MUST examination-archive papers**. This includes the initial 16 quizzes / 80 questions plus 18 newly seeded quizzes / 90 questions. Question answers remain server-side; grading and XP are handled by trusted SQL functions, not browser-submitted marks. The quiz seed is idempotent: rerunning it does not duplicate quizzes or questions.
 
 ## Resource sourcing
 
