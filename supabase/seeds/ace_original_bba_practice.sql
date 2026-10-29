@@ -26,8 +26,11 @@ inserted_quizzes AS (
  RETURNING id,course_code,title
 ),
 quiz_ids AS (
+ SELECT id,course_code,title FROM inserted_quizzes
+ UNION ALL
  SELECT q.id,q.course_code,q.title FROM public.ace_quizzes q
  JOIN quiz_seed s ON s.course_code=q.course_code AND s.title=q.title
+ WHERE NOT EXISTS (SELECT 1 FROM inserted_quizzes i WHERE i.id=q.id)
 ),
 question_seed(course_code,quiz_title,sort_order,prompt,options,correct_index,explanation) AS (
  VALUES
