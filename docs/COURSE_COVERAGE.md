@@ -19,7 +19,7 @@ Eighteen additional BBA course-specific practice quizzes now cover Introduction 
 
 Additionally, **ACC 101** (general introductory financial accounting) and **ECO 101** (general introductory microeconomics) remain general foundational quiz labels, **not verified official university course codes**.
 
-Current content totals: **65 mapped course records, 34 published quizzes, 170 original multiple-choice questions, and 13 links to official MUST examination-archive papers**. This includes the initial 16 quizzes / 80 questions plus 18 newly seeded quizzes / 90 questions. Question answers remain server-side; grading and XP are handled by trusted SQL functions, not browser-submitted marks. The quiz seed is idempotent: rerunning it does not duplicate quizzes or questions.
+Current content totals: **65 mapped course records, 34 published quizzes, 170 original multiple-choice questions, and 13 links to official MUST examination-archive papers**. This includes the initial 16 quizzes / 80 questions plus 18 newly seeded quizzes / 90 questions. Question answers remain server-side; grading and XP are handled by trusted SQL functions, not browser-submitted marks. The practice seed files are idempotent: rerunning them does not duplicate quizzes or questions.
 
 ## Resource sourcing
 
@@ -47,4 +47,4 @@ Academic directory → select university/programme/unit → **Course Hub** → v
 5. Automated link-health checks and media accessibility audits.
 6. Larger question banks, detailed worked solutions and topic-level mastery data to support sustainable revision.
 
-The source content and SQL seed scripts are versioned under `supabase/seeds/`. `ace_verified_must_bba_curriculum.sql` seeds the mapped catalogue and official archive links; `ace_original_bba_practice.sql` seeds original quizzes and explanations. Both scripts are designed to be idempotent and should remain reproducible and auditable. Avoid inserting fake students, scores, or social engagement for visual effect.
+The source content and SQL seed scripts are versioned under `supabase/seeds/`. `ace_verified_must_bba_curriculum.sql` seeds the mapped catalogue and official archive links; `ace_original_bba_practice.sql` seeds the main original quiz bank, while `ace_international_finance_practice.sql` seeds the additional finance-option quiz. Both are idempotent. Both scripts are designed to be idempotent and should remain reproducible and auditable. Avoid inserting fake students, scores, or social engagement for visual effect.
