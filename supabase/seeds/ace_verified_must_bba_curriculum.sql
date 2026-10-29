@@ -179,5 +179,5 @@ UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3465','BFB3469','BF
 WHERE url='https://openstax.org/books/organizational-behavior/pages/18-introduction';
 UPDATE public.ace_open_resources SET related_codes=ARRAY['BFC3125','BFC3175','BFC3327','BFC3426']::text[]
 WHERE url='https://openstax.org/books/principles-financial-accounting/pages/1-why-it-matters';
-UPDATE public.ace_open_resources SET related_codes=ARRAY['EMP3350']::text[]
+UPDATE public.ace_open_resources SET related_codes=ARRAY['EMP3350','BFC3475']::text[]
 WHERE url='https://openstax.org/books/introduction-sociology-3e/pages/2-2-research-methods';
