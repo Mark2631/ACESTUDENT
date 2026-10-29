@@ -49,6 +49,7 @@ FROM programme CROSS JOIN (VALUES
  (3,1,'BFC3334','Financial Systems'),
  (4,2,'BFC3327','Financial Accounting Theory'),
  (4,2,'BFC3329','Advanced Taxation'),
+ (4,2,'BFC3429','International Finance'),
  (3,2,'BFB3350','Strategic Management'),
  (4,1,'BFC3400','Company Law'),
  (4,1,'BFC3428','Computerized Accounting'),
@@ -75,6 +76,7 @@ FROM (VALUES
  ('Business Planning, April 2024','BFB3452','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2024/06/BFB-3452-BUSINESS-PLANNING-.pdf','Meru University of Science and Technology','Official published BBA Year 4 Semester 2 examination paper',ARRAY['BFB3452']::text[]),
  ('Business Finance, January 2025','BFC3277','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2025/04/BFC-3277-BUSINESS-FINANCE.pdf','Meru University of Science and Technology','Official published BBA Year 2 Semester 2 examination paper',ARRAY['BFC3277']::text[]),
  ('Auditing and Assurance, January 2025','BFC3278','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2025/04/BFC-3278-AUDITING-AND-ASSURANCE.pdf','Meru University of Science and Technology','Official published BBA Year 2 Semester 2 examination paper',ARRAY['BFC3278']::text[]),
- ('Financial Systems, January 2025','BFC3334','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2025/04/BFC-3334-FINANCIAL-SYSTEMS.pdf','Meru University of Science and Technology','Official published BBA Year 3 Semester 1 examination paper',ARRAY['BFC3334']::text[])
+ ('Financial Systems, January 2025','BFC3334','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2025/04/BFC-3334-FINANCIAL-SYSTEMS.pdf','Meru University of Science and Technology','Official published BBA Year 3 Semester 1 examination paper',ARRAY['BFC3334']::text[]),
+ ('International Finance, April 2023','BFC3429','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2024/03/BFC-3429-INTERNATIONAL-FINANCE.pdf','Meru University of Science and Technology','Official published BBA Year 4 Semester 2 examination paper',ARRAY['BFC3429']::text[])
 ) AS v(title,subject,kind,provider,url,attribution,description,related_codes)
 WHERE NOT EXISTS (SELECT 1 FROM public.ace_open_resources r WHERE r.url=v.url);
