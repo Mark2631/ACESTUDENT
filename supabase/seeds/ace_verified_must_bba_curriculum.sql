@@ -80,3 +80,62 @@ FROM (VALUES
  ('International Finance, April 2023','BFC3429','Past paper','MUST examination archive','https://exampapers.must.ac.ke/wp-content/uploads/2024/03/BFC-3429-INTERNATIONAL-FINANCE.pdf','Meru University of Science and Technology','Official published BBA Year 4 Semester 2 examination paper',ARRAY['BFC3429']::text[])
 ) AS v(title,subject,kind,provider,url,attribution,description,related_codes)
 WHERE NOT EXISTS (SELECT 1 FROM public.ace_open_resources r WHERE r.url=v.url);
+
+-- Map previously unassigned open resources to relevant BBA units.
+-- MIT/Saylor/OpenStax material is supplementary and is not represented as MUST-issued content.
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFC3125','BFC3175','BFC3227','BFC3425']::text[]
+WHERE url IN (
+ 'https://ocw.mit.edu/courses/15-501-introduction-to-financial-and-managerial-accounting-spring-2004/resources/final_exam_s04/',
+ 'https://ocw.mit.edu/courses/15-501-introduction-to-financial-and-managerial-accounting-spring-2004/resources/exams/',
+ 'https://ocw.mit.edu/courses/15-501-introduction-to-financial-and-managerial-accounting-spring-2004/pages/assignments/',
+ 'https://ocw.mit.edu/courses/15-501-introduction-to-financial-and-managerial-accounting-spring-2004/12588379584d82b0d59337d2d2a5d80d_final_exam_s04.pdf',
+ 'https://ocw.mit.edu/courses/15-501-introduction-to-financial-and-managerial-accounting-spring-2004/pages/lecture-notes/',
+ 'https://ocw.mit.edu/courses/15-501-introduction-to-financial-and-managerial-accounting-spring-2004/e7f2f38387fac9d3fe00dd6641a5d781_mid1_f03.pdf',
+ 'https://ocw.mit.edu/courses/15-501-introduction-to-financial-and-managerial-accounting-spring-2004/pages/exams/'
+);
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BEC3150']::text[]
+WHERE url IN (
+ 'https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/resources/exams/',
+ 'https://ocw.mit.edu/courses/14-02-principles-of-macroeconomics-spring-2023/download/'
+);
+UPDATE public.ace_open_resources SET related_codes=ARRAY['SMB3113']::text[]
+WHERE url IN (
+ 'https://openstax.org/books/introductory-business-statistics-2e/pages/1-introduction',
+ 'https://openstax.org/books/introductory-business-statistics/pages/1-1-definitions-of-statistics-probability-and-key-terms'
+);
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BEC3101','BEC3150']::text[]
+WHERE url='https://openstax.org/details/books/principles-economics-3e/';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFC3226','BFC3277','BFC3429','BFC3479','BFC3381']::text[]
+WHERE url='https://openstax.org/books/principles-finance/pages/1-why-it-matters';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFC3125','BFC3175','BFC3327']::text[]
+WHERE url='https://openstax.org/books/principles-financial-accounting/pages/1-why-it-matters';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFC3227','BFC3425']::text[]
+WHERE url='https://openstax.org/books/principles-managerial-accounting/pages/1-why-it-matters';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFC3227','BFC3425','BFB3452']::text[]
+WHERE url='https://openstax.org/books/principles-managerial-accounting/pages/3-2-calculate-a-break-even-point-in-units-and-dollars';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3202','BFB3452']::text[]
+WHERE url IN (
+ 'https://openstax.org/books/entrepreneurship/pages/1-introduction',
+ 'https://openstax.org/books/entrepreneurship/pages/11-3-conducting-a-feasibility-analysis',
+ 'https://openstax.org/books/entrepreneurship/pages/5-1-entrepreneurial-opportunity'
+);
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3201']::text[],
+ description='Open textbook from a US legal context. Use for general legal concepts only; Kenyan statutes, cases and procedures take precedence.'
+WHERE url='https://openstax.org/books/business-law-i-essentials-2e/pages/1-introduction';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3201']::text[],
+ description='Open course with jurisdiction-specific legal material; check Kenyan law before applying any legal rule.'
+WHERE url='https://learn.saylor.org/course/view.php?id=1259';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3200','BFB3203','BFB3251','BFB3402']::text[]
+WHERE url='https://openstax.org/books/organizational-behavior/pages/1-introduction';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3203','BFB3103','BFB3251','BFB3420']::text[]
+WHERE url='https://openstax.org/books/principles-management/pages/15-1-teamwork-in-the-workplace';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['UCU3102','BFB3204','BFB3205']::text[]
+WHERE url='https://openstax.org/books/principles-management/pages/16-1-the-process-of-managerial-communication';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3103','BFB3203','BFB3200']::text[]
+WHERE url='https://learn.saylor.org/course/bus208';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['UCU3102','BFB3204','BFB3205']::text[]
+WHERE url='https://learn.saylor.org/course/bus210';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3200','BFB3251','BFB3402']::text[]
+WHERE url='https://learn.saylor.org/course/bus301';
+UPDATE public.ace_open_resources SET related_codes=ARRAY['BFB3203','BFB3350','BFB3420']::text[]
+WHERE url='https://learn.saylor.org/course/bus401';
