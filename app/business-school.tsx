@@ -7,6 +7,7 @@ type Course={id:string,programme_id:string,code:string,title:string,year_of_stud
 type Resource={id:string,title:string,subject:string,kind:string,related_codes:string[]};
 type Quiz={id:string,title:string,course_code:string,description:string|null};
 type StudentMaterial={id:string,course_code:string};
+const normalizeCode=(code:string)=>code.replace(/\s+/g,"").toUpperCase();
 export default function BusinessSchoolWorkspace({user,onCourse}:{user:User,onCourse:(code:string)=>void}){
  const[schoolName,setSchoolName]=useState("Business School"),[schoolSub,setSchoolSub]=useState("Bachelor of Business Administration"),[institutionName,setInstitutionName]=useState(""),[courses,setCourses]=useState<Course[]>([]),[resources,setResources]=useState<Resource[]>([]),[studentMaterials,setStudentMaterials]=useState<StudentMaterial[]>([]),[quizzes,setQuizzes]=useState<Quiz[]>([]),[attempts,setAttempts]=useState<{quiz_id:string}[]>([]),[year,setYear]=useState("all"),[pathway,setPathway]=useState("all"),[search,setSearch]=useState(""),[loading,setLoading]=useState(true),[notice,setNotice]=useState(""),[myYear,setMyYear]=useState<number|null>(null);
  useEffect(()=>{if(!supabase){setNotice("The academic database is not connected.");setLoading(false);return}const db=supabase;let alive=true;
@@ -32,7 +33,6 @@ export default function BusinessSchoolWorkspace({user,onCourse}:{user:User,onCou
  }
  void load();return()=>{alive=false}
  },[user.id]);
- const normalizeCode=(code:string)=>code.replace(/\s+/g,"").toUpperCase();
  const rows=useMemo(()=>courses.filter(c=>(year==="all"||String(c.year_of_study)===year)&&(pathway==="all"||(c.pathway??"common")===pathway)&&[c.code,c.title,c.pathway??"common"].join(" ").toLowerCase().includes(search.trim().toLowerCase())).map(c=>{const rs=resources.filter(r=>(r.related_codes??[]).some(code=>normalizeCode(code)===normalizeCode(c.code)));const qs=quizzes.filter(q=>q.course_code.replace(/\s/g,"").toUpperCase()===c.code.replace(/\s/g,"").toUpperCase());return {...c,resourceCount:rs.length+studentMaterials.filter(r=>normalizeCode(r.course_code)===normalizeCode(c.code)).length,quizCount:qs.length,completed:qs.filter(q=>attempts.some(a=>a.quiz_id===q.id)).length}}),[courses,resources,studentMaterials,quizzes,attempts,year,pathway,search]);
  const summary={units:courses.length,resources:resources.filter(r=>courses.some(c=>(r.related_codes??[]).some(code=>normalizeCode(code)===normalizeCode(c.code)))).length+studentMaterials.filter(r=>courses.some(c=>normalizeCode(c.code)===normalizeCode(r.course_code))).length,quizzes:quizzes.filter(q=>courses.some(c=>c.code===q.course_code)).length,completed:attempts.filter(a=>quizzes.some(q=>q.id===a.quiz_id&&courses.some(c=>c.code===q.course_code))).length};
  const yearCounts=[1,2,3,4].map(y=>({year:y,count:courses.filter(c=>c.year_of_study===y).length}));
