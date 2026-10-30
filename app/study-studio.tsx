@@ -53,11 +53,22 @@ function parseCards(text:string):Card[]{
 type GuideSection={title:string;summary:string};
 type StudyGuide={overview:string;sections:GuideSection[];keyPoints:string[];terms:Card[]};
 function buildStudyGuide(source:string):StudyGuide{
- const cleaned=source.replace(/^PAGE\s+\d+\s*$/gim,"").replace(/^#{1,4}\s*/gm,"").trim();
+ const cleaned=source.replace(/^SOURCE:\s*.+$/gim,"").replace(/^(?:PAGE|SLIDE)\s+\d+\s*$/gim,"").replace(/^#{1,4}\s*/gm,"").trim();
  const paragraphs=cleaned.split(/\n{2,}|(?<=[.!?])\s+(?=[A-Z])/).map(x=>x.replace(/\s+/g," ").trim()).filter(x=>x.length>=45);
  const sections:GuideSection[]=[];
- const pageBlocks=source.split(/(?=^PAGE\s+\d+\s*$)/im).filter(x=>x.trim());
- for(let i=0;i<pageBlocks.length&&sections.length<12;i++){const block=pageBlocks[i];const page=block.match(/^PAGE\s+(\d+)/im);const paragraph=block.replace(/^PAGE\s+\d+\s*/im,"").split(/\n{2,}/).map(x=>x.trim()).filter(x=>x.length>45).slice(0,2).join(" ");if(paragraph)sections.push({title:page?"Page "+page[1]:"Section "+(i+1),summary:paragraph.slice(0,500)})}
+ const sourceBlocks=source.split(/(?=^SOURCE:\s*.+$)/im);
+ for(const sourceBlock of sourceBlocks){
+  if(sections.length>=12)break;
+  const sourceName=sourceBlock.match(/^SOURCE:\s*(.+)$/im)?.[1]?.trim()||"Study notes";
+  const pageBlocks=sourceBlock.split(/(?=^(?:PAGE|SLIDE)\s+\d+\s*$)/im).filter(x=>x.trim());
+  for(const block of pageBlocks){
+   if(sections.length>=12)break;
+   const marker=block.match(/^(PAGE|SLIDE)\s+(\d+)/im);
+   const label=marker?(marker[1].toUpperCase()==="SLIDE"?"Slide ":"Page ")+marker[2]:"Overview";
+   const paragraph=block.replace(/^SOURCE:\s*.+$/im,"").replace(/^(?:PAGE|SLIDE)\s+\d+\s*$/im,"").split(/\n{2,}/).map(x=>x.trim()).filter(x=>x.length>45).slice(0,2).join(" ");
+   if(paragraph)sections.push({title:sourceName+" · "+label,summary:paragraph.slice(0,500)});
+  }
+ }
  if(!sections.length){for(let i=0;i<paragraphs.length&&sections.length<10;i++){const sentences=paragraphs[i].match(/[^.!?]+[.!?]?/g)??[paragraphs[i]];sections.push({title:"Key idea "+(i+1),summary:sentences.slice(0,2).join(" ").slice(0,500)})}}
  const keyPoints=[...new Set(paragraphs.map(p=>(p.match(/[^.!?]+[.!?]?/)??[p])[0].trim()).filter(x=>x.length>=35&&x.length<=300))].slice(0,12);
  const terms=parseCards(source).slice(0,16);
@@ -71,10 +82,10 @@ function findEvidence(source:string,question:string):Evidence[]{
  const sources=source.split(/(?=^SOURCE:\s*.+$)/im);const found:Evidence[]=[];
  for(const sourceBlock of sources){
   const sourceName=sourceBlock.match(/^SOURCE:\s*(.+)$/im)?.[1]?.trim()||"Notebook";
-  const pageBlocks=sourceBlock.split(/(?=^PAGE\s+\d+\s*$)/im);
+  const pageBlocks=sourceBlock.split(/(?=^(?:PAGE|SLIDE)\s+\d+\s*$)/im);
   for(const block of pageBlocks){
-   const pageMatch=block.match(/^PAGE\s+(\d+)/im);const page=pageMatch?"Page "+pageMatch[1]:"Source text";
-   const cleaned=block.replace(/^SOURCE:\s*.+$/im,"").replace(/^PAGE\s+\d+\s*$/im,"");
+   const pageMatch=block.match(/^(PAGE|SLIDE)\s+(\d+)/im);const page=pageMatch?(pageMatch[1].toUpperCase()==="SLIDE"?"Slide ":"Page ")+pageMatch[2]:"Source text";
+   const cleaned=block.replace(/^SOURCE:\s*.+$/im,"").replace(/^(?:PAGE|SLIDE)\s+\d+\s*$/im,"");
    const chunks=cleaned.split(/(?<=[.!?])\s+|\n{2,}/).map(x=>x.trim()).filter(x=>x.length>=35);
    for(const excerpt of chunks){
     const normalized=excerpt.toLowerCase();const matched=terms.filter(term=>normalized.includes(term));if(!matched.length)continue;
