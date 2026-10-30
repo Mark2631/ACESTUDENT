@@ -40,9 +40,25 @@ test("public course deep links work without authentication",async({page})=>{
  await expect(page.getByText("EXPLORE A COURSE")).toBeVisible();
  await expect(page.getByRole("heading",{name:"Open learning resources"})).toBeVisible();
 });
+test("desktop and phone use deliberately different navigation layouts",async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto("/");
+ await expect(page.locator(".side")).toBeVisible();
+ await expect(page.locator(".bottom")).toBeHidden();
+ await expect(page.locator(".home-columns")).toHaveCSS("display","grid");
+ await page.setViewportSize({width:390,height:844});
+ await expect(page.locator(".side")).toBeHidden();
+ await expect(page.locator(".bottom")).toBeVisible();
+});
 test("the workspace has no sideways overflow on a narrow phone",async({page})=>{
  await page.setViewportSize({width:360,height:780});
  await page.goto("/");
  await expect(page.getByRole("heading",{name:"Make room for progress."})).toBeVisible();
+ await expect(page.locator(".side")).toBeHidden();
+ await expect(page.locator(".bottom")).toBeVisible();
+ await expect(page.getByRole("button",{name:"Create on Ace Student"})).toBeVisible();
+ await page.getByRole("button",{name:"Create on Ace Student"}).click();
+ await expect(page.getByRole("dialog",{name:"Create on Ace Student"})).toBeVisible();
+ await expect(page.getByRole("button",{name:"Upload learning material"})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
 });
