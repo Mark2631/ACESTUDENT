@@ -34,18 +34,18 @@ Marginal analysis: Comparing the additional benefits and costs of a decision.
 Critical thinking: Evaluating evidence, assumptions, and alternative explanations before drawing a conclusion.
 SMART goals: Goals that are specific, measurable, achievable, relevant, and time-bound.`;
 function removeSourceBlock(text:string,source:StudySource):{source:string;removed:boolean}{
- const blocks=text.split(/(?=^SOURCE:\\s*.+$)/im);let removed=false;
+ const blocks=text.split(/(?=^SOURCE:\s*.+$)/im);let removed=false;
  const kept=blocks.filter(block=>{
-  const header=block.match(/^SOURCE:\\s*(.+)$/im)?.[1]?.trim();if(!header)return true;
-  const id=header.match(/\\[ACE_SOURCE_ID=([^\\]]+)\\]/i)?.[1];
+  const header=block.match(/^SOURCE:\s*(.+)$/im)?.[1]?.trim();if(!header)return true;
+  const id=header.match(/\[ACE_SOURCE_ID=([^\]]+)\]/i)?.[1];
   if(id){if(id===source.id){removed=true;return false}return true}
   if(!removed&&header===source.name){removed=true;return false}
   return true;
  });
- const result=kept.join("").replace(/^\\s+|\\s+$/g,"");
+ const result=kept.join("").replace(/^\s+|\s+$/g,"");
  return {source:result,removed};
 }
-function safeSourceName(name:string){return name.replace(/[\\r\\n\\t\\0-\\x1f\\x7f]/g," ").replace(/[\\/:*?"<>|]/g,"_").trim().slice(0,180)||"Study source"}
+function safeSourceName(name:string){return name.replace(/[\r\n\t\0-\x1f\x7f]/g," ").replace(/[\\/:*?"<>|]/g,"_").trim().slice(0,180)||"Study source"}
 function parseDelimitedRow(line:string,delimiter:string):string[]{
  const values:string[]=[];let value="";let quoted=false;
  for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(quoted&&line[i+1]==='"'){value+='"';i++}else quoted=!quoted}else if(ch===delimiter&&!quoted){values.push(value.trim());value=""}else value+=ch}
