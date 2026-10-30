@@ -7,7 +7,7 @@ These scripts target only Ace Student tables in the shared Supabase project. The
 1. Apply the repository's existing base schema migrations.
 2. Apply `supabase/migrations/20261030_ace_bba_pathways.sql`. This adds the BBA `pathway` field and upserts common-core, Finance & Accounting and Project Management option records.
 3. Run `supabase/seeds/ace_verified_must_bba_curriculum.sql`. It upserts the mapped BBA catalogue, 13 official MUST examination-archive papers, and 45 supplementary open resources. It also links each visible resource to relevant course codes and includes explicit jurisdiction caveats for non-Kenyan legal material.
-4. Run these practice seeds:
+4. Run `ace_verified_y2s1_past_papers.sql` — adds nine additional official MUST BBA Year 2 Semester 1 past papers verified against the university exam archive.\n5. Run these practice seeds:
    - `ace_original_bba_practice.sql` — 17 original quizzes / 85 questions.
    - `ace_international_finance_practice.sql` — 1 quiz / 5 questions.
    - `ace_additional_core_practice.sql` — 12 quizzes / 60 questions.
@@ -22,7 +22,7 @@ All practice questions are original Ace Student study material, not copied from 
 - 48 common-core records, 8 Finance & Accounting option records and 9 Project Management option records.
 - 64 of the 65 academic course records have a published quiz. The eight-week Industrial Attachment is the intentional exception because it is experiential.
 - 74 published quizzes / 370 questions overall, including four general foundational quiz records not mapped as official BBA course codes.
-- 58 visible resources: 13 MUST examination-archive papers and 45 supplementary open resources.
+- 67 visible resources: 22 MUST examination-archive papers and 45 supplementary open resources.
 - Every visible resource is linked to at least one course code.
 - No duplicate course codes within the programme, duplicate visible resource URLs, published quizzes without questions, duplicate question order within a quiz, questions with an option count other than four, or practice questions without explanations were found in the checks run.
 
