@@ -24,7 +24,8 @@ async function minimalPptx():Promise<Buffer>{
  zip.file("ppt/slides/slide1.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>Supply: The quantity producers are willing to sell at a given price.</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>`);
  return Buffer.from(await zip.generateAsync({type:"nodebuffer"}));
 }
-\ntest.beforeEach(async({page})=>{await page.goto("/studio")});
+
+test.beforeEach(async({page})=>{await page.goto("/studio")});
 
 test("guest can create a notebook, review cards and test understanding",async({page})=>{
  await page.getByRole("button",{name:"New notebook"}).click();
