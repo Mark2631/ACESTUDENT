@@ -1,5 +1,6 @@
 import {test,expect} from "@playwright/test";
 import type {Buffer} from "node:buffer";
+import JSZip from "jszip";
 
 function minimalPdf():Buffer{
  const objects=[
@@ -18,7 +19,12 @@ function minimalPdf():Buffer{
  pdf+="trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n"+xref+"\n%%EOF";
  return Buffer.from(pdf,"binary");
 }
-test.beforeEach(async({page})=>{await page.goto("/studio")});
+async function minimalPptx():Promise<Buffer>{
+ const zip=new JSZip();
+ zip.file("ppt/slides/slide1.xml",`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><p:sld xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><p:cSld><p:spTree><p:sp><p:txBody><a:p><a:r><a:t>Supply: The quantity producers are willing to sell at a given price.</a:t></a:r></a:p></p:txBody></p:sp></p:spTree></p:cSld></p:sld>`);
+ return Buffer.from(await zip.generateAsync({type:"nodebuffer"}));
+}
+\ntest.beforeEach(async({page})=>{await page.goto("/studio")});
 
 test("guest can create a notebook, review cards and test understanding",async({page})=>{
  await page.getByRole("button",{name:"New notebook"}).click();
@@ -73,6 +79,39 @@ test("a text-based PDF can be imported and converted into a notebook",async({pag
  await expect(page.getByRole("heading",{name:"economics"})).toBeVisible();
  await page.getByRole("tab",{name:"Flashcards"}).click();
  await expect(page.getByText("Opportunity cost")).toBeVisible();
+});
+
+test("daily review combines due cards from every notebook",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Statistics basics");
+ await page.getByLabel("Study material").fill([
+  "Mean: The arithmetic average of a dataset.",
+  "Median: The middle value when observations are ordered."
+ ].join("\\n"));
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await page.getByRole("button",{name:"All notebooks"}).click();
+ await expect(page.getByText("2",{exact:true})).toBeVisible();
+ await page.getByRole("button",{name:/Cards due/}).click();
+ await expect(page.getByRole("heading",{name:"Everything due, in one session"})).toBeVisible();
+ await expect(page.getByText("2 remaining")).toBeVisible();
+ await page.getByRole("button",{name:"Reveal answer"}).click();
+ await page.getByRole("button",{name:"Good",exact:true}).click();
+ await expect(page.getByText("1 remaining")).toBeVisible();
+ await page.getByRole("button",{name:"Reveal answer"}).click();
+ await page.getByRole("button",{name:"Easy",exact:true}).click();
+ await expect(page.getByRole("heading",{name:"You're caught up."})).toBeVisible();
+});
+
+test("PowerPoint lecture slides can be imported into a source notebook",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.locator('input[type="file"]').setInputFiles({name:"economics-lecture.pptx",mimeType:"application/vnd.openxmlformats-officedocument.presentationml.presentation",buffer:await minimalPptx()});
+ await expect(page.getByText(/Slide text extracted locally/)).toBeVisible({timeout:30000});
+ await expect(page.getByLabel("Notebook name")).toHaveValue("economics-lecture");
+ await expect(page.getByLabel("Study material")).toContainText("Supply");
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await expect(page.getByRole("heading",{name:"economics-lecture"})).toBeVisible();
+ await page.getByRole("tab",{name:"Flashcards"}).click();
+ await expect(page.getByText("Supply")).toBeVisible();
 });
 
 test("focus timer requires a notebook",async({page})=>{
