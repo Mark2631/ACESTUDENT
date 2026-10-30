@@ -114,6 +114,29 @@ test("PowerPoint lecture slides can be imported into a source notebook",async({p
  await expect(page.getByText("Supply")).toBeVisible();
 });
 
+test("Anki CSV export can be imported back into Ace without losing card text",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Intro to Accounting");
+ await page.getByLabel("Study material").fill([
+  "Assets: Resources controlled by an entity.",
+  "Liabilities: Present obligations of an entity."
+ ].join(String.fromCharCode(10)));
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ const downloadPromise=page.waitForEvent("download");
+ await page.getByRole("button",{name:"Anki CSV"}).click();
+ const download=await downloadPromise;
+ expect(download.suggestedFilename()).toMatch(/Intro to Accounting-cards\.csv$/);
+ const downloadPath=await download.path();
+ await page.getByRole("button",{name:"All notebooks"}).click();
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.locator('input[type="file"]').setInputFiles(downloadPath!);
+ await expect(page.getByText(/File imported/)).toBeVisible();
+ await expect(page.getByLabel("Study material")).toContainText("Assets");
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await expect(page.getByRole("heading",{name:"Intro to Accounting-cards"})).toBeVisible();
+ await expect(page.getByText("2 cards",{exact:false})).toBeVisible();
+});
+
 test("focus timer requires a notebook",async({page})=>{
  await page.getByRole("button",{name:"Focus timer"}).click();
  await expect(page.getByText("25:00")).toBeVisible();
