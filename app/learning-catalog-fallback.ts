@@ -9,7 +9,7 @@ export const FALLBACK_AREAS=[
  {slug:"health-wellbeing",title:"Health & wellbeing",description:"Healthcare, public health and human behaviour",sort_order:6},
  {slug:"humanities-languages",title:"Humanities & languages",description:"History, philosophy, culture and communication",sort_order:7},
  {slug:"creative-media",title:"Creative arts & media",description:"Visual design, storytelling, music and digital media",sort_order:8}
-] as const;
+];
 export const FALLBACK_SUBJECTS=[
  {slug:"accounting",title:"Accounting",description:"Financial statements, reporting and cost analysis",parent_slug:"business-enterprise",keywords:["accounts","cost","financial"]},
  {slug:"economics",title:"Economics",description:"Markets, incentives, macroeconomics and policy",parent_slug:"business-enterprise",keywords:["demand","supply","markets"]},
@@ -31,4 +31,4 @@ export const FALLBACK_SUBJECTS=[
  {slug:"communication",title:"Communication",description:"Language, expression and professional writing",parent_slug:"humanities-languages",keywords:["writing","language"]},
  {slug:"visual-design",title:"Visual design",description:"Composition, typography and visual systems",parent_slug:"creative-media",keywords:["design","typography"]},
  {slug:"media-production",title:"Media production",description:"Video, sound and digital storytelling",parent_slug:"creative-media",keywords:["video","audio","media"]}
-] as const;
+];
