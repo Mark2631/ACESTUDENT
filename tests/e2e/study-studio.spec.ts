@@ -422,3 +422,23 @@ test("the generated source outline opens the original section in the notebook",a
  });
  expect(selected).toContain("Market equilibrium occurs");
 });
+
+
+test("source focus limits evidence search and returns to all sources",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.locator('input[type="file"]').setInputFiles([
+  {name:"opportunity-cost.txt",mimeType:"text/plain",buffer:Buffer.from("Opportunity cost is the value of the next best alternative that is forgone when making a choice.")},
+  {name:"market-structure.txt",mimeType:"text/plain",buffer:Buffer.from("Perfect competition is a market structure with many buyers and sellers and price-taking firms.")}
+ ]);
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await expect(page.getByLabel("Source selection")).toBeVisible();
+ await page.getByLabel("opportunity-cost.txt").uncheck();
+ await expect(page.getByText("1 of 2 selected")).toBeVisible();
+ await page.getByRole("tab",{name:"Find"}).click();
+ await page.getByRole("textbox",{name:"Find in notes"}).fill("opportunity cost forgone alternative");
+ await page.getByRole("button",{name:"Find evidence"}).click();
+ await expect(page.getByRole("heading",{name:"No matching passage found"})).toBeVisible();
+ await page.getByRole("button",{name:"Select all"}).click();
+ await page.getByRole("button",{name:"Find evidence"}).click();
+ await expect(page.getByText(/next best alternative that is forgone/)).toBeVisible();
+});
