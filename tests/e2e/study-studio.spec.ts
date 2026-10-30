@@ -186,3 +186,27 @@ test("source mind map turns notebook ideas into an inspectable visual index",asy
  await expect(page.getByRole("heading",{name:"Find answers in your material"})).toBeVisible();
  await expect(page.getByText(/value of the next best alternative/)).toBeVisible();
 });
+
+
+test("practice supports multiple choice, true-false and written self-recall",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Basic Economics");
+ await page.getByLabel("Study material").fill([
+  "Opportunity cost: The value of the next best alternative given up when making a choice.",
+  "Supply: The quantity producers are willing to sell at a given price."
+ ].join(String.fromCharCode(10)));
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await page.getByRole("tab",{name:"Quick test"}).click();
+ await page.getByRole("button",{name:"True / False"}).click();
+ await page.getByRole("button",{name:"True",exact:true}).click();
+ await expect(page.getByText(/Correct — nicely done/)).toBeVisible();
+ await page.getByRole("button",{name:"Next question"}).click();
+ await page.getByRole("button",{name:"False",exact:true}).click();
+ await expect(page.getByText(/Correct — nicely done/)).toBeVisible();
+ await page.getByRole("button",{name:"Written recall"}).click();
+ await page.getByLabel("Your answer").fill("Producers supply goods and services at different prices.");
+ await page.getByRole("button",{name:"Reveal model answer"}).click();
+ await expect(page.getByText(/The quantity producers are willing to sell/)).toBeVisible();
+ await page.getByRole("button",{name:"I remembered it"}).click();
+ await expect(page.getByText(/self-assessment has been recorded/)).toBeVisible();
+});
