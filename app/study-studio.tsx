@@ -107,25 +107,54 @@ async function importFile(file?:File){
    setNotice("Reading PDF pages on this device…");
    const pdfjs=await import("pdfjs-dist/build/pdf.mjs");
    pdfjs.GlobalWorkerOptions.workerSrc="/pdf.worker.mjs";
-   const document=await pdfjs.getDocument({data:await file.arrayBuffer(),useSystemFonts:true}).promise;
-   if(document.numPages>100){await document.destroy();setNotice("For now, import PDFs up to 100 pages. Split larger books into chapters.");return}
+   const pdfDocument=await pdfjs.getDocument({data:await file.arrayBuffer(),useSystemFonts:true}).promise;
+   if(pdfDocument.numPages>100){await pdfDocument.destroy();setNotice("Import PDFs up to 100 pages. Split larger books into chapters.");return}
    const pages:string[]=[];
-   for(let pageNumber=1;pageNumber<=document.numPages;pageNumber++){
-    const page=await document.getPage(pageNumber);const content=await page.getTextContent();
-    const text=content.items.map(item=>("str" in item?item.str+(item.hasEOL?"\n":" "):"")).join("").replace(/[ \t]+\n/g,"\n").trim();
+   for(let pageNumber=1;pageNumber<=pdfDocument.numPages;pageNumber++){
+    const page=await pdfDocument.getPage(pageNumber);const content=await page.getTextContent();
+    const text=content.items.map(item=>item.str+(item.hasEOL?"\n":" ")).join("").replace(/[ \t]+\n/g,"\n").trim();
     if(text)pages.push("PAGE "+pageNumber+"\n"+text);
-    if(pages.join("\n\n").length>1_900_000){await document.destroy();setNotice("The extracted text is too large for one notebook. Split this PDF into smaller chapters and import them separately.");return}
+    if(pages.join("\n\n").length>1_900_000){await pdfDocument.destroy();setNotice("Extracted text is too large for one notebook. Split the PDF into smaller chapters.");return}
    }
-   await document.destroy();
+   await pdfDocument.destroy();
    const extracted=pages.join("\n\n");
    if(extracted.trim().length<80){setNotice("This PDF contains little selectable text. It may be scanned; OCR is not enabled, so use a text-based PDF or paste your notes instead.");return}
-   setSource(extracted);setTitle(file.name.replace(/\.pdf$/i,""));setCreate(true);setNotice("PDF text extracted locally. Review the pages and create your notebook; the original PDF is not uploaded.")
-   return;
+   setSource(extracted);setTitle(file.name.replace(/\.pdf$/i,""));setCreate(true);setNotice("PDF text extracted locally. Review and save it; the original file is not uploaded.");return;
   }
-  if(!(/\.txt$|\.md$|\.csv$/i.test(file.name))){setNotice("Import PDF, plain text, Markdown or CSV files.");return}
+  if(extension==="docx"){
+   setNotice("Extracting Word document text on this device…");
+   const mammoth=await import("mammoth");
+   const result=await mammoth.extractRawText({arrayBuffer:await file.arrayBuffer()});
+   const extracted=result.value.trim();
+   if(extracted.length<40){setNotice("This Word document has too little extractable text.");return}
+   if(extracted.length>1_900_000){setNotice("The extracted document is too large for one notebook. Split it into chapters.");return}
+   setSource(extracted);setTitle(file.name.replace(/\.docx$/i,""));setCreate(true);
+   setNotice("Word content extracted locally. Review it before saving.");return;
+  }
+  if(extension==="pptx"){
+   setNotice("Extracting lecture slides on this device…");
+   const JSZip=(await import("jszip")).default;
+   const archive=await JSZip.loadAsync(await file.arrayBuffer());
+   const slidePaths=Object.keys(archive.files).filter(path=>/^ppt\/slides\/slide\d+\.xml$/.test(path)&&!archive.files[path].dir).sort((a,b)=>Number(a.match(/slide(\d+)/)?.[1]??0)-Number(b.match(/slide(\d+)/)?.[1]??0));
+   if(!slidePaths.length){setNotice("No readable PowerPoint slides were found in this file.");return}
+   if(slidePaths.length>150){setNotice("Import decks up to 150 slides. Split larger presentations into chapters.");return}
+   const pages:string[]=[];
+   for(let i=0;i<slidePaths.length;i++){
+    const xml=await archive.files[slidePaths[i]].async("string");
+    const parsed=new DOMParser().parseFromString(xml,"application/xml");
+    if(parsed.querySelector("parsererror"))continue;
+    const text=Array.from(parsed.getElementsByTagName("a:t")).map(node=>node.textContent?.trim()??"").filter(Boolean).join(" ");
+    if(text)pages.push("SLIDE "+(i+1)+"\n"+text);
+    if(pages.join("\n\n").length>1_900_000){setNotice("Extracted slide text is too large for one notebook. Split the deck into smaller chapters.");return}
+   }
+   const extracted=pages.join("\n\n");
+   if(extracted.trim().length<40){setNotice("These slides contain little selectable text. Images and diagrams are not extracted.");return}
+   setSource(extracted);setTitle(file.name.replace(/\.pptx$/i,""));setCreate(true);setNotice("Slide text extracted locally. Review it before saving; images and speaker audio are not imported.");return;
+  }
+  if(!(/\.txt$|\.md$|\.csv$/i.test(file.name))){setNotice("Import PDF, Word, PowerPoint or text files.");return}
   const text=await file.text();if(text.length>1_900_000){setNotice("This text file is too large for one notebook. Split it into smaller chapters.");return}
   setSource(text);setTitle(file.name.replace(/\.(txt|md|csv)$/i,""));setCreate(true);setNotice("File imported. Review your text and create the notebook.")
- }catch(error){setNotice("Could not read this file. Try another PDF or text export. "+(error instanceof Error?error.message:""))}
+ }catch(error){setNotice("Could not read this file. Try another export or save it in a supported format. "+(error instanceof Error?error.message:""))}
 }
 const filtered=notebooks.filter(n=>[n.title,n.courseCode??"",...(n.tags??[])].join(" ").toLowerCase().includes(query.toLowerCase()));
 const summary=notebooks.reduce((a,n)=>({minutes:a.minutes+n.minutes,cards:a.cards+n.cards.length,attempts:a.attempts+n.attempts,correct:a.correct+n.correct}),{minutes:0,cards:0,attempts:0,correct:0});
@@ -135,7 +164,7 @@ return <div className="ace-studio">
 <div className="studio-topline"><span className="studio-overline"><span className="ace-live-dot"/> ACE STUDY STUDIO</span><div className="studio-top-actions"><span className={"studio-sync-state "+syncStatus}>{syncStatus==="synced"?"Synced":syncStatus==="syncing"?"Syncing…":syncStatus==="error"?"On this device":"Local mode"}</span><button type="button" onClick={()=>setFocus(v=>!v)}><Clock3 size={15}/> {focus?"Hide timer":"Focus timer"}</button><button type="button" onClick={()=>{stopSpeech();if(recording)stopRecording();setSelected("");setCreate(true);setSource("");setTitle("");setNotice("")}}><Plus size={15}/> New notebook</button></div></div>
 {focus&&<div className="studio-timer"><span>Focus session</span><strong>{String(Math.floor(seconds/60)).padStart(2,"0")}:{String(seconds%60).padStart(2,"0")}</strong><button onClick={toggleFocus}>{running?<Pause size={15}/>:<Play size={15}/>} {running?"Pause":"Start"}</button><button onClick={resetFocus}><RotateCcw size={14}/> Reset</button></div>}
 {notice&&<div className="studio-notice" role="status">{notice}<button onClick={()=>setNotice("")} aria-label="Dismiss notification"><X size={14}/></button></div>}
-{create?<div className="studio-editor-wrap"><div className="studio-heading"><button className="studio-icon-button" onClick={()=>setCreate(false)} aria-label="Back"><ArrowLeft size={17}/></button><div><span className="studio-overline">PERSONAL WORKSPACE</span><h1>Create a notebook</h1></div></div><p className="studio-copy">Bring your own material. Ace turns clearly labeled terms and definitions into flashcards and practice questions without sending your notes to an AI service.</p><label className="studio-field">Notebook name<input value={title} maxLength={110} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Economics · Chapter 2"/></label><label className="studio-field">Course code <input value={courseCode} maxLength={40} onChange={e=>setCourseCode(e.target.value)} placeholder="Optional · e.g. BFC 2204"/></label><label className="studio-field">Tags <input value={tagInput} maxLength={180} onChange={e=>setTagInput(e.target.value)} placeholder="Optional · separate with commas"/></label><label className="studio-field">Study material<textarea rows={13} value={source} onChange={e=>setSource(e.target.value)} placeholder={"Paste your notes here.\n\nOpportunity cost: The value of the next best alternative forgone.\nSupply: The quantity producers are willing to sell at a given price.\n\nUse one Term: Definition per line for study cards."}/></label><div className="studio-editor-footer"><button className="studio-soft-button" onClick={()=>fileRef.current?.click()}><FileText size={15}/> Import text file</button><input ref={fileRef} type="file" accept=".pdf,.txt,.md,.csv,application/pdf,text/plain,text/markdown,text/csv" hidden onChange={e=>void importFile(e.target.files?.[0])}/><button className="studio-action" onClick={addNotebook}><Plus size={15}/> Create notebook</button></div></div>:
+{create?<div className="studio-editor-wrap"><div className="studio-heading"><button className="studio-icon-button" onClick={()=>setCreate(false)} aria-label="Back"><ArrowLeft size={17}/></button><div><span className="studio-overline">PERSONAL WORKSPACE</span><h1>Create a notebook</h1></div></div><p className="studio-copy">Bring your own material. Ace turns clearly labeled terms and definitions into flashcards and practice questions without sending your notes to an AI service.</p><label className="studio-field">Notebook name<input value={title} maxLength={110} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Economics · Chapter 2"/></label><label className="studio-field">Course code <input value={courseCode} maxLength={40} onChange={e=>setCourseCode(e.target.value)} placeholder="Optional · e.g. BFC 2204"/></label><label className="studio-field">Tags <input value={tagInput} maxLength={180} onChange={e=>setTagInput(e.target.value)} placeholder="Optional · separate with commas"/></label><label className="studio-field">Study material<textarea rows={13} value={source} onChange={e=>setSource(e.target.value)} placeholder={"Paste your notes here.\n\nOpportunity cost: The value of the next best alternative forgone.\nSupply: The quantity producers are willing to sell at a given price.\n\nUse one Term: Definition per line for study cards."}/></label><div className="studio-editor-footer"><button className="studio-soft-button" onClick={()=>fileRef.current?.click()}><FileText size={15}/> Import text file</button><input ref={fileRef} type="file" accept=".pdf,.docx,.pptx,.txt,.md,.csv,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,text/plain,text/markdown,text/csv" hidden onChange={e=>void importFile(e.target.files?.[0])}/><button className="studio-action" onClick={addNotebook}><Plus size={15}/> Create notebook</button></div></div>:
 !notebook?<><div className="studio-hero"><div><span className="studio-overline">A BETTER WAY TO STUDY</span><h1>Your thinking space.</h1><p>Read. Remember. Test yourself. Listen. Everything stays together, inside your own notebooks.</p><button className="studio-action" onClick={()=>{setCreate(true);setTitle("");setSource("")}}><Plus size={15}/> Start a notebook <ArrowRight size={15}/></button></div><div className="studio-hero-art"><div className="studio-stack studio-stack-one"/><div className="studio-stack studio-stack-two"/><div className="studio-stack studio-stack-three"><BookOpen size={31}/></div></div></div>
 <div className="studio-stats"><div><strong>{summary.minutes>=60?Math.floor(summary.minutes/60)+"h "+summary.minutes%60+"m":summary.minutes+"m"}</strong><span>Focus time</span></div><div><strong>{summary.cards}</strong><span>Study cards</span></div><div><strong>{summary.attempts?Math.round(summary.correct/summary.attempts*100)+"%":"—"}</strong><span>Recall accuracy</span></div><div><strong>{dueTotal}</strong><span>Cards due</span></div></div>
 <div className="studio-section-heading"><div><span className="studio-overline">LIBRARY</span><h2>My notebooks <span>{notebooks.length}</span></h2></div><label className="studio-search"><Search size={15}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Find notebook" aria-label="Search notebooks"/></label></div>
