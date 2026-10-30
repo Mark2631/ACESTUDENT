@@ -22,7 +22,8 @@ test("subject explorer exposes real topics and a clear account boundary for save
  await page.getByRole("button",{name:"Sign in to follow"}).first().click();
  await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();
 });
-\ntest("major URLs load directly without losing their destination",async({page})=>{
+
+test("major URLs load directly without losing their destination",async({page})=>{
  await page.goto("/library");
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
  await page.reload();
