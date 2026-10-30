@@ -57,7 +57,7 @@ drop policy if exists ace_study_notebooks_delete_own on public.ace_study_noteboo
 create policy ace_study_notebooks_delete_own on public.ace_study_notebooks
 for delete to authenticated using ((select auth.uid()) = user_id);
 
-create table if not exists public.ace_study_sessions (
+create table if not exists public.ace_individual_study_sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   notebook_id uuid not null references public.ace_study_notebooks(id, user_id) on delete cascade,
@@ -69,21 +69,21 @@ create table if not exists public.ace_study_sessions (
   ended_at timestamptz,
   created_at timestamptz not null default now()
 );
-create index if not exists ace_study_sessions_owner_created_idx
-  on public.ace_study_sessions (user_id, created_at desc);
-alter table public.ace_study_sessions enable row level security;
-revoke all on table public.ace_study_sessions from anon, authenticated;
-grant select, insert, update, delete on table public.ace_study_sessions to authenticated;
-drop policy if exists ace_study_sessions_select_own on public.ace_study_sessions;
-create policy ace_study_sessions_select_own on public.ace_study_sessions
+create index if not exists ace_individual_study_sessions_owner_created_idx
+  on public.ace_individual_study_sessions (user_id, created_at desc);
+alter table public.ace_individual_study_sessions enable row level security;
+revoke all on table public.ace_individual_study_sessions from anon, authenticated;
+grant select, insert, update, delete on table public.ace_individual_study_sessions to authenticated;
+drop policy if exists ace_individual_study_sessions_select_own on public.ace_individual_study_sessions;
+create policy ace_individual_study_sessions_select_own on public.ace_individual_study_sessions
 for select to authenticated using ((select auth.uid()) = user_id);
-drop policy if exists ace_study_sessions_insert_own on public.ace_study_sessions;
-create policy ace_study_sessions_insert_own on public.ace_study_sessions
+drop policy if exists ace_individual_study_sessions_insert_own on public.ace_individual_study_sessions;
+create policy ace_individual_study_sessions_insert_own on public.ace_individual_study_sessions
 for insert to authenticated with check ((select auth.uid()) = user_id);
-drop policy if exists ace_study_sessions_update_own on public.ace_study_sessions;
-create policy ace_study_sessions_update_own on public.ace_study_sessions
+drop policy if exists ace_individual_study_sessions_update_own on public.ace_individual_study_sessions;
+create policy ace_individual_study_sessions_update_own on public.ace_individual_study_sessions
 for update to authenticated using ((select auth.uid()) = user_id)
 with check ((select auth.uid()) = user_id);
-drop policy if exists ace_study_sessions_delete_own on public.ace_study_sessions;
-create policy ace_study_sessions_delete_own on public.ace_study_sessions
+drop policy if exists ace_individual_study_sessions_delete_own on public.ace_individual_study_sessions;
+create policy ace_individual_study_sessions_delete_own on public.ace_individual_study_sessions
 for delete to authenticated using ((select auth.uid()) = user_id);
