@@ -452,9 +452,9 @@ async function importApprovedResource(id:string){
    if(pageText)pages.push("PAGE "+pageNo+"\n"+pageText);
    if(pages.join("\n\n").length>1_900_000){await pdf.destroy();setNotice("This document has too much text for one notebook. Split it into chapters.");return}
   }
-  await pdf.destroy();const extracted=pages.join("\n\n");
+  const pageCount=pdf.numPages;await pdf.destroy();const extracted=pages.join("\n\n");
   if(extracted.trim().length<20){setNotice("This PDF has little selectable text. It may be scanned; OCR is not currently enabled.");return}
-  const metadata:StudySource={id:crypto.randomUUID(),name:safeSourceName(data.title+".pdf"),format:"PDF · Ace library",characters:extracted.length,pages:pdf.numPages,addedAt:Date.now()};const attributed="SOURCE: "+metadata.name+" [ACE_SOURCE_ID="+metadata.id+"]\n\n"+extracted;setSelected("");setMode("read");setTitle(data.title);setCourseCode(data.course_code??"");setTagInput([data.course_name,data.kind,"Ace library"].filter(Boolean).join(", "));setSource(attributed);setSourceFiles([metadata]);setCreate(true);
+  const metadata:StudySource={id:crypto.randomUUID(),name:safeSourceName(data.title+".pdf"),format:"PDF · Ace library",characters:extracted.length,pages:pageCount,addedAt:Date.now()};const attributed="SOURCE: "+metadata.name+" [ACE_SOURCE_ID="+metadata.id+"]\n\n"+extracted;setSelected("");setMode("read");setTitle(data.title);setCourseCode(data.course_code??"");setTagInput([data.course_name,data.kind,"Ace library"].filter(Boolean).join(", "));setSource(attributed);setSourceFiles([metadata]);setCreate(true);
   setNotice("Imported from the Ace student library. Check the extracted pages, then create your private study notebook.");
  }catch(error){setNotice("Could not import this library document. "+(error instanceof Error?error.message:"Please try again."))}
 }
@@ -521,10 +521,11 @@ async function importFile(file?:File){
     if(text)pages.push("PAGE "+pageNumber+"\n"+text);
     if(pages.join("\n\n").length>1_900_000){await pdfDocument.destroy();setNotice("Extracted text is too large for one notebook. Split the PDF into smaller chapters.");return}
    }
+   const pageCount=pdfDocument.numPages;
    await pdfDocument.destroy();
    const extracted=pages.join("\n\n");
    if(extracted.trim().length<20){setNotice("This PDF contains little selectable text. It may be scanned; OCR is not enabled, so use a text-based PDF or paste your notes instead.");return}
-   attachImportedSource(file,extracted,"PDF",pdfDocument.numPages);return;
+   attachImportedSource(file,extracted,"PDF",pageCount);return;
   }
   if(extension==="docx"){
    setNotice("Extracting Word document text on this device…");
