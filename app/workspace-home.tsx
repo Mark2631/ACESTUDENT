@@ -50,6 +50,7 @@ export default function WorkspaceHome({
   const [subjects, setSubjects] = useState<LearningSubject[]>([]);
   const [resources, setResources] = useState<OpenResource[]>([]);
   const [notebooks, setNotebooks] = useState<Notebook[]>([]);
+  const [notebookCount, setNotebookCount] = useState(0);
   const [followed, setFollowed] = useState<string[]>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
   const [showAllAreas, setShowAllAreas] = useState(false);
@@ -75,14 +76,16 @@ export default function WorkspaceHome({
       ] as const;
       const [disciplines, topics, open] = await Promise.all(requests);
       let recent: Notebook[] = [];
+      let notebookResultCount: number | null = null;
       let followedRows: { subject_slug: string }[] = [];
 
       if (user) {
         const [notebookResult, followResult] = await Promise.all([
-          supabase.from("ace_study_notebooks").select("id,title,course_code,updated_at,cards,attempts,correct").eq("user_id", user.id).order("updated_at", { ascending: false }).limit(4),
+          supabase.from("ace_study_notebooks").select("id,title,course_code,updated_at,cards,attempts,correct", { count: "exact" }).eq("user_id", user.id).order("updated_at", { ascending: false }).limit(4),
           supabase.from("ace_user_subjects").select("subject_slug").eq("user_id", user.id)
         ]);
         recent = (notebookResult.data ?? []) as Notebook[];
+        notebookResultCount = notebookResult.count;
         followedRows = followResult.data ?? [];
         if (notebookResult.error && notebookResult.error.code !== "42P01") {
           setIssue("Your recent notebooks could not be loaded. They are still available in Study Studio.");
@@ -97,6 +100,7 @@ export default function WorkspaceHome({
       setSubjects(topics.data?.length ? topics.data : [...FALLBACK_SUBJECTS]);
       setResources(open.data ?? []);
       setNotebooks(recent);
+      setNotebookCount(user ? (notebookResultCount ?? recent.length) : 0);
       setFollowed(followedRows.map(row => row.subject_slug));
       if (disciplines.error || topics.error) {
         setIssue("Some learning areas are using the starter directory while the catalogue reconnects.");
@@ -184,8 +188,8 @@ export default function WorkspaceHome({
       </header>
 
       <section className="home-overview" aria-label="Your learning overview">
-        <div><span>Recent notebooks</span><strong>{user ? notebooks.length : "—"}</strong><small>{user ? "Your latest study spaces" : "Sign in to save your work"}</small></div>
-        <div><span>Study cards</span><strong>{user ? notebookCardCount : "—"}</strong><small>Built from your own material</small></div>
+        <div><span>Notebooks</span><strong>{user ? notebookCount : "—"}</strong><small>{user ? "Saved to your study space" : "Sign in to save your work"}</small></div>
+        <div><span>Study cards</span><strong>{user ? notebookCardCount : "—"}</strong><small>{user ? "Across your latest four notebooks" : "Built from your own material"}</small></div>
         <div><span>Subjects followed</span><strong>{user ? followed.length : "—"}</strong><small>Areas you want to explore</small></div>
       </section>
 
