@@ -308,3 +308,7 @@ html{font-size:14px}body,button,input,textarea,select{font-family:'DM Sans',syst
 .studio-bottom-links{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:700px){.studio-bottom-links{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:380px){.studio-bottom-links{grid-template-columns:1fr}}
+
+
+.studio-markdown-tools{display:flex;align-items:center;gap:5px;padding:6px 0 9px;margin-top:5px;border-bottom:1px solid var(--line);flex-wrap:wrap}.studio-markdown-tools>span{font-size:8px;letter-spacing:.13em;font-weight:800;color:var(--sub);margin-right:7px}.studio-markdown-tools button{display:grid;place-items:center;width:29px;height:27px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--sub)}.studio-markdown-tools button:hover,.studio-markdown-tools button:focus-visible{background:var(--surface2);border-color:var(--line);color:var(--ink)}.studio-markdown-tools small{font-size:9px;color:var(--sub);margin-left:auto}
+.studio-field .studio-markdown-tools{margin:0}.studio-field .studio-markdown-tools+textarea{margin-top:0}
