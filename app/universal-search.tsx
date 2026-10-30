@@ -17,13 +17,14 @@ export default function UniversalSearch({query,user,open,onPick}:{query:string;u
   if(user){requests.push(client.from("ace_quizzes").select("id,title,course_code").eq("status","published").ilike("title",term).limit(4));requests.push(client.from("ace_spaces").select("id,title,course_code").ilike("title",term).limit(4));requests.push(client.from("ace_shared_notes").select("id,title,course_code").ilike("title",term).limit(4))}
   const groups=await Promise.all(requests);if(!alive)return;
   const out:Hit[]=[];
-  for(const row of groups[0].data??[])out.push({id:row.code,label:row.title,detail:row.code,kind:"course",code:row.code});
-  for(const row of groups[1].data??[])out.push({id:row.id,label:row.title,detail:row.subject,kind:"resource",url:row.url});
-  for(const row of groups[2].data??[])out.push({id:row.id,label:row.title,detail:row.course_code,kind:"document"});
+  const rows=(index:number):Array<Record<string,string|null>>=>(groups[index]?.data??[]) as unknown as Array<Record<string,string|null>>;
+  for(const row of rows(0))out.push({id:String(row.code??""),label:String(row.title??""),detail:String(row.code??""),kind:"course",code:String(row.code??"")});
+  for(const row of rows(1))out.push({id:String(row.id??""),label:String(row.title??""),detail:String(row.subject??""),kind:"resource",url:String(row.url??"")});
+  for(const row of rows(2))out.push({id:String(row.id??""),label:String(row.title??""),detail:String(row.course_code??""),kind:"document"});
   if(user){
-   for(const row of groups[3]?.data??[])out.push({id:row.id,label:row.title,detail:row.course_code,kind:"quiz",code:row.course_code});
-   for(const row of groups[4]?.data??[])out.push({id:row.id,label:row.title,detail:row.course_code,kind:"space",code:row.course_code});
-   for(const row of groups[5]?.data??[])out.push({id:row.id,label:row.title,detail:row.course_code||"Shared notes",kind:"note"})
+   for(const row of rows(3))out.push({id:String(row.id??""),label:String(row.title??""),detail:String(row.course_code??""),kind:"quiz",code:String(row.course_code??"")});
+   for(const row of rows(4))out.push({id:String(row.id??""),label:String(row.title??""),detail:String(row.course_code??""),kind:"space",code:String(row.course_code??"")});
+   for(const row of rows(5))out.push({id:String(row.id??""),label:String(row.title??""),detail:String(row.course_code??"")||"Shared notes",kind:"note"})
   }
   setResults(out.slice(0,16));setLoading(false);
  },210);
