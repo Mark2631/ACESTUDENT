@@ -52,6 +52,7 @@ export default function WorkspaceHome({
   const [notebooks, setNotebooks] = useState<Notebook[]>([]);
   const [followed, setFollowed] = useState<string[]>([]);
   const [expanded, setExpanded] = useState<string[]>([]);
+  const [showAllAreas, setShowAllAreas] = useState(false);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [busySlug, setBusySlug] = useState("");
@@ -111,7 +112,41 @@ export default function WorkspaceHome({
     [areas, search]
   );
   const followedSubjects = subjects.filter(subject => followed.includes(subject.slug));
-  const resourcePicks = resources.slice(0, 3);
+  const resourcePicks = useMemo(() => {
+    const targets = followedSubjects.length ? followedSubjects : subjects;
+    const ranked = resources.map(resource => {
+      const haystack = (resource.title + " " + resource.subject + " " + (resource.description ?? "")).toLowerCase();
+      const subjectName = resource.subject.toLowerCase();
+      let score = 0;
+      for (const target of targets) {
+        const label = target.title.toLowerCase();
+        if (subjectName === label) score = Math.max(score, 5);
+        else if (subjectName.includes(label) || label.includes(subjectName)) score = Math.max(score, 3);
+        for (const keyword of target.keywords ?? []) {
+          if (keyword.trim().length > 2 && haystack.includes(keyword.toLowerCase())) score = Math.max(score, 2);
+        }
+      }
+      if (["official data", "primary legal text", "open course"].includes(resource.kind.toLowerCase())) score += 0.15;
+      return { resource, score };
+    }).sort((a, b) => b.score - a.score || a.resource.title.localeCompare(b.resource.title));
+    const chosen: OpenResource[] = [];
+    const seenSubjects = new Set<string>();
+    for (const item of ranked) {
+      const key = item.resource.subject.toLowerCase();
+      if (!seenSubjects.has(key)) {
+        chosen.push(item.resource);
+        seenSubjects.add(key);
+      }
+      if (chosen.length === 3) break;
+    }
+    if (chosen.length < 3) {
+      for (const item of ranked) {
+        if (!chosen.some(resource => resource.id === item.resource.id)) chosen.push(item.resource);
+        if (chosen.length === 3) break;
+      }
+    }
+    return chosen;
+  }, [resources, subjects, followedSubjects]);
   const latestNotebook = notebooks[0];
   const notebookCardCount = notebooks.reduce((total, item) => total + (Array.isArray(item.cards) ? item.cards.length : 0), 0);
   const displayName = name.trim().split(/\s+/)[0];
@@ -192,7 +227,7 @@ export default function WorkspaceHome({
             </div>
             {loading ? <div className="home-loading">Loading learning areas…</div> : filteredAreas.length ? (
               <div className="home-area-grid">
-                {filteredAreas.slice(0, 8).map((area, index) => {
+                {(showAllAreas ? filteredAreas : filteredAreas.slice(0, 8)).map((area, index) => {
                   const Icon = areaIcons[index % areaIcons.length];
                   const topics = subjects.filter(subject => subject.parent_slug === area.slug);
                   const isExpanded = expanded.includes(area.slug);
@@ -216,6 +251,7 @@ export default function WorkspaceHome({
                 })}
               </div>
             ) : <div className="home-loading">No learning areas match that search.</div>}
+            {filteredAreas.length > 8 && <button className="home-text-link" onClick={() => setShowAllAreas(value => !value)}>{showAllAreas ? "Show fewer learning areas" : "View all " + filteredAreas.length + " learning areas"} <ArrowRight size={14} /></button>}
             <button className="home-text-link" onClick={onLibrary}>Browse the full learning library <ArrowRight size={14} /></button>
           </section>
         </div>
