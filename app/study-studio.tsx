@@ -2,7 +2,7 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import {supabase} from "@/lib/supabase";
 import type {User} from "@supabase/supabase-js";
-import {ArrowLeft,ArrowRight,BookOpen,Brain,CheckCircle2,ChevronLeft,ChevronRight,Clock3,Download,FileText,GitBranch,Headphones,Layers,Mic,MicOff,Pause,Play,Plus,RotateCcw,Save,Search,Target,Trash2,Volume2,VolumeX,X} from "lucide-react";
+import {ArrowLeft,ArrowRight,BookOpen,Brain,CheckCircle2,ChevronLeft,ChevronRight,Clock3,Download,FileText,GitBranch,Headphones,Layers,Mic,MicOff,Pause,Play,Plus,RotateCcw,Save,Search,Target,Trash2,Users,Volume2,VolumeX,X} from "lucide-react";
 type Card={id:string;front:string;back:string;next:number;interval:number;ease:number;reviews:number;lastGrade?:number};
 type Highlight={id:string;quote:string;note:string;page:string;created:number};
 type StudySource={id:string;name:string;format:string;characters:number;pages:number|null;addedAt:number};
