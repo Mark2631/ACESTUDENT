@@ -209,7 +209,7 @@ test("source mind map turns notebook ideas into an inspectable visual index",asy
  await expect(page.getByRole("heading",{name:"See how this notebook is organised"})).toBeVisible();
  await expect(page.getByRole("heading",{name:"Principles of Economics"})).toBeVisible();
  await expect(page.getByRole("button",{name:/Key idea 01/})).toBeVisible();
- await page.getByRole("button",{name:/Term 01/}).click();
+ await page.getByRole("button",{name:/Key idea 01/}).click();
  await expect(page.getByText(/The value of the next best alternative/)).toBeVisible();
  await page.getByRole("button",{name:/Find this in my source/}).click();
  await expect(page.getByRole("heading",{name:"Find answers in your material"})).toBeVisible();
@@ -238,4 +238,36 @@ test("practice supports multiple choice, true-false and written self-recall",asy
  await expect(page.getByText(/The quantity producers are willing to sell/)).toBeVisible();
  await page.getByRole("button",{name:"I remembered it"}).click();
  await expect(page.getByText(/self-assessment has been recorded/)).toBeVisible();
+});
+
+
+test("interleaved practice alternates between independent notebooks",async({page})=>{
+ for(const notebook of [
+  {title:"Microeconomics",source:["Opportunity cost: The value of the next best alternative forgone.","Demand: The quantity consumers are willing to buy at each price."]},
+  {title:"Management",source:["Delegation: Assigning responsibility and authority to another person.","Planning: Defining goals and deciding how to achieve them."]}
+ ]){
+  await page.getByRole("button",{name:"New notebook"}).click();
+  await page.getByLabel("Notebook name").fill(notebook.title);
+  await page.getByLabel("Study material").fill(notebook.source.join(String.fromCharCode(10)));
+  await page.getByRole("button",{name:"Create notebook"}).click();
+  await page.getByRole("button",{name:"All notebooks"}).click();
+ }
+ await expect(page.getByRole("heading",{name:"My notebooks"})).toBeVisible();
+ await page.getByRole("button",{name:"Start mixed practice"}).click();
+ await expect(page.getByRole("heading",{name:"Think across your subjects"})).toBeVisible();
+ await expect(page.getByText("Microeconomics",{exact:true})).toBeVisible();
+ await page.getByRole("button",{name:"A"}).click();
+ await page.getByRole("button",{name:"Next question"}).click();
+ await expect(page.getByText("Management",{exact:true})).toBeVisible();
+});
+
+test("deleting a guest notebook removes it from the local library",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Temporary revision notes");
+ await page.getByLabel("Study material").fill("Revenue: Income generated from ordinary business activities.");
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await page.getByRole("button",{name:"Delete notebook"}).click();
+ page.once("dialog",dialog=>dialog.accept());
+ await page.getByRole("button",{name:"Delete notebook"}).click();
+ await expect(page.getByText("Temporary revision notes")).toHaveCount(0);
 });
