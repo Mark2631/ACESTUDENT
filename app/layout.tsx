@@ -1,4 +1,4 @@
-import type {Metadata,Viewport} from "next";import "./globals.css";import {PWARegister} from "./pwa-register";
+import type {Metadata,Viewport} from "next";import "./globals.css";import "./fieldnotes.css";import {PWARegister} from "./pwa-register";
 export const metadata:Metadata={title:"Ace Student | Learn. Practice. Excel.",description:"Discover legitimate course resources, master topics with graded quizzes, compete with peers, and study together.",manifest:"/manifest.webmanifest",applicationName:"Ace Student",icons:{icon:[{url:"/icon.svg",type:"image/svg+xml",sizes:"any"}],shortcut:"/icon.svg",apple:"/icon.svg"},openGraph:{title:"Ace Student",description:"Read, practice, plan and learn with others in one connected study space.",siteName:"Ace Student",type:"website"},robots:{index:true,follow:true}};
 export const viewport:Viewport={themeColor:"#f5f4ef",width:"device-width",initialScale:1};
 export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en" suppressHydrationWarning><body>{children}<PWARegister/></body></html>}
