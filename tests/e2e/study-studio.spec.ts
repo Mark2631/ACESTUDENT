@@ -394,3 +394,31 @@ test("new recall cards use FSRS memory states and persist the next review foreca
  expect(Date.parse(card.memory.due)).toBeGreaterThan(Date.now());
  expect(card.next).toBe(Date.parse(card.memory.due));
 });
+
+
+test("the generated source outline opens the original section in the notebook",async({page})=>{
+ const notes=[
+  "# Introduction",
+  "A market is a set of buyers and sellers whose actions determine prices and the allocation of resources. Market participants respond to changing information and incentives.",
+  "## Market equilibrium",
+  "Market equilibrium occurs when the quantity supplied equals the quantity demanded at a given price. A change in demand or supply can move the equilibrium price and quantity.",
+  "## Price elasticity",
+  "Price elasticity measures how responsive quantity demanded or supplied is to a change in price. Elasticity is calculated as a percentage change divided by another percentage change."
+ ].join(String.fromCharCode(10,10));
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Market analysis");
+ await page.getByLabel("Study material").fill(notes);
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await page.getByRole("tab",{name:"Study guide"}).click();
+ const section=page.getByRole("button",{name:/Market equilibrium/});
+ await expect(section).toBeVisible();
+ await expect(section).toContainText(/quantity supplied equals the quantity demanded/);
+ await section.click();
+ const textarea=page.getByRole("textbox",{name:"Notebook material"});
+ await expect(textarea).toBeFocused();
+ const selected=await textarea.evaluate((element)=>{
+  const field=element as HTMLTextAreaElement;
+  return field.value.slice(field.selectionStart,field.selectionEnd);
+ });
+ expect(selected).toContain("Market equilibrium occurs");
+});
