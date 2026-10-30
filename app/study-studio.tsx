@@ -320,6 +320,7 @@ function removeDraftSource(id:string){
  setSource(result.source);setSourceFiles(items=>items.filter(source=>source.id!==id));setNotice(item.name+" removed from this draft.");
 }
 function removeNotebookSource(item:StudySource){
+ setDisabledSourceIds(ids=>ids.filter(id=>id!==item.id));
  if(!notebook)return;
  const result=removeSourceBlock(source,item);if(!result.removed){setNotice("That source could not be located in the notebook text.");return}
  const existing=new Map(notebook.cards.map(card=>[card.front.toLowerCase()+"::"+card.back,card]));
