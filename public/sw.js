@@ -1,5 +1,5 @@
-const CACHE_NAME = "ace-student-static-v1";
-const PRECACHE = ["/offline.html", "/icon.svg", "/manifest.webmanifest"];
+const CACHE_NAME = "ace-student-static-v3";
+const PRECACHE = ["/offline.html", "/icon.svg", "/manifest.webmanifest", "/studio", "/pdf.worker.mjs"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -26,6 +26,14 @@ self.addEventListener("fetch", (event) => {
   if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/auth/")) return;
 
   if (request.mode === "navigate") {
+    // Studio contains only a public app shell; personal notebooks remain in device storage.
+    if (url.pathname === "/studio") {
+      event.respondWith(fetch(request).then(async (response) => {
+        if (response.ok) { const copy = response.clone(); const cache = await caches.open(CACHE_NAME); await cache.put("/studio", copy); }
+        return response;
+      }).catch(async () => (await caches.match("/studio")) || (await caches.match("/offline.html"))));
+      return;
+    }
     event.respondWith(
       fetch(request).catch(async () => {
         const offline = await caches.match("/offline.html");
@@ -40,7 +48,7 @@ self.addEventListener("fetch", (event) => {
 
   // Only immutable, hashed Next.js assets are cached. Auth, Supabase data,
   // user uploads, quiz attempts and personalised responses are never cached.
-  if (url.pathname.startsWith("/_next/static/")) {
+  if (url.pathname === "/pdf.worker.mjs" || url.pathname.startsWith("/_next/static/")) {
     event.respondWith(
       caches.match(request).then((cached) => cached || fetch(request).then((response) => {
         if (response.ok) {
