@@ -454,13 +454,13 @@ async function importApprovedResource(id:string){
   }
   await pdf.destroy();const extracted=pages.join("\n\n");
   if(extracted.trim().length<20){setNotice("This PDF has little selectable text. It may be scanned; OCR is not currently enabled.");return}
-  const metadata:StudySource={id:crypto.randomUUID(),name:safeSourceName(data.title+".pdf"),format:"PDF · Ace library",characters:extracted.length,pages:pdf.numPages,addedAt:Date.now()};const attributed="SOURCE: "+metadata.name+" [ACE_SOURCE_ID="+metadata.id+"]\\n\\n"+extracted;setSelected("");setMode("read");setTitle(data.title);setCourseCode(data.course_code??"");setTagInput([data.course_name,data.kind,"Ace library"].filter(Boolean).join(", "));setSource(attributed);setSourceFiles([metadata]);setCreate(true);
+  const metadata:StudySource={id:crypto.randomUUID(),name:safeSourceName(data.title+".pdf"),format:"PDF · Ace library",characters:extracted.length,pages:pdf.numPages,addedAt:Date.now()};const attributed="SOURCE: "+metadata.name+" [ACE_SOURCE_ID="+metadata.id+"]\n\n"+extracted;setSelected("");setMode("read");setTitle(data.title);setCourseCode(data.course_code??"");setTagInput([data.course_name,data.kind,"Ace library"].filter(Boolean).join(", "));setSource(attributed);setSourceFiles([metadata]);setCreate(true);
   setNotice("Imported from the Ace student library. Check the extracted pages, then create your private study notebook.");
  }catch(error){setNotice("Could not import this library document. "+(error instanceof Error?error.message:"Please try again."))}
 }
 function attachImportedSource(file:File,extracted:string,format:string,pages:number|null=null){
  const metadata:StudySource={id:crypto.randomUUID(),name:safeSourceName(file.name),format,characters:extracted.length,pages,addedAt:Date.now()};
- const header="SOURCE: "+metadata.name+" [ACE_SOURCE_ID="+metadata.id+"]\\n\\n";
+ const header="SOURCE: "+metadata.name+" [ACE_SOURCE_ID="+metadata.id+"]\n\n";
  const target=notebook?(notebooksRef.current.find(n=>n.id===notebook.id)??notebook):null;
  if(target&&!create){
   if((target.sources??[]).length>=100){setNotice("This notebook has reached its 100-source limit.");return}
