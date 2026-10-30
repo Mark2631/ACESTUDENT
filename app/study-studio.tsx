@@ -3,6 +3,7 @@ import {useEffect,useMemo,useRef,useState} from "react";
 import {supabase} from "@/lib/supabase";
 import {deleteStudyAudio,formatAudioDuration,getStudyAudio,listStudyAudio,saveStudyAudio,type AudioNoteMeta} from "./study-studio-audio";
 import {getFSRSSchedulePreview,getRetrievability,isPersistedFSRSCard,scheduleFSRSReview,type PersistedFSRSCard} from "./study-studio-fsrs";
+import {getScopedNotebookText} from "./study-studio-source-scope";
 import type {User} from "@supabase/supabase-js";
 import {ArrowLeft,ArrowRight,BookOpen,Bold,Brain,CalendarDays,CheckCircle2,ChevronLeft,ChevronRight,Clock3,Download,FileText,GitBranch,Heading1,Headphones,Layers,List,Mic,MicOff,Pause,Play,Plus,Quote,RotateCcw,Save,Search,Shuffle,Target,Trash2,Users,Volume2,VolumeX,X} from "lucide-react";
 type Card={id:string;front:string;back:string;next:number;interval:number;ease:number;reviews:number;lastGrade?:number;lastReviewed?:number;lapses?:number;memory?:PersistedFSRSCard};
