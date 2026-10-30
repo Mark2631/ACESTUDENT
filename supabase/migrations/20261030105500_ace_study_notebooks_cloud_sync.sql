@@ -60,14 +60,16 @@ for delete to authenticated using ((select auth.uid()) = user_id);
 create table if not exists public.ace_individual_study_sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  notebook_id uuid not null references public.ace_study_notebooks(id, user_id) on delete cascade,
+  notebook_id uuid not null,
   mode text not null check (mode in ('read', 'cards', 'quiz', 'listen', 'focus')),
   duration_seconds integer not null default 0 check (duration_seconds between 0 and 21600),
   question_count integer not null default 0 check (question_count >= 0),
   correct_count integer not null default 0 check (correct_count between 0 and question_count),
   started_at timestamptz not null default now(),
   ended_at timestamptz,
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  constraint ace_individual_study_sessions_notebook_owner_fk foreign key (notebook_id, user_id)
+    references public.ace_study_notebooks(id, user_id) on delete cascade
 );
 create index if not exists ace_individual_study_sessions_owner_created_idx
   on public.ace_individual_study_sessions (user_id, created_at desc);
