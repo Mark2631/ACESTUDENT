@@ -60,7 +60,7 @@ for delete to authenticated using ((select auth.uid()) = user_id);
 create table if not exists public.ace_study_sessions (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  notebook_id uuid references public.ace_study_notebooks(id, user_id) on delete set null,
+  notebook_id uuid not null references public.ace_study_notebooks(id, user_id) on delete cascade,
   mode text not null check (mode in ('read', 'cards', 'quiz', 'listen', 'focus')),
   duration_seconds integer not null default 0 check (duration_seconds between 0 and 21600),
   question_count integer not null default 0 check (question_count >= 0),
