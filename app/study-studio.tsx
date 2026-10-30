@@ -76,25 +76,50 @@ function buildStudyGuide(source:string):StudyGuide{
 }
 type Evidence={source:string;page:string;excerpt:string;score:number};
 function findEvidence(source:string,question:string):Evidence[]{
- const stop=new Set(["what","when","where","which","who","whom","whose","this","that","with","from","into","about","does","have","been","were","will","would","could","should","there","their","they","them","your","yours","what","how","why","does","the","and","for","are","was","has","had","not","but","can","its","you","our","use","used","using"]);
- const terms=[...new Set(question.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").split(/[^a-z0-9]+/).filter(t=>t.length>2&&!stop.has(t)))];
+ const stop=new Set(["what","when","where","which","who","whom","whose","this","that","with","from","into","about","does","have","been","were","will","would","could","should","there","their","they","them","your","yours","how","why","the","and","for","are","was","has","had","not","but","can","its","you","our","use","used","using","than","then","also","some","any","all","much","many","more","most","such"]);
+ const tokenize=(value:string)=>value.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").match(/[\\p{L}\\p{N}]{2,}/gu)??[];
+ const terms=[...new Set(tokenize(question).filter(term=>term.length>2&&!stop.has(term)))];
  if(!terms.length)return [];
- const sources=source.split(/(?=^SOURCE:\s*.+$)/im);const found:Evidence[]=[];
+ const documents:{source:string;page:string;excerpt:string;tokens:string[];frequencies:Map<string,number>}[]=[];
+ const sources=source.split(/(?=^SOURCE:\\s*.+$)/im);
  for(const sourceBlock of sources){
-  const sourceName=sourceBlock.match(/^SOURCE:\s*(.+)$/im)?.[1]?.trim()||"Notebook";
-  const pageBlocks=sourceBlock.split(/(?=^(?:PAGE|SLIDE)\s+\d+\s*$)/im);
+  const sourceName=sourceBlock.match(/^SOURCE:\\s*(.+)$/im)?.[1]?.trim()||"Notebook";
+  const pageBlocks=sourceBlock.split(/(?=^PAGE\\s+\\d+\\s*$)/im);
   for(const block of pageBlocks){
-   const pageMatch=block.match(/^(PAGE|SLIDE)\s+(\d+)/im);const page=pageMatch?(pageMatch[1].toUpperCase()==="SLIDE"?"Slide ":"Page ")+pageMatch[2]:"Source text";
-   const cleaned=block.replace(/^SOURCE:\s*.+$/im,"").replace(/^(?:PAGE|SLIDE)\s+\d+\s*$/im,"");
-   const chunks=cleaned.split(/(?<=[.!?])\s+|\n{2,}/).map(x=>x.trim()).filter(x=>x.length>=35);
-   for(const excerpt of chunks){
-    const normalized=excerpt.toLowerCase();const matched=terms.filter(term=>normalized.includes(term));if(!matched.length)continue;
-    const score=matched.length/terms.length+matched.length*.15+(normalized.includes(question.toLowerCase())?2:0);
-    found.push({source:sourceName,page,excerpt:excerpt.slice(0,620),score});
+   const pageMatch=block.match(/^PAGE\\s+(\\d+)/im);const page=pageMatch?"Page "+pageMatch[1]:"Source text";
+   const cleaned=block.replace(/^SOURCE:\\s*.+$/im,"").replace(/^PAGE\\s+\\d+\\s*$/im,"");
+   const sentences=cleaned.split(/(?<=[.!?])\\s+|\\n{2,}/).map(x=>x.replace(/\\s+/g," ").trim()).filter(x=>x.length>=25);
+   let chunk="";
+   const push=(excerpt:string)=>{const tokens=tokenize(excerpt);if(!tokens.length)return;const frequencies=new Map<string,number>();for(const token of tokens)frequencies.set(token,(frequencies.get(token)??0)+1);documents.push({source:sourceName,page,excerpt:excerpt.slice(0,720),tokens,frequencies})};
+   for(const sentence of sentences){
+    if(sentence.length>720){if(chunk){push(chunk);chunk=""}for(let offset=0;offset<sentence.length;offset+=620)push(sentence.slice(offset,offset+620));continue}
+    if(chunk&&chunk.length+sentence.length>620){push(chunk);chunk=sentence}else chunk=chunk?chunk+" "+sentence:sentence
    }
+   if(chunk)push(chunk)
   }
  }
- return found.sort((a,b)=>b.score-a.score).slice(0,5)
+ const total=documents.length;if(!total)return [];
+ const documentFrequency=new Map<string,number>();
+ for(const doc of documents)for(const term of new Set(doc.tokens))documentFrequency.set(term,(documentFrequency.get(term)??0)+1);
+ const averageLength=documents.reduce((sum,doc)=>sum+doc.tokens.length,0)/total||1;
+ const exactPhrase=question.toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu," ").trim();
+ const ranked=documents.map(doc=>{
+  const length=doc.tokens.length;let score=0;let matched=0;
+  for(const term of terms){
+   const tf=doc.frequencies.get(term)??0;if(!tf)continue;matched++;
+   const df=documentFrequency.get(term)??0;
+   const inverse=Math.log(1+(total-df+0.5)/(df+0.5));
+   const k1=1.2,b=0.75;
+   score+=inverse*(tf*(k1+1))/(tf+k1*(1-b+b*length/averageLength));
+  }
+  if(!matched)return null;
+  if(exactPhrase.length>5&&doc.excerpt.toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu," ").includes(exactPhrase))score+=2.2;
+  const coverage=matched/terms.length;
+  score+=coverage*0.35;
+  return {...doc,score,normalizedScore:score/(score+2.5)}
+ }).filter((doc):doc is NonNullable<typeof doc>=>doc!==null);
+ const seen=new Set<string>();
+ return ranked.sort((a,b)=>b.score-a.score).filter(doc=>{const key=doc.source+"::"+doc.page+"::"+doc.excerpt.slice(0,90);if(seen.has(key))return false;seen.add(key);return true}).slice(0,5).map(doc=>({source:doc.source,page:doc.page,excerpt:doc.excerpt,score:doc.normalizedScore}))
 }
 function formatDay(n:number){return new Date(n).toLocaleDateString(undefined,{month:"short",day:"numeric"})}
 const createNotebook=(title:string,source:string,courseCode:string,subjectSlug:string,tags:string[],sources:StudySource[]=[]):Notebook=>({id:crypto.randomUUID(),title,courseCode:courseCode.trim().toUpperCase()||null,subjectSlug:subjectSlug||null,tags,source,sources,cards:parseCards(source),highlights:[],created:Date.now(),updated:Date.now(),minutes:0,attempts:0,correct:0});
