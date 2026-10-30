@@ -42,7 +42,7 @@ test("guest notebooks survive reload and remain searchable",async({page})=>{
  await page.getByRole("textbox",{name:"Search notebooks"}).fill("Research");
  await expect(page.getByText("Research Methods")).toBeVisible();
  await page.getByRole("textbox",{name:"Search notebooks"}).fill("No matching content");
- await expect(page.getByText("You haven't made a notebook yet.")).toHaveCount(0);
+ await expect(page.getByText("No matching notebooks")).toBeVisible();
 });
 
 test("focus timer requires a notebook and can be opened without creating noise",async({page})=>{
