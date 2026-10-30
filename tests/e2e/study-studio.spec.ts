@@ -48,7 +48,7 @@ test("guest can create a notebook, review cards and test understanding",async({p
  await expect(page.getByText("Opportunity cost")).toBeVisible();
  await page.getByRole("button",{name:"Reveal answer"}).click();
  await expect(page.getByText(/next best alternative given up/)).toBeVisible();
- await page.getByRole("button",{name:"Good",exact:true}).click();
+ await page.getByRole("button",{name:/^Good\b/}).click();
  await page.getByRole("tab",{name:"Quick test"}).click();
  await expect(page.getByText("Check what you know")).toBeVisible();
  await page.getByRole("button",{name:/The value of the next best alternative given up/}).click();
@@ -73,9 +73,9 @@ test("guest notebooks survive reload and remain searchable",async({page})=>{
 test("a text-based PDF can be imported and converted into a notebook",async({page})=>{
  await page.getByRole("button",{name:"New notebook"}).click();
  await page.locator('input[type="file"]').setInputFiles({name:"economics.pdf",mimeType:"application/pdf",buffer:minimalPdf()});
- await expect(page.getByText(/PDF text extracted locally/)).toBeVisible({timeout:30000});
+ await expect(page.getByText(/Added economics\.pdf/)).toBeVisible({timeout:30000});
  await expect(page.getByLabel("Notebook name")).toHaveValue("economics");
- await expect(page.getByLabel("Study material")).toContainText("Opportunity cost");
+ await expect(page.getByLabel("Study material")).toHaveValue(/Opportunity cost/);
  await page.getByRole("button",{name:"Create notebook"}).click();
  await expect(page.getByRole("heading",{name:"economics"})).toBeVisible();
  await page.getByRole("tab",{name:"Flashcards"}).click();
@@ -91,15 +91,15 @@ test("daily review combines due cards from every notebook",async({page})=>{
  ].join(String.fromCharCode(10)));
  await page.getByRole("button",{name:"Create notebook"}).click();
  await page.getByRole("button",{name:"All notebooks"}).click();
- await expect(page.getByText("2",{exact:true})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Cards due/})).toBeVisible();
  await page.getByRole("button",{name:/Cards due/}).click();
  await expect(page.getByRole("heading",{name:"Everything due, in one session"})).toBeVisible();
  await expect(page.getByText("2 remaining")).toBeVisible();
  await page.getByRole("button",{name:"Reveal answer"}).click();
- await page.getByRole("button",{name:"Good",exact:true}).click();
+ await page.getByRole("button",{name:/^Good\b/}).click();
  await expect(page.getByText("1 remaining")).toBeVisible();
  await page.getByRole("button",{name:"Reveal answer"}).click();
- await page.getByRole("button",{name:"Easy",exact:true}).click();
+ await page.getByRole("button",{name:/^Easy\b/}).click();
  await expect(page.getByRole("heading",{name:"You're caught up."})).toBeVisible();
 });
 
@@ -108,7 +108,7 @@ test("PowerPoint lecture slides can be imported into a source notebook",async({p
  await page.locator('input[type="file"]').setInputFiles({name:"economics-lecture.pptx",mimeType:"application/vnd.openxmlformats-officedocument.presentationml.presentation",buffer:await minimalPptx()});
  await expect(page.getByText(/Slide text extracted locally/)).toBeVisible({timeout:30000});
  await expect(page.getByLabel("Notebook name")).toHaveValue("economics-lecture");
- await expect(page.getByLabel("Study material")).toContainText("Supply");
+ await expect(page.getByLabel("Study material")).toHaveValue(/Supply/);
  await page.getByRole("button",{name:"Create notebook"}).click();
  await expect(page.getByRole("heading",{name:"economics-lecture"})).toBeVisible();
  await page.getByRole("tab",{name:"Flashcards"}).click();
@@ -131,8 +131,8 @@ test("Anki CSV export can be imported back into Ace without losing card text",as
  await page.getByRole("button",{name:"All notebooks"}).click();
  await page.getByRole("button",{name:"New notebook"}).click();
  await page.locator('input[type="file"]').setInputFiles(downloadPath!);
- await expect(page.getByText(/File imported/)).toBeVisible();
- await expect(page.getByLabel("Study material")).toContainText("Assets");
+ await expect(page.getByText(/Added Intro to Accounting-cards\.csv/)).toBeVisible();
+ await expect(page.getByLabel("Study material")).toHaveValue(/Assets/);
  await page.getByRole("button",{name:"Create notebook"}).click();
  await expect(page.getByRole("heading",{name:"Intro to Accounting-cards"})).toBeVisible();
  await expect(page.getByText("2 cards",{exact:false})).toBeVisible();
@@ -168,12 +168,12 @@ test("multiple files become one source collection inside a notebook",async({page
  ]);
  await expect(page.getByText(/Added market-structure.md/)).toBeVisible();
  await expect(page.getByLabel("Notebook name")).toHaveValue("economics-notes");
- await expect(page.getByLabel("Study material")).toContainText("Perfect competition");
+ await expect(page.getByLabel("Study material")).toHaveValue(/Perfect competition/);
  await expect(page.getByLabel("Study material")).toContainText("Opportunity cost");
  await page.getByRole("button",{name:"Create notebook"}).click();
  await expect(page.getByRole("heading",{name:"economics-notes"})).toBeVisible();
  await expect(page.getByText("2 SOURCES IN THIS NOTEBOOK")).toBeVisible();
- await expect(page.getByText("market-structure.md")).toBeVisible();
+ await expect(page.locator(".studio-source-manifest strong").filter({hasText:"market-structure.md"})).toBeVisible();
 });
 
 test("a second source can be attached to an existing notebook",async({page})=>{
@@ -181,17 +181,17 @@ test("a second source can be attached to an existing notebook",async({page})=>{
  await page.getByLabel("Notebook name").fill("Public policy");
  await page.getByLabel("Study material").fill("Governance: The processes through which decisions are made and implemented.");
  await page.getByRole("button",{name:"Create notebook"}).click();
- await page.getByRole("button",{name:"Add source"}).click();
+ await page.locator(".studio-reading-tools").getByRole("button",{name:"Add source"}).click();
  await page.locator('input[type="file"]').setInputFiles({name:"public-finance.txt",mimeType:"text/plain",buffer:Buffer.from("Public expenditure: Government spending on goods, services and transfers.")});
  await expect(page.getByText(/Added public-finance.txt to Public policy/)).toBeVisible();
  await expect(page.getByText("1 SOURCES IN THIS NOTEBOOK")).toBeVisible();
- await expect(page.getByRole("textbox",{name:"Notebook material"})).toContainText("Public expenditure");
+ await expect(page.getByRole("textbox",{name:"Notebook material"})).toHaveValue(/Public expenditure/);
 });
 
 test("focus timer requires a notebook",async({page})=>{
  await page.getByRole("button",{name:"Focus timer"}).click();
  await expect(page.getByText("25:00")).toBeVisible();
- await page.getByRole("button",{name:"Start"}).click();
+ await page.locator(".studio-timer").getByRole("button",{name:"Start"}).click();
  await expect(page.getByText(/Open a notebook before starting/)).toBeVisible();
 });
 
@@ -255,10 +255,13 @@ test("interleaved practice alternates between independent notebooks",async({page
  await expect(page.getByRole("heading",{name:"My notebooks"})).toBeVisible();
  await page.getByRole("button",{name:"Start mixed practice"}).click();
  await expect(page.getByRole("heading",{name:"Think across your subjects"})).toBeVisible();
- await expect(page.getByText("Microeconomics",{exact:true})).toBeVisible();
+ const firstNotebook=await page.locator(".studio-global-source>span").textContent();
+ expect(["Microeconomics","Management"]).toContain(firstNotebook?.trim());
  await page.locator(".studio-answer-list button").first().click();
  await page.getByRole("button",{name:"Next question"}).click();
- await expect(page.getByText("Management",{exact:true})).toBeVisible();
+ const secondNotebook=await page.locator(".studio-global-source>span").textContent();
+ expect(["Microeconomics","Management"]).toContain(secondNotebook?.trim());
+ expect(secondNotebook?.trim()).not.toBe(firstNotebook?.trim());
 });
 
 test("deleting a guest notebook removes it from the local library",async({page})=>{
@@ -273,7 +276,7 @@ test("deleting a guest notebook removes it from the local library",async({page})
 
 
 test("weekly study goal persists on the device",async({page})=>{
- await expect(page.getByLabel("Weekly study goal")).toHaveValue("180");
+ await expect(page.getByRole("combobox",{name:"Weekly study goal"})).toHaveValue("180");
  await page.getByLabel("Weekly study goal").selectOption("240");
  await expect(page.getByLabel("Weekly study goal")).toHaveValue("240");
  await page.reload();
@@ -294,6 +297,7 @@ test("audio recaps persist in the notebook after reload",async({page})=>{
   }
   Object.defineProperty(window,"MediaRecorder",{configurable:true,value:FakeRecorder});
  });
+ await page.reload();
  await page.getByRole("button",{name:"New notebook"}).click();
  await page.getByLabel("Notebook name").fill("Audio revision");
  await page.getByLabel("Study material").fill("Revision: Revisiting material to improve retention.");
@@ -323,6 +327,7 @@ test("complete Ace backup carries saved audio recaps into a fresh notebook",asyn
   }
   Object.defineProperty(window,"MediaRecorder",{configurable:true,value:FakeRecorder});
  });
+ await page.reload();
  await page.getByRole("button",{name:"New notebook"}).click();
  await page.getByLabel("Notebook name").fill("Portable lecture notes");
  await page.getByLabel("Study material").fill("Delegation: Assigning responsibility and authority to another person.");
@@ -358,8 +363,8 @@ test("students can remove one source without deleting the other source",async({p
  ]);
  await expect(page.getByText(/Added economics-markets.txt/)).toBeVisible();
  await page.getByRole("button",{name:"Remove economics-core.txt"}).click();
- await expect(page.getByText("economics-core.txt")).toHaveCount(0);
- await expect(page.getByText("economics-markets.txt")).toBeVisible();
+ await expect(page.locator(".studio-draft-sources strong").filter({hasText:"economics-core.txt"})).toHaveCount(0);
+ await expect(page.locator(".studio-draft-sources strong").filter({hasText:"economics-markets.txt"})).toBeVisible();
  await expect(page.getByLabel("Study material")).not.toHaveValue(/Opportunity cost/);
  await expect(page.getByLabel("Study material")).toHaveValue(/Market equilibrium/);
  await page.getByRole("button",{name:"Create notebook"}).click();
@@ -410,7 +415,7 @@ test("the generated source outline opens the original section in the notebook",a
  await page.getByLabel("Study material").fill(notes);
  await page.getByRole("button",{name:"Create notebook"}).click();
  await page.getByRole("tab",{name:"Study guide"}).click();
- const section=page.getByRole("button",{name:/Market equilibrium/});
+ const section=page.locator(".studio-guide-section").filter({hasText:/^Market equilibrium/});
  await expect(section).toBeVisible();
  await expect(section).toContainText(/quantity supplied equals the quantity demanded/);
  await section.click();
