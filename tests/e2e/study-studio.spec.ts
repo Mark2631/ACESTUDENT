@@ -207,8 +207,8 @@ test("source mind map turns notebook ideas into an inspectable visual index",asy
  await page.getByRole("button",{name:"Create notebook"}).click();
  await page.getByRole("tab",{name:"Mind map"}).click();
  await expect(page.getByRole("heading",{name:"See how this notebook is organised"})).toBeVisible();
- await expect(page.getByText("Principles of Economics",{exact:true})).toBeVisible();
- await expect(page.getByRole("button",{name:/Term 01/})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Principles of Economics"})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Key idea 01/})).toBeVisible();
  await page.getByRole("button",{name:/Term 01/}).click();
  await expect(page.getByText(/The value of the next best alternative/)).toBeVisible();
  await page.getByRole("button",{name:/Find this in my source/}).click();
