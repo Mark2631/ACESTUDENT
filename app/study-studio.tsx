@@ -78,18 +78,18 @@ function buildStudyGuide(source:string):StudyGuide{
 type Evidence={source:string;page:string;excerpt:string;score:number};
 function findEvidence(source:string,question:string):Evidence[]{
  const stop=new Set(["what","when","where","which","who","whom","whose","this","that","with","from","into","about","does","have","been","were","will","would","could","should","there","their","they","them","your","yours","how","why","the","and","for","are","was","has","had","not","but","can","its","you","our","use","used","using","than","then","also","some","any","all","much","many","more","most","such"]);
- const tokenize=(value:string)=>value.toLowerCase().normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").match(/[\\p{L}\\p{N}]{2,}/gu)??[];
+ const tokenize=(value:string)=>value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").match(/[\p{L}\p{N}]{2,}/gu)??[];
  const terms=[...new Set(tokenize(question).filter(term=>term.length>2&&!stop.has(term)))];
  if(!terms.length)return [];
  const documents:{source:string;page:string;excerpt:string;tokens:string[];frequencies:Map<string,number>}[]=[];
- const sources=source.split(/(?=^SOURCE:\\s*.+$)/im);
+ const sources=source.split(/(?=^SOURCE:\s*.+$)/im);
  for(const sourceBlock of sources){
-  const sourceName=sourceBlock.match(/^SOURCE:\\s*(.+)$/im)?.[1]?.trim()||"Notebook";
-  const pageBlocks=sourceBlock.split(/(?=^PAGE\\s+\\d+\\s*$)/im);
+  const sourceName=sourceBlock.match(/^SOURCE:\s*(.+)$/im)?.[1]?.trim()||"Notebook";
+  const pageBlocks=sourceBlock.split(/(?=^PAGE\s+\d+\s*$)/im);
   for(const block of pageBlocks){
-   const pageMatch=block.match(/^PAGE\\s+(\\d+)/im);const page=pageMatch?"Page "+pageMatch[1]:"Source text";
-   const cleaned=block.replace(/^SOURCE:\\s*.+$/im,"").replace(/^PAGE\\s+\\d+\\s*$/im,"");
-   const sentences=cleaned.split(/(?<=[.!?])\\s+|\\n{2,}/).map(x=>x.replace(/\\s+/g," ").trim()).filter(x=>x.length>=25);
+   const pageMatch=block.match(/^PAGE\s+(\d+)/im);const page=pageMatch?"Page "+pageMatch[1]:"Source text";
+   const cleaned=block.replace(/^SOURCE:\s*.+$/im,"").replace(/^PAGE\s+\d+\s*$/im,"");
+   const sentences=cleaned.split(/(?<=[.!?])\s+|\n{2,}/).map(x=>x.replace(/\s+/g," ").trim()).filter(x=>x.length>=25);
    let chunk="";
    const push=(excerpt:string)=>{const tokens=tokenize(excerpt);if(!tokens.length)return;const frequencies=new Map<string,number>();for(const token of tokens)frequencies.set(token,(frequencies.get(token)??0)+1);documents.push({source:sourceName,page,excerpt:excerpt.slice(0,720),tokens,frequencies})};
    for(const sentence of sentences){
@@ -103,7 +103,7 @@ function findEvidence(source:string,question:string):Evidence[]{
  const documentFrequency=new Map<string,number>();
  for(const doc of documents)for(const term of new Set(doc.tokens))documentFrequency.set(term,(documentFrequency.get(term)??0)+1);
  const averageLength=documents.reduce((sum,doc)=>sum+doc.tokens.length,0)/total||1;
- const exactPhrase=question.toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu," ").trim();
+ const exactPhrase=question.toLowerCase().replace(/[^\p{L}\p{N}]+/gu," ").trim();
  const ranked=documents.map(doc=>{
   const length=doc.tokens.length;let score=0;let matched=0;
   for(const term of terms){
@@ -114,7 +114,7 @@ function findEvidence(source:string,question:string):Evidence[]{
    score+=inverse*(tf*(k1+1))/(tf+k1*(1-b+b*length/averageLength));
   }
   if(!matched)return null;
-  if(exactPhrase.length>5&&doc.excerpt.toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu," ").includes(exactPhrase))score+=2.2;
+  if(exactPhrase.length>5&&doc.excerpt.toLowerCase().replace(/[^\p{L}\p{N}]+/gu," ").includes(exactPhrase))score+=2.2;
   const coverage=matched/terms.length;
   score+=coverage*0.35;
   return {...doc,score,normalizedScore:score/(score+2.5)}
@@ -321,14 +321,14 @@ async function downloadNotebookBackup(){
   for(const item of audio.slice(0,30)){
    const stored=await getStudyAudio(item.id);if(!stored)continue;
    total+=stored.blob.size;if(total>12*1024*1024){setNotice("This notebook's audio is too large for one backup. Download individual recordings or remove some before exporting.");return}
-   const safeName=item.name.replace(/[\\/:*?"<>|]/g,"_").slice(0,100);
+   const safeName=item.name.replace(/[^\w .-]/g,"_").slice(0,100);
    const path="audio/"+item.id+"_"+safeName;
    zip.file(path,stored.blob);
    audioFiles.push({...item,path});
   }
   zip.file("notebook.ace.json",JSON.stringify({format:"ace-study-notebook",version:2,exportedAt:new Date().toISOString(),notebook,audioFiles},null,2));
   const blob=await zip.generateAsync({type:"blob",compression:"DEFLATE",compressionOptions:{level:6}});
-  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=(notebook.title.replace(/[^\\w\\- ]/g,"").slice(0,60)||"ace-notebook")+".ace.zip";a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=(notebook.title.replace(/[^\w\- ]/g,"").slice(0,60)||"ace-notebook")+".ace.zip";a.click();setTimeout(()=>URL.revokeObjectURL(url),1500);
   setNotice("Complete notebook backup created, including "+audioFiles.length+" audio note(s). Keep the .ace.zip file somewhere safe.");
  }catch(error){setNotice("Could not create the full notebook backup. "+(error instanceof Error?error.message:""))}
 }
@@ -353,11 +353,11 @@ async function importApprovedResource(id:string){
   const pages:string[]=[];
   for(let pageNo=1;pageNo<=pdf.numPages;pageNo++){
    const page=await pdf.getPage(pageNo);const content=await page.getTextContent();
-   const pageText=content.items.map(item=>item.str+(item.hasEOL?"\\n":" ")).join("").replace(/[ \\t]+\\n/g,"\\n").trim();
-   if(pageText)pages.push("PAGE "+pageNo+"\\n"+pageText);
-   if(pages.join("\\n\\n").length>1_900_000){await pdf.destroy();setNotice("This document has too much text for one notebook. Split it into chapters.");return}
+   const pageText=content.items.map(item=>item.str+(item.hasEOL?"\n":" ")).join("").replace(/[ \t]+\n/g,"\n").trim();
+   if(pageText)pages.push("PAGE "+pageNo+"\n"+pageText);
+   if(pages.join("\n\n").length>1_900_000){await pdf.destroy();setNotice("This document has too much text for one notebook. Split it into chapters.");return}
   }
-  await pdf.destroy();const extracted=pages.join("\\n\\n");
+  await pdf.destroy();const extracted=pages.join("\n\n");
   if(extracted.trim().length<80){setNotice("This PDF has little selectable text. It may be scanned; OCR is not currently enabled.");return}
   setSelected("");setMode("read");setTitle(data.title);setCourseCode(data.course_code??"");setTagInput([data.course_name,data.kind,"Ace library"].filter(Boolean).join(", "));setSource(extracted);setSourceFiles([{id:crypto.randomUUID(),name:data.title+".pdf",format:"PDF · Ace library",characters:extracted.length,pages:pdf.numPages,addedAt:Date.now()}]);setCreate(true);
   setNotice("Imported from the Ace student library. Check the extracted pages, then create your private study notebook.");
