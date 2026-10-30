@@ -37,7 +37,7 @@ async function upload(e:React.FormEvent){
   const up=await supabase.storage.from("ace-submissions").upload(path,file,{contentType:"application/pdf",upsert:false});
   if(up.error){setNotice("Upload failed: "+up.error.message);return}
   setNotice("File uploaded. Saving the submission…");
-  const result=await supabase.from("ace_resources").insert({title:title.trim(),course_code:course.trim().replace(/\\s+/g,"").toUpperCase(),course_name:courseName.trim(),kind,storage_path:path,uploader_id:user.id,status:"pending"}).select("id").single();
+  const result=await supabase.from("ace_resources").insert({title:title.trim(),course_code:course.trim().replace(/\s+/g,"").toUpperCase(),course_name:courseName.trim(),kind,storage_path:path,uploader_id:user.id,status:"pending"}).select("id").single();
   if(result.error){const cleanup=await supabase.storage.from("ace-submissions").remove([path]);setNotice("The file uploaded, but the submission record was rejected: "+result.error.message+(cleanup.error?" The unused file also needs cleanup.":""));return}
   setNotice("Submitted successfully. It is now in the review queue; it will appear in the library after approval.");
   setTitle("");setFile(null);setCourse("");setCourseName("");setUploadVersion(v=>v+1);
