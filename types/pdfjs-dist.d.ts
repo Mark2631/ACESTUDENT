@@ -23,5 +23,6 @@ declare module "pdfjs-dist/build/pdf.mjs" {
     useSystemFonts?: boolean;
   }): {
     promise: Promise<PDFDocumentProxy>;
+    destroy(): Promise<void>;
   };
 }
