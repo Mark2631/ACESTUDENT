@@ -2,7 +2,7 @@
   "id": "/",
   "name": "Ace Student",
   "short_name": "Ace Student",
-  "description": "Learn. Practice. Excel.",
+  "description": "Your private study workspace for notes, revision and learning with peers.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
