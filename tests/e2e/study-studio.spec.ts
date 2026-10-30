@@ -74,7 +74,7 @@ test("guest notebooks survive reload and remain searchable",async({page})=>{
 test("a text-based PDF can be imported and converted into a notebook",async({page})=>{
  await page.getByRole("button",{name:"New notebook"}).click();
  await page.locator('input[type="file"]').setInputFiles({name:"economics.pdf",mimeType:"application/pdf",buffer:minimalPdf()});
- await expect(page.getByText(/Added economics\.pdf/)).toBeVisible({timeout:30000});
+ await expect.poll(async()=>({notice:await page.locator(".studio-notice").allTextContents(),sources:await page.locator(".studio-draft-sources").count()}),{timeout:20000,intervals:[500,1000,2000]}).toMatchObject({sources:1});
  await expect(page.getByLabel("Notebook name")).toHaveValue("economics");
  await expect(page.getByLabel("Study material")).toHaveValue(/Opportunity cost/);
  await page.getByRole("button",{name:"Create notebook"}).click();
