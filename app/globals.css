@@ -319,3 +319,7 @@ html{font-size:14px}body,button,input,textarea,select{font-family:'DM Sans',syst
 
 .course-toolkit{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:17px 19px;margin:18px 0 24px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(110deg,var(--surface),var(--surface2))}.course-toolkit>div:first-child{min-width:0}.course-toolkit h2{font-size:15px;margin:4px 0}.course-toolkit p{font-size:11px;margin:0}.course-toolkit-actions{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}.course-toolkit-actions .btn{font-size:11px;white-space:nowrap;min-height:38px}
 @media(max-width:650px){.course-toolkit{align-items:stretch;flex-direction:column;gap:12px;padding:15px}.course-toolkit-actions{justify-content:stretch}.course-toolkit-actions .btn{flex:1;justify-content:center}}
+
+
+.studio-course-context{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:5px 0 18px;padding:16px 18px;border:1px solid #355d78;border-radius:12px;background:linear-gradient(110deg,#152c3d,#152739 65%,#1c2b3a)}.studio-course-context h2{font-size:15px;color:#e9f4ff;margin:4px 0}.studio-course-context p{font-size:10px;color:#a4bbcd;margin:0;line-height:1.5}.studio-course-context .studio-action{white-space:nowrap;min-height:36px;font-size:10px;padding:9px 12px}
+@media(max-width:620px){.studio-course-context{align-items:flex-start;flex-direction:column;padding:14px}.studio-course-context .studio-action{width:100%;justify-content:center}}
