@@ -3,7 +3,6 @@ test("visitors see actual learning before an account wall",async({page})=>{
  await page.goto("/");
  await expect(page.getByRole("heading",{name:"Your learning, organized."})).toBeVisible();
  await expect(page.getByRole("heading",{name:"Explore courses"})).toBeVisible();
- await expect(page.getByRole("button",{name:/View all|Show fewer/}).first()).toHaveCount(1).catch(()=>{});
  await page.getByRole("button",{name:"Library",exact:true}).first().click();
  await expect(page).toHaveURL(/\/library$/);
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
