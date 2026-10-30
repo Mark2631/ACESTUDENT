@@ -73,6 +73,12 @@ export function scheduleFSRSReview(
  const memory=toPersisted(result.card);
  return {memory,dueAt:result.card.due.getTime(),scheduledDays:result.card.scheduled_days,difficulty:result.card.difficulty,repetitions:result.card.reps,lapses:result.card.lapses};
 }
+export type FSRSSchedulePreview={again:number;hard:number;good:number;easy:number};
+export function getFSRSSchedulePreview(saved:PersistedFSRSCard|undefined,legacy:LegacyReviewState,now:number=Date.now()):FSRSSchedulePreview{
+ const card:CardInput=saved&&isPersistedFSRSCard(saved)?toInput(saved):legacy.reviews>0?fromLegacy(legacy,now):createEmptyCard(new Date(now));
+ const preview=scheduler.repeat(card,new Date(now));
+ return {again:preview[Rating.Again].card.due.getTime(),hard:preview[Rating.Hard].card.due.getTime(),good:preview[Rating.Good].card.due.getTime(),easy:preview[Rating.Easy].card.due.getTime()};
+}
 export function getRetrievability(memory:PersistedFSRSCard|undefined,now:number=Date.now()):number|null{
  if(!memory||!isPersistedFSRSCard(memory)||!memory.last_review)return null;
  const elapsed=Math.max(0,(now-Date.parse(memory.last_review))/DAY);
