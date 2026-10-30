@@ -332,7 +332,7 @@ test("complete Ace backup carries saved audio recaps into a fresh notebook",asyn
  await page.getByRole("button",{name:"Stop recording"}).click();
  await expect(page.getByText(/SAVED IN THIS NOTEBOOK/)).toBeVisible();
  const downloadPromise=page.waitForEvent("download");
- await page.getByRole("button",{name:"Backup"}).click();
+ await page.getByRole("button",{name:"Full backup"}).click();
  const download=await downloadPromise;
  expect(download.suggestedFilename()).toMatch(/Portable lecture notes\.ace\.zip$/);
  const stream=await download.createReadStream();
