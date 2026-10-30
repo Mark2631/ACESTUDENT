@@ -308,3 +308,43 @@ test("audio recaps persist in the notebook after reload",async({page})=>{
  await expect(page.getByText(/SAVED IN THIS NOTEBOOK/)).toBeVisible();
  await expect(page.getByText(/Audio revision · Recap/)).toBeVisible();
 });
+
+
+test("complete Ace backup carries saved audio recaps into a fresh notebook",async({page})=>{
+ await page.addInitScript(()=>{
+  const stream=new MediaStream();
+  Object.defineProperty(navigator.mediaDevices,"getUserMedia",{configurable:true,value:async()=>stream});
+  class FakeRecorder{
+   mimeType="audio/webm";state="inactive";ondataavailable:((event:BlobEvent)=>void)|null=null;onstop:(()=>void)|null=null;
+   static isTypeSupported(){return true}
+   constructor(_stream:MediaStream,_options?:MediaRecorderOptions){}
+   start(){this.state="recording"}
+   stop(){this.state="inactive";const blob=new Blob(["portable audio note"],{type:this.mimeType});queueMicrotask(()=>{this.ondataavailable?.({data:blob} as BlobEvent);this.onstop?.()})}
+  }
+  Object.defineProperty(window,"MediaRecorder",{configurable:true,value:FakeRecorder});
+ });
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Portable lecture notes");
+ await page.getByLabel("Study material").fill("Delegation: Assigning responsibility and authority to another person.");
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await page.getByRole("tab",{name:"Listen"}).click();
+ await page.getByRole("button",{name:"Record a recap"}).click();
+ await page.getByRole("button",{name:"Stop recording"}).click();
+ await expect(page.getByText(/SAVED IN THIS NOTEBOOK/)).toBeVisible();
+ const downloadPromise=page.waitForEvent("download");
+ await page.getByRole("button",{name:"Backup"}).click();
+ const download=await downloadPromise;
+ expect(download.suggestedFilename()).toMatch(/Portable lecture notes\.ace\.zip$/);
+ const stream=await download.createReadStream();
+ if(!stream)throw new Error("Backup download stream unavailable");
+ const chunks:Buffer[]=[];
+ for await(const chunk of stream)chunks.push(Buffer.from(chunk));
+ const archive=Buffer.concat(chunks);
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.locator('input[type="file"]').setInputFiles({name:"Portable lecture notes.ace.zip",mimeType:"application/zip",buffer:archive});
+ await expect(page.getByRole("heading",{name:"Portable lecture notes"})).toBeVisible();
+ await expect(page.getByText(/Complete notebook restored with 1 audio note/)).toBeVisible();
+ await page.getByRole("tab",{name:"Listen"}).click();
+ await expect(page.getByText(/SAVED IN THIS NOTEBOOK/)).toBeVisible();
+ await expect(page.getByText(/Portable lecture notes · Recap/)).toBeVisible();
+});
