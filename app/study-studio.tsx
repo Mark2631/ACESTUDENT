@@ -2,9 +2,10 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import {supabase} from "@/lib/supabase";
 import {deleteStudyAudio,formatAudioDuration,getStudyAudio,listStudyAudio,saveStudyAudio,type AudioNoteMeta} from "./study-studio-audio";
+import {isPersistedFSRSCard,scheduleFSRSReview,type PersistedFSRSCard} from "./study-studio-fsrs";
 import type {User} from "@supabase/supabase-js";
 import {ArrowLeft,ArrowRight,BookOpen,Bold,Brain,CalendarDays,CheckCircle2,ChevronLeft,ChevronRight,Clock3,Download,FileText,GitBranch,Heading1,Headphones,Layers,List,Mic,MicOff,Pause,Play,Plus,Quote,RotateCcw,Save,Search,Shuffle,Target,Trash2,Users,Volume2,VolumeX,X} from "lucide-react";
-type Card={id:string;front:string;back:string;next:number;interval:number;ease:number;reviews:number;lastGrade?:number;lastReviewed?:number;lapses?:number};
+type Card={id:string;front:string;back:string;next:number;interval:number;ease:number;reviews:number;lastGrade?:number;lastReviewed?:number;lapses?:number;memory?:PersistedFSRSCard};
 type Highlight={id:string;quote:string;note:string;page:string;created:number};
 type StudySource={id:string;name:string;format:string;characters:number;pages:number|null;addedAt:number};
 type Notebook={id:string;title:string;courseCode?:string|null;subjectSlug?:string|null;tags?:string[];source:string;sources?:StudySource[];cards:Card[];highlights?:Highlight[];created:number;updated:number;minutes:number;attempts:number;correct:number};
@@ -19,7 +20,7 @@ function isHighlightRecord(value:unknown):value is Highlight{if(!value||typeof v
 function isCardRecord(value:unknown):value is Card{
  if(!value||typeof value!=="object")return false;
  const card=value as Partial<Card>;
- return typeof card.id==="string"&&card.id.length<=80&&typeof card.front==="string"&&card.front.length<=2000&&typeof card.back==="string"&&card.back.length<=5000&&Number.isFinite(card.next)&&Number.isFinite(card.interval)&&Number.isFinite(card.ease)&&typeof card.reviews==="number"&&Number.isInteger(card.reviews)&&card.reviews>=0&&(card.lastGrade===undefined||(typeof card.lastGrade==="number"&&Number.isInteger(card.lastGrade)&&card.lastGrade>=0&&card.lastGrade<=3))&&(card.lastReviewed===undefined||(typeof card.lastReviewed==="number"&&Number.isFinite(card.lastReviewed)))&&(card.lapses===undefined||(typeof card.lapses==="number"&&Number.isInteger(card.lapses)&&card.lapses>=0));
+ return typeof card.id==="string"&&card.id.length<=80&&typeof card.front==="string"&&card.front.length<=2000&&typeof card.back==="string"&&card.back.length<=5000&&Number.isFinite(card.next)&&Number.isFinite(card.interval)&&Number.isFinite(card.ease)&&typeof card.reviews==="number"&&Number.isInteger(card.reviews)&&card.reviews>=0&&(card.lastGrade===undefined||(typeof card.lastGrade==="number"&&Number.isInteger(card.lastGrade)&&card.lastGrade>=0&&card.lastGrade<=3))&&(card.lastReviewed===undefined||(typeof card.lastReviewed==="number"&&Number.isFinite(card.lastReviewed)))&&(card.lapses===undefined||(typeof card.lapses==="number"&&Number.isInteger(card.lapses)&&card.lapses>=0))&&(card.memory===undefined||isPersistedFSRSCard(card.memory));
 }
 
 type Mode="read"|"guide"|"ask"|"map"|"cards"|"quiz"|"listen";
@@ -228,7 +229,7 @@ const quizOptionLabels=quizFormat==="truefalse"?["True","False"]:options;
 function persistFocusSegment(){const start=focusStartedRef.current;if(!start)return;focusStartedRef.current=null;const seconds=Math.min(21600,Math.max(0,Math.floor((Date.now()-start)/1000)));if(seconds<20||!notebook)return;const startedAt=new Date(start).toISOString();const endedAt=new Date().toISOString();const existing=notebooksRef.current.find(n=>n.id===notebook.id);if(!existing)return;const updated=notebooksRef.current.map(n=>n.id===notebook.id?{...n,minutes:n.minutes+Math.max(1,Math.round(seconds/60)),updated:Date.now()}:n);notebooksRef.current=updated;try{localStorage.setItem(storageKey,JSON.stringify(updated))}catch{}setNotebooks(updated);const localSession:StudySessionRow={started_at:startedAt,duration_seconds:seconds,mode:"focus"};setWeeklySessions(old=>[...old.filter(row=>row.started_at!==startedAt),localSession].sort((a,b)=>a.started_at.localeCompare(b.started_at)).slice(-400));try{const history=JSON.parse(localStorage.getItem(sessionStorageKey)||"[]");const rows=Array.isArray(history)?history.filter((row):row is StudySessionRow=>!!row&&typeof row.started_at==="string"&&Number.isFinite(row.duration_seconds)&&typeof row.mode==="string"):[];rows.push(localSession);localStorage.setItem(sessionStorageKey,JSON.stringify(rows.slice(-400)))}catch{}if(user&&supabase)void supabase.from("ace_individual_study_sessions").insert({user_id:user.id,notebook_id:notebook.id,mode:"focus",duration_seconds:seconds,question_count:0,correct_count:0,started_at:startedAt,ended_at:endedAt}).then(({error})=>{if(error)setNotice("Focus time was saved on this device, but its session record could not sync.")})}
 function toggleFocus(){if(running){persistFocusSegment();setRunning(false);return}if(!notebook){setNotice("Open a notebook before starting a tracked focus session.");return}focusStartedRef.current=Date.now();setRunning(true)}
 function resetFocus(){if(running){persistFocusSegment();setRunning(false)}setSeconds(25*60)}
-function recordInterleavedResult(card:MixedCard,correct:boolean){patchNotebook(card.notebookId,current=>({...current,attempts:current.attempts+1,correct:current.correct+(correct?1:0),updated:Date.now()}))}
+function recordInterleavedResult(card:MixedCard,correct:boolean){applyCardGrade(card.notebookId,card,correct?2:0)}
 function runSourceSearch(e:React.FormEvent){e.preventDefault();if(!notebook)return;setAskResults(findEvidence(notebook.source,askQuery));setAskSearched(true)}
 function importGuestNotebooks(){if(!user){setNotice("Sign in before importing guest notebooks.");return}try{const raw=localStorage.getItem(STORAGE+":guest");if(!raw){setGuestImportAvailable(false);setGuestImportCount(0);return}const parsed=JSON.parse(raw) as Notebook[];if(!Array.isArray(parsed)){setNotice("The guest notebook data could not be read.");return}const merged=new Map(notebooks.map(n=>[n.id,n]));let imported=0;for(const n of parsed){const safe=sanitizeNotebook(n);if(safe&&!merged.has(safe.id)){merged.set(safe.id,safe);imported++}}setNotebooks([...merged.values()].sort((a,b)=>b.updated-a.updated).slice(0,80));setClaimGuest(true);setGuestImportAvailable(false);setGuestImportCount(0);setNotice(imported+" guest notebooks added to your private account. They will be removed from this device after cloud sync completes.")}catch{setNotice("Unable to import guest notebooks. Export a local backup first.")}}
 function deleteNotebook(id:string){if(recordingNotebookRef.current?.id===id)stopRecording();if(selected===id){for(const item of savedAudioNotes)void deleteStudyAudio(item.id).catch(()=>{});setSavedAudioNotes([]);setRecordedAudio(old=>{if(old)URL.revokeObjectURL(old);return null})}const remaining=notebooksRef.current.filter(n=>n.id!==id);notebooksRef.current=remaining;setNotebooks(remaining);if(user)setDeletedIds(old=>[...new Set([...old,id])].slice(-200));setSelected("");setNotice("Notebook deleted from this device and queued for cloud deletion.");}
@@ -272,20 +273,14 @@ function removeNotebookSource(item:StudySource){
  setSource(result.source);setNotice(item.name+" removed. Remaining cards and their review history were preserved.");
 }
 function applyCardGrade(notebookId:string,prev:Card,grade:0|1|2|3){
- const now=Date.now(),reviews=prev.reviews??0;
- const quality=grade===0?0:grade===1?3:grade===2?4:5;
- const ease=Math.max(1.3,prev.ease+(0.1-(5-quality)*(0.08+(5-quality)*0.02)));
- let interval:number,next:number,lapses=prev.lapses??0;
- if(grade===0){interval=0;next=now+5*60*1000;lapses+=1}
- else if(grade===1){interval=reviews===0?1:Math.max(1,Math.round((prev.interval||1)*1.2));next=now+interval*24*60*60*1000}
- else if(grade===2){interval=reviews===0?1:reviews===1?6:Math.max(1,Math.round((prev.interval||1)*prev.ease));next=now+interval*24*60*60*1000}
- else{interval=reviews===0?4:reviews===1?7:Math.max(1,Math.round((prev.interval||1)*prev.ease*1.3));next=now+interval*24*60*60*1000}
- patchNotebook(notebookId,n=>({...n,updated:now,attempts:n.attempts+1,correct:n.correct+(grade?1:0),cards:n.cards.map(c=>c.id===prev.id?{...c,next,interval,ease,lapses,lastReviewed:now,reviews:reviews+1,lastGrade:grade}:c)}));
- setFlipped(false);return next
+ const now=Date.now();
+ const scheduled=scheduleFSRSReview(prev.memory,{next:prev.next,interval:prev.interval,ease:prev.ease,reviews:prev.reviews,lapses:prev.lapses,lastReviewed:prev.lastReviewed},grade,now);
+ patchNotebook(notebookId,n=>({...n,updated:now,attempts:n.attempts+1,correct:n.correct+(grade?1:0),cards:n.cards.map(c=>c.id===prev.id?{...c,next:scheduled.dueAt,interval:scheduled.scheduledDays,ease:scheduled.difficulty,reviews:scheduled.repetitions,lapses:scheduled.lapses,lastReviewed:now,lastGrade:grade,memory:scheduled.memory}:c)}));
+ setFlipped(false);return scheduled.dueAt
 }
 function rateCard(grade:0|1|2|3){if(!notebook||!card)return;const next=applyCardGrade(notebook.id,card,grade);setCardIndex(i=>Math.max(0,i-1));setNotice(grade===0?"Added to your retry queue (5 min).":"Review scheduled for "+formatDay(next)+".")}
 function rateGlobalCard(grade:0|1|2|3){const nextCard=reviewQueue[0];if(!nextCard)return;const next=applyCardGrade(nextCard.notebookId,nextCard,grade);setReviewedInSession(n=>n+1);setNotice(grade===0?"You can retry this card again in five minutes.":"Review scheduled for "+formatDay(next)+".")}
-function recordQuizResult(correct:boolean,selectedIndex?:number){if(!notebook||!currentQuiz)return;setQuizCorrect(correct);setAnswered(selectedIndex??(correct?1:0));patchNotebook(notebook.id,n=>({...n,attempts:n.attempts+1,correct:n.correct+(correct?1:0),updated:Date.now()}))}
+function recordQuizResult(correct:boolean,selectedIndex?:number){if(!notebook||!currentQuiz)return;setQuizCorrect(correct);setAnswered(selectedIndex??(correct?1:0));applyCardGrade(notebook.id,currentQuiz,correct?2:0)}
 function pickAnswer(index:number){if(answered!==null||!notebook||!currentQuiz)return;const correct=quizFormat==="truefalse"?(index===0)===(trueFalseClaim?.isTrue??false):options[index]===currentQuiz.back;recordQuizResult(correct,index)}
 function nextQuizQuestion(){setQuizIndex(i=>(i+1)%quizCards.length);setAnswered(null);setQuizCorrect(null);setWrittenAnswer("");setWrittenRevealed(false)}
 
