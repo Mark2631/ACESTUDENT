@@ -279,3 +279,32 @@ test("weekly study goal persists on the device",async({page})=>{
  await page.reload();
  await expect(page.getByLabel("Weekly study goal")).toHaveValue("240");
 });
+
+
+test("audio recaps persist in the notebook after reload",async({page})=>{
+ await page.addInitScript(()=>{
+  const stream=new MediaStream();
+  Object.defineProperty(navigator.mediaDevices,"getUserMedia",{configurable:true,value:async()=>stream});
+  class FakeRecorder{
+   mimeType="audio/webm";state="inactive";ondataavailable:((event:BlobEvent)=>void)|null=null;onstop:(()=>void)|null=null;
+   static isTypeSupported(){return true}
+   constructor(_stream:MediaStream,_options?:MediaRecorderOptions){}
+   start(){this.state="recording"}
+   stop(){this.state="inactive";const blob=new Blob(["fake audio data"],{type:this.mimeType});queueMicrotask(()=>{this.ondataavailable?.({data:blob} as BlobEvent);this.onstop?.()})}
+  }
+  Object.defineProperty(window,"MediaRecorder",{configurable:true,value:FakeRecorder});
+ });
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Audio revision");
+ await page.getByLabel("Study material").fill("Revision: Revisiting material to improve retention.");
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await page.getByRole("tab",{name:"Listen"}).click();
+ await page.getByRole("button",{name:"Record a recap"}).click();
+ await page.getByRole("button",{name:"Stop recording"}).click();
+ await expect(page.getByText(/SAVED IN THIS NOTEBOOK/)).toBeVisible();
+ await page.reload();
+ await page.getByRole("button",{name:"Audio revision"}).click();
+ await page.getByRole("tab",{name:"Listen"}).click();
+ await expect(page.getByText(/SAVED IN THIS NOTEBOOK/)).toBeVisible();
+ await expect(page.getByText(/Audio revision · Recap/)).toBeVisible();
+});
