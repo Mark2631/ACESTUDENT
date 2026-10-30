@@ -4,10 +4,11 @@ import {CalendarDays,Check,Clock3,Plus,RefreshCw,Trash2} from "lucide-react";
 import {supabase} from "@/lib/supabase";
 import type {User} from "@supabase/supabase-js";
 type Task={id:string;user_id:string;title:string;course_code:string;due_at:string|null;completed_at:string|null;created_at:string};
-export default function StudyPlanner({user}:{user:User}){
- const[tasks,setTasks]=useState<Task[]>([]),[title,setTitle]=useState(""),[course,setCourse]=useState(""),[due,setDue]=useState(""),[busy,setBusy]=useState(false),[issue,setIssue]=useState(""),[loading,setLoading]=useState(true),[view,setView]=useState<"open"|"completed"|"all">("open");
+export default function StudyPlanner({user,initialCourseCode=""}:{user:User;initialCourseCode?:string}){
+ const[tasks,setTasks]=useState<Task[]>([]),[title,setTitle]=useState(""),[course,setCourse]=useState(initialCourseCode),[due,setDue]=useState(""),[busy,setBusy]=useState(false),[issue,setIssue]=useState(""),[loading,setLoading]=useState(true),[view,setView]=useState<"open"|"completed"|"all">("open");
  async function refresh(){if(!supabase)return;const {data,error}=await supabase.from("ace_study_tasks").select("*").eq("user_id",user.id).order("created_at",{ascending:false}).limit(200);setLoading(false);if(error)setIssue("Unable to load your study planner: "+error.message);else setTasks(data??[])}
  useEffect(()=>{void refresh()},[user.id]);
+ useEffect(()=>{if(initialCourseCode)setCourse(initialCourseCode)},[initialCourseCode]);
  async function add(e:React.FormEvent){e.preventDefault();if(!supabase||busy||title.trim().length<3)return;setBusy(true);setIssue("");const {data,error}=await supabase.from("ace_study_tasks").insert({user_id:user.id,title:title.trim(),course_code:course.trim().toUpperCase(),due_at:due?new Date(due).toISOString():null}).select("*").single();if(error)setIssue("Could not save the task: "+error.message);else if(data){setTasks(x=>[data,...x]);setTitle("");setCourse("");setDue("")}setBusy(false)}
  async function complete(task:Task){if(!supabase)return;setBusy(true);setIssue("");const {data,error}=await supabase.from("ace_study_tasks").update({completed_at:task.completed_at?null:new Date().toISOString()}).eq("id",task.id).eq("user_id",user.id).select("*").single();if(error)setIssue(error.message);else if(data)setTasks(x=>x.map(t=>t.id===task.id?data:t));setBusy(false)}
  async function remove(task:Task){if(!supabase||!window.confirm("Delete this study task?"))return;setBusy(true);const{error}=await supabase.from("ace_study_tasks").delete().eq("id",task.id).eq("user_id",user.id);if(error)setIssue(error.message);else setTasks(x=>x.filter(t=>t.id!==task.id));setBusy(false)}
