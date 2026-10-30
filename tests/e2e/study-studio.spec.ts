@@ -369,3 +369,28 @@ test("students can remove one source without deleting the other source",async({p
  await expect(page.getByText("0 SOURCES IN THIS NOTEBOOK")).toHaveCount(0);
  await expect(page.getByRole("textbox",{name:"Notebook material"})).not.toContainText("Market equilibrium");
 });
+
+
+test("new recall cards use FSRS memory states and persist the next review forecast",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("FSRS scheduling");
+ await page.getByLabel("Study material").fill("Retrieval practice: Recalling information from memory strengthens later access.");
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await page.getByRole("tab",{name:"Flashcards"}).click();
+ await page.getByRole("button",{name:"Reveal answer"}).click();
+ await expect(page.getByText(/Rate your recall/)).toBeVisible();
+ await expect(page.getByRole("button",{name:/Good/})).toBeVisible();
+ await page.getByRole("button",{name:/Good/}).click();
+ const saved=await page.evaluate(()=>{
+  const raw=localStorage.getItem("ace-studio-notebooks-v1:guest");
+  return raw?JSON.parse(raw):[];
+ });
+ const card=saved[0]?.cards?.[0];
+ expect(card?.memory).toBeTruthy();
+ expect(card.memory.stability).toBeGreaterThan(0);
+ expect(card.memory.difficulty).toBeGreaterThan(0);
+ expect(card.memory.reps).toBe(1);
+ expect(card.memory.last_review).toBeTruthy();
+ expect(Date.parse(card.memory.due)).toBeGreaterThan(Date.now());
+ expect(card.next).toBe(Date.parse(card.memory.due));
+});
