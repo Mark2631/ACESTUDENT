@@ -159,7 +159,8 @@ test("students can highlight source passages and keep private annotations",async
  await page.getByRole("button",{name:/Business Law notes/}).click();
  await expect(page.getByText(/Remember the limits and accountability/)).toBeVisible();
 });
-\ntest("multiple files become one source collection inside a notebook",async({page})=>{
+
+test("multiple files become one source collection inside a notebook",async({page})=>{
  await page.getByRole("button",{name:"New notebook"}).click();
  await page.locator('input[type="file"]').setInputFiles([
   {name:"economics-notes.txt",mimeType:"text/plain",buffer:Buffer.from("Opportunity cost: The value of the next best alternative given up.")},
@@ -186,7 +187,8 @@ test("a second source can be attached to an existing notebook",async({page})=>{
  await expect(page.getByText("1 SOURCES IN THIS NOTEBOOK")).toBeVisible();
  await expect(page.getByRole("textbox",{name:"Notebook material"})).toContainText("Public expenditure");
 });
-\ntest("focus timer requires a notebook",async({page})=>{
+
+test("focus timer requires a notebook",async({page})=>{
  await page.getByRole("button",{name:"Focus timer"}).click();
  await expect(page.getByText("25:00")).toBeVisible();
  await page.getByRole("button",{name:"Start"}).click();
