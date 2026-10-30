@@ -87,7 +87,7 @@ test("daily review combines due cards from every notebook",async({page})=>{
  await page.getByLabel("Study material").fill([
   "Mean: The arithmetic average of a dataset.",
   "Median: The middle value when observations are ordered."
- ].join("\\n"));
+ ].join(String.fromCharCode(10)));
  await page.getByRole("button",{name:"Create notebook"}).click();
  await page.getByRole("button",{name:"All notebooks"}).click();
  await expect(page.getByText("2",{exact:true})).toBeVisible();
