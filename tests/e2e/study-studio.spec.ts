@@ -159,6 +159,33 @@ test("students can highlight source passages and keep private annotations",async
  await page.getByRole("button",{name:/Business Law notes/}).click();
  await expect(page.getByText(/Remember the limits and accountability/)).toBeVisible();
 });
+\ntest("multiple files become one source collection inside a notebook",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.locator('input[type="file"]').setInputFiles([
+  {name:"economics-notes.txt",mimeType:"text/plain",buffer:Buffer.from("Opportunity cost: The value of the next best alternative given up.")},
+  {name:"market-structure.md",mimeType:"text/markdown",buffer:Buffer.from("Perfect competition: A market structure with many buyers and sellers.")},
+ ]);
+ await expect(page.getByText(/Added market-structure.md/)).toBeVisible();
+ await expect(page.getByLabel("Notebook name")).toHaveValue("economics-notes");
+ await expect(page.getByLabel("Study material")).toContainText("Perfect competition");
+ await expect(page.getByLabel("Study material")).toContainText("Opportunity cost");
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await expect(page.getByRole("heading",{name:"economics-notes"})).toBeVisible();
+ await expect(page.getByText("2 SOURCES IN THIS NOTEBOOK")).toBeVisible();
+ await expect(page.getByText("market-structure.md")).toBeVisible();
+});
+
+test("a second source can be attached to an existing notebook",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Public policy");
+ await page.getByLabel("Study material").fill("Governance: The processes through which decisions are made and implemented.");
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await page.getByRole("button",{name:"Add source"}).click();
+ await page.locator('input[type="file"]').setInputFiles({name:"public-finance.txt",mimeType:"text/plain",buffer:Buffer.from("Public expenditure: Government spending on goods, services and transfers.")});
+ await expect(page.getByText(/Added public-finance.txt to Public policy/)).toBeVisible();
+ await expect(page.getByText("1 SOURCES IN THIS NOTEBOOK")).toBeVisible();
+ await expect(page.getByRole("textbox",{name:"Notebook material"})).toContainText("Public expenditure");
+});
 \ntest("focus timer requires a notebook",async({page})=>{
  await page.getByRole("button",{name:"Focus timer"}).click();
  await expect(page.getByText("25:00")).toBeVisible();
