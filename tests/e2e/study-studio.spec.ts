@@ -1,3 +1,4 @@
+import {readFile} from "node:fs/promises";
 import {test,expect} from "@playwright/test";
 import type {Buffer} from "node:buffer";
 import JSZip from "jszip";
@@ -130,7 +131,7 @@ test("Anki CSV export can be imported back into Ace without losing card text",as
  const downloadPath=await download.path();
  await page.getByRole("button",{name:"All notebooks"}).click();
  await page.getByRole("button",{name:"New notebook"}).click();
- await page.locator('input[type="file"]').setInputFiles(downloadPath!);
+ await page.locator('input[type="file"]').setInputFiles({name:download.suggestedFilename(),mimeType:"text/csv",buffer:await readFile(downloadPath!)});
  await expect(page.getByText(/Added Intro to Accounting-cards\.csv/)).toBeVisible();
  await expect(page.getByLabel("Study material")).toHaveValue(/Assets/);
  await page.getByRole("button",{name:"Create notebook"}).click();
@@ -277,10 +278,10 @@ test("deleting a guest notebook removes it from the local library",async({page})
 
 test("weekly study goal persists on the device",async({page})=>{
  await expect(page.getByRole("combobox",{name:"Weekly study goal"})).toHaveValue("180");
- await page.getByLabel("Weekly study goal").selectOption("240");
- await expect(page.getByLabel("Weekly study goal")).toHaveValue("240");
+ await page.getByRole("combobox",{name:"Weekly study goal"}).selectOption("240");
+ await expect(page.getByRole("combobox",{name:"Weekly study goal"})).toHaveValue("240");
  await page.reload();
- await expect(page.getByLabel("Weekly study goal")).toHaveValue("240");
+ await expect(page.getByRole("combobox",{name:"Weekly study goal"})).toHaveValue("240");
 });
 
 
@@ -437,7 +438,7 @@ test("source focus limits evidence search and returns to all sources",async({pag
  ]);
  await page.getByRole("button",{name:"Create notebook"}).click();
  await expect(page.getByLabel("Source selection")).toBeVisible();
- await page.getByLabel("opportunity-cost.txt").uncheck();
+ await page.locator(".studio-source-focus-chips label").filter({hasText:"opportunity-cost.txt"}).locator("input").uncheck();
  await expect(page.getByText("1 of 2 selected")).toBeVisible();
  await page.getByRole("tab",{name:"Find"}).click();
  await page.getByRole("textbox",{name:"Find in notes"}).fill("opportunity cost forgone alternative");
