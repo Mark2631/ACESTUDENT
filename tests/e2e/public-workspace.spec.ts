@@ -5,6 +5,8 @@ test("visitors see actual learning before an account wall",async({page})=>{
  await expect(page.getByRole("heading",{name:"Explore learning areas"})).toBeVisible();
  await expect(page.getByRole("button",{name:/Business & enterprise/})).toBeVisible();
  await expect(page.getByRole("button",{name:/Computing & technology/})).toBeVisible();
+ await page.getByRole("button",{name:/Business & enterprise/}).click();
+ await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
  await page.getByRole("button",{name:"Library",exact:true}).first().click();
  await expect(page).toHaveURL(/\/library$/);
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
