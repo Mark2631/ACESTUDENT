@@ -1,5 +1,5 @@
-const CACHE_NAME = "ace-student-static-v2";
-const PRECACHE = ["/offline.html", "/icon.svg", "/manifest.webmanifest", "/studio"];
+const CACHE_NAME = "ace-student-static-v3";
+const PRECACHE = ["/offline.html", "/icon.svg", "/manifest.webmanifest", "/studio", "/pdf.worker.mjs"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -48,7 +48,7 @@ self.addEventListener("fetch", (event) => {
 
   // Only immutable, hashed Next.js assets are cached. Auth, Supabase data,
   // user uploads, quiz attempts and personalised responses are never cached.
-  if (url.pathname.startsWith("/_next/static/")) {
+  if (url.pathname === "/pdf.worker.mjs" || url.pathname.startsWith("/_next/static/")) {
     event.respondWith(
       caches.match(request).then((cached) => cached || fetch(request).then((response) => {
         if (response.ok) {
