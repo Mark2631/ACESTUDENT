@@ -3,7 +3,7 @@ import {useEffect,useMemo,useRef,useState} from "react";
 import {supabase} from "@/lib/supabase";
 import type {User} from "@supabase/supabase-js";
 import {ArrowLeft,ArrowRight,BookOpen,Brain,CheckCircle2,ChevronLeft,ChevronRight,Clock3,Download,FileText,GitBranch,Headphones,Layers,Mic,MicOff,Pause,Play,Plus,RotateCcw,Save,Search,Target,Trash2,Users,Volume2,VolumeX,X} from "lucide-react";
-type Card={id:string;front:string;back:string;next:number;interval:number;ease:number;reviews:number;lastGrade?:number};
+type Card={id:string;front:string;back:string;next:number;interval:number;ease:number;reviews:number;lastGrade?:number;lastReviewed?:number;lapses?:number};
 type Highlight={id:string;quote:string;note:string;page:string;created:number};
 type StudySource={id:string;name:string;format:string;characters:number;pages:number|null;addedAt:number};
 type Notebook={id:string;title:string;courseCode?:string|null;subjectSlug?:string|null;tags?:string[];source:string;sources?:StudySource[];cards:Card[];highlights?:Highlight[];created:number;updated:number;minutes:number;attempts:number;correct:number};
@@ -18,7 +18,7 @@ function isHighlightRecord(value:unknown):value is Highlight{if(!value||typeof v
 function isCardRecord(value:unknown):value is Card{
  if(!value||typeof value!=="object")return false;
  const card=value as Partial<Card>;
- return typeof card.id==="string"&&card.id.length<=80&&typeof card.front==="string"&&card.front.length<=2000&&typeof card.back==="string"&&card.back.length<=5000&&Number.isFinite(card.next)&&Number.isFinite(card.interval)&&Number.isFinite(card.ease)&&typeof card.reviews==="number"&&Number.isInteger(card.reviews)&&card.reviews>=0&&(card.lastGrade===undefined||(typeof card.lastGrade==="number"&&Number.isInteger(card.lastGrade)&&card.lastGrade>=0&&card.lastGrade<=3));
+ return typeof card.id==="string"&&card.id.length<=80&&typeof card.front==="string"&&card.front.length<=2000&&typeof card.back==="string"&&card.back.length<=5000&&Number.isFinite(card.next)&&Number.isFinite(card.interval)&&Number.isFinite(card.ease)&&typeof card.reviews==="number"&&Number.isInteger(card.reviews)&&card.reviews>=0&&(card.lastGrade===undefined||(typeof card.lastGrade==="number"&&Number.isInteger(card.lastGrade)&&card.lastGrade>=0&&card.lastGrade<=3))&&(card.lastReviewed===undefined||(typeof card.lastReviewed==="number"&&Number.isFinite(card.lastReviewed)))&&(card.lapses===undefined||(typeof card.lapses==="number"&&Number.isInteger(card.lapses)&&card.lapses>=0));
 }
 
 type Mode="read"|"guide"|"ask"|"map"|"cards"|"quiz"|"listen";
@@ -196,7 +196,18 @@ function saveHighlight(){if(!notebook||!selection)return;const current=notebook.
 function removeHighlight(id:string){if(!notebook)return;patchNotebook(notebook.id,n=>({...n,highlights:(n.highlights??[]).filter(h=>h.id!==id),updated:Date.now()}))}
 function jumpToHighlight(highlight:Highlight){if(!sourceTextareaRef.current)return;setMode("read");setSource(notebook?.source??"");const index=(notebook?.source??"").indexOf(highlight.quote);if(index>=0){requestAnimationFrame(()=>{const area=sourceTextareaRef.current;if(!area)return;area.focus();area.setSelectionRange(index,index+highlight.quote.length);area.scrollTop=Math.max(0,area.scrollHeight*(index/Math.max(1,area.value.length))-.3*area.clientHeight)})}}
 function saveSource(){if(!notebook)return;const existing=new Map(notebook.cards.map(c=>[c.front.toLowerCase()+"::"+c.back,c]));const next=parseCards(source).map(c=>existing.get(c.front.toLowerCase()+"::"+c.back)||c);const updated=notebooks.map(n=>n.id===notebook.id?{...n,source,cards:next,updated:Date.now()}:n);if(JSON.stringify(updated).length>2_200_000){setNotice("This edit exceeds the offline storage limit. Split the source into smaller notebooks.");return}setNotebooks(updated);setNotice("Notes saved on this device. Cards rebuilt; unchanged review history preserved.")}
-function applyCardGrade(notebookId:string,prev:Card,grade:0|1|2|3){const interval=grade===0?0:prev.reviews===0?(grade===1?1:grade===2?2:4):Math.max(1,Math.round(prev.interval*Math.max(1.3,prev.ease+(grade-2)*.14)));const next=grade===0?Date.now()+5*60*1000:Date.now()+interval*24*60*60*1000;patchNotebook(notebookId,n=>({...n,updated:Date.now(),attempts:n.attempts+1,correct:n.correct+(grade?1:0),cards:n.cards.map(c=>c.id===prev.id?{...c,next,interval,ease:Math.max(1.3,c.ease+(grade-2)*.16),reviews:c.reviews+1,lastGrade:grade}:c)}));setFlipped(false);return next}
+function applyCardGrade(notebookId:string,prev:Card,grade:0|1|2|3){
+ const now=Date.now(),reviews=prev.reviews??0;
+ const quality=grade===0?0:grade===1?3:grade===2?4:5;
+ const ease=Math.max(1.3,prev.ease+(0.1-(5-quality)*(0.08+(5-quality)*0.02)));
+ let interval:number,next:number,lapses=prev.lapses??0;
+ if(grade===0){interval=0;next=now+5*60*1000;lapses+=1}
+ else if(grade===1){interval=reviews===0?1:Math.max(1,Math.round((prev.interval||1)*1.2));next=now+interval*24*60*60*1000}
+ else if(grade===2){interval=reviews===0?1:reviews===1?6:Math.max(1,Math.round((prev.interval||1)*prev.ease));next=now+interval*24*60*60*1000}
+ else{interval=reviews===0?4:reviews===1?7:Math.max(1,Math.round((prev.interval||1)*prev.ease*1.3));next=now+interval*24*60*60*1000}
+ patchNotebook(notebookId,n=>({...n,updated:now,attempts:n.attempts+1,correct:n.correct+(grade?1:0),cards:n.cards.map(c=>c.id===prev.id?{...c,next,interval,ease,lapses,lastReviewed:now,reviews:reviews+1,lastGrade:grade}:c)}));
+ setFlipped(false);return next
+}
 function rateCard(grade:0|1|2|3){if(!notebook||!card)return;const next=applyCardGrade(notebook.id,card,grade);setCardIndex(i=>Math.max(0,i-1));setNotice(grade===0?"Added to your retry queue (5 min).":"Review scheduled for "+formatDay(next)+".")}
 function rateGlobalCard(grade:0|1|2|3){const nextCard=reviewQueue[0];if(!nextCard)return;const next=applyCardGrade(nextCard.notebookId,nextCard,grade);setReviewedInSession(n=>n+1);setNotice(grade===0?"You can retry this card again in five minutes.":"Review scheduled for "+formatDay(next)+".")}
 function recordQuizResult(correct:boolean,selectedIndex?:number){if(!notebook||!currentQuiz)return;setQuizCorrect(correct);setAnswered(selectedIndex??(correct?1:0));patchNotebook(notebook.id,n=>({...n,attempts:n.attempts+1,correct:n.correct+(correct?1:0),updated:Date.now()}))}
