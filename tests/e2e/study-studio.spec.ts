@@ -137,7 +137,28 @@ test("Anki CSV export can be imported back into Ace without losing card text",as
  await expect(page.getByText("2 cards",{exact:false})).toBeVisible();
 });
 
-test("focus timer requires a notebook",async({page})=>{
+test("students can highlight source passages and keep private annotations",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Business Law notes");
+ const source="The rule of law requires that public power is exercised according to publicly known laws, applied consistently and reviewed independently.\n\nLegal certainty helps people understand the consequences of their actions.";
+ await page.getByLabel("Study material").fill(source);
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ const textarea=page.getByRole("textbox",{name:"Notebook material"});
+ await textarea.evaluate((element)=>{
+  const field=element as HTMLTextAreaElement;
+  const start=field.value.indexOf("public power");
+  field.focus();field.setSelectionRange(start,start+("public power is exercised according to publicly known laws").length);
+  field.dispatchEvent(new Event("mouseup",{bubbles:true}));
+ });
+ await expect(page.getByText(/SELECTED PASSAGE/)).toBeVisible();
+ await page.getByLabel("Highlight note").fill("Remember the limits and accountability of government.");
+ await page.getByRole("button",{name:"Save highlight"}).click();
+ await expect(page.getByText(/Remember the limits and accountability/)).toBeVisible();
+ await page.getByRole("button",{name:"All notebooks"}).click();
+ await page.getByRole("button",{name:/Business Law notes/}).click();
+ await expect(page.getByText(/Remember the limits and accountability/)).toBeVisible();
+});
+\ntest("focus timer requires a notebook",async({page})=>{
  await page.getByRole("button",{name:"Focus timer"}).click();
  await expect(page.getByText("25:00")).toBeVisible();
  await page.getByRole("button",{name:"Start"}).click();
