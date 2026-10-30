@@ -190,8 +190,8 @@ function attachImportedSource(file:File,extracted:string,format:string,pages:num
   if(combined.length>1_900_000){setNotice("This notebook has reached its 1.9 MB source limit. Create another notebook for this file.");return}
   const existing=new Map(target.cards.map(card=>[card.front.toLowerCase()+"::"+card.back,card]));
   const cards=parseCards(combined).map(card=>existing.get(card.front.toLowerCase()+"::"+card.back)||card);
-  patchNotebook(notebook.id,current=>({...current,source:combined,cards,sources:[...(current.sources??[]),metadata],updated:Date.now()}));
-  setSource(combined);setNotice("Added "+file.name+" to "+notebook.title+". Your source collection and study cards are updated.");return;
+  patchNotebook(target.id,current=>({...current,source:combined,cards,sources:[...(current.sources??[]),metadata],updated:Date.now()}));
+  setSource(combined);setNotice("Added "+file.name+" to "+target.title+". Your source collection and study cards are updated.");return;
  }
  setSource(current=>current?current+"\n\nSOURCE: "+file.name+"\n\n"+extracted:extracted);
  setSourceFiles(current=>[...current,metadata]);
