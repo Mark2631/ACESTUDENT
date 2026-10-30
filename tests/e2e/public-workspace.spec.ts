@@ -1,15 +1,15 @@
 import {test,expect} from "@playwright/test";
 test("visitors see actual learning before an account wall",async({page})=>{
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"Your learning, organized."})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Make room for progress."})).toBeVisible();
  await expect(page.getByRole("heading",{name:"Explore learning areas"})).toBeVisible();
  await expect(page.getByRole("button",{name:/Business & enterprise/})).toBeVisible();
  await expect(page.getByRole("button",{name:/Computing & technology/})).toBeVisible();
  await page.getByRole("button",{name:/Business & enterprise/}).click();
- await expect(page.getByRole("button",{name:"Accounting"})).toBeVisible();
- await page.locator(".ace-topic-name").filter({hasText:"Accounting"}).click();
+ await expect(page.getByRole("button",{name:/Accounting/})).toBeVisible();
+ await page.locator(".home-topic-open").filter({hasText:"Accounting"}).click();
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
- await page.getByRole("button",{name:"Library",exact:true}).first().click();
+ await page.locator(".navitem").filter({hasText:"Learning library"}).click();
  await expect(page).toHaveURL(/\/library$/);
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
  await expect(page.getByRole("heading",{name:/Free learning resources/})).toBeVisible();
@@ -19,7 +19,7 @@ test("subject explorer exposes real topics and a clear account boundary for save
  await page.getByRole("button",{name:/Business & enterprise/}).click();
  await expect(page.getByRole("button",{name:/Accounting/})).toBeVisible();
  await expect(page.getByRole("button",{name:/Economics/})).toBeVisible();
- await page.getByRole("button",{name:"Sign in to follow"}).first().click();
+ await page.locator(".home-follow").first().click();
  await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();
 });
 
@@ -43,6 +43,6 @@ test("public course deep links work without authentication",async({page})=>{
 test("the workspace has no sideways overflow on a narrow phone",async({page})=>{
  await page.setViewportSize({width:360,height:780});
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"Your learning, organized."})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Make room for progress."})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
 });
