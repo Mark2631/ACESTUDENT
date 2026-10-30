@@ -1,18 +1,16 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
-import {ArrowRight,BookOpen,CalendarDays,FileText,GraduationCap,Search,Users,PlayCircle,LibraryBig,ArrowUpRight,Sparkles,Layers3} from "lucide-react";
+import {ArrowRight,BookOpen,CalendarDays,FileText,GraduationCap,Search,Users,PlayCircle,ArrowUpRight,Sparkles,Layers3} from "lucide-react";
 import {supabase} from "@/lib/supabase";
 import type {User} from "@supabase/supabase-js";
 type Unit={id:string;code:string;title:string;year_of_study:number|null;semester:number|null;pathway:string|null};
-type Material={id:string;title:string;subject:string;kind:string;provider:string;related_codes:string[];url:string};
 export default function WorkspaceHome({user,name,onCourse,onLibrary,onPractice,onSpaces,onAccount,onNotes,onPlanner,onStudio}:{user:User|null;name:string;onCourse:(code:string)=>void;onLibrary:()=>void;onPractice:()=>void;onSpaces:()=>void;onAccount:()=>void;onNotes:()=>void;onPlanner:()=>void;onStudio:()=>void}){
- const[courses,setCourses]=useState<Unit[]>([]),[resources,setResources]=useState<Material[]>([]),[loading,setLoading]=useState(true),[issue,setIssue]=useState(""),[search,setSearch]=useState(""),[showAll,setShowAll]=useState(false);
+ const[courses,setCourses]=useState<Unit[]>([]),[loading,setLoading]=useState(true),[issue,setIssue]=useState(""),[search,setSearch]=useState(""),[showAll,setShowAll]=useState(false);
  const[recent,setRecent]=useState<{code:string;title:string}|null>(null);
  useEffect(()=>{try{const last=window.localStorage.getItem("ace-last-course");if(last){const parsed=JSON.parse(last) as {code:string;title:string};if(typeof parsed.code==="string"&&typeof parsed.title==="string")setRecent(parsed)}}catch{}},[]);
- useEffect(()=>{let alive=true;async function load(){if(!supabase){setIssue("Learning catalogue is temporarily unavailable.");setLoading(false);return}const [units,materials]=await Promise.all([supabase.from("ace_course_catalog").select("id,code,title,year_of_study,semester,pathway").order("year_of_study").order("semester").order("title").limit(240),supabase.from("ace_open_resources").select("id,title,subject,kind,provider,related_codes,url").eq("hidden",false).order("title").limit(240)]);if(!alive)return;setCourses(units.data??[]);setResources(materials.data??[]);if(units.error||materials.error)setIssue("Some catalogue items could not be loaded. Please retry.");setLoading(false)}void load();return()=>{alive=false}},[]);
+ useEffect(()=>{let alive=true;async function load(){if(!supabase){setIssue("Learning catalogue is temporarily unavailable.");setLoading(false);return}const {data,error}=await supabase.from("ace_course_catalog").select("id,code,title,year_of_study,semester,pathway").order("year_of_study").order("semester").order("title").limit(240);if(!alive)return;setCourses(data??[]);if(error)setIssue("The course catalogue could not be loaded. Please retry.");setLoading(false)}void load();return()=>{alive=false}},[]);
  const filtered=useMemo(()=>courses.filter(c=>[c.code,c.title,c.pathway??""].join(" ").toLowerCase().includes(search.toLowerCase())),[courses,search]);
  const shown=showAll?filtered:filtered.slice(0,8);
- const recommended=useMemo(()=>resources.filter(r=>(r.related_codes??[]).length>0).slice(0,4),[resources]);
  function visitCourse(c:Unit){try{window.localStorage.setItem("ace-last-course",JSON.stringify({code:c.code,title:c.title}))}catch{}onCourse(c.code)}
  return <div className="ace-workspace-home ace-next">
   <section className="ace-welcome">
@@ -25,15 +23,12 @@ export default function WorkspaceHome({user,name,onCourse,onLibrary,onPractice,o
    <button onClick={onStudio}><span className="ace-tool-icon violet"><Sparkles size={17}/></span><span><strong>Practice</strong><small>Test your knowledge</small></span><ArrowUpRight size={14}/></button>
    <button onClick={onNotes}><span className="ace-tool-icon mint"><FileText size={17}/></span><span><strong>Shared notes</strong><small>Think together</small></span><ArrowUpRight size={14}/></button>
    <button onClick={onSpaces}><span className="ace-tool-icon blue"><Users size={17}/></span><span><strong>Study groups</strong><small>Learn with others</small></span><ArrowUpRight size={14}/></button>
-   <button onClick={onStudio}><span className="ace-tool-icon amber"><CalendarDays size={17}/></span><span><strong>Listen & recall</strong><small>Study hands-free</small></span><ArrowUpRight size={14}/></button>
+   <button onClick={onPlanner}><span className="ace-tool-icon amber"><CalendarDays size={17}/></span><span><strong>Study plan</strong><small>Keep deadlines visible</small></span><ArrowUpRight size={14}/></button>
   </section>
   <section className="ace-discovery"><div className="ace-section-heading"><div><span className="ace-label">YOUR SUBJECTS</span><h2>Explore courses</h2></div><span className="ace-section-count">{courses.length} courses</span></div>
    <label className="ace-inline-search"><Search size={15}/><input aria-label="Find a course" placeholder="Find a course or topic" value={search} onChange={e=>setSearch(e.target.value)}/></label>
    {loading?<div className="ace-skeleton">Finding courses…</div>:shown.length?<div className="ace-course-list">{shown.map((c,i)=><button key={c.id} className="ace-course-row" onClick={()=>visitCourse(c)}><span className={"ace-course-monogram ace-color-"+i%4}>{c.title.trim().slice(0,1).toUpperCase()}</span><span className="ace-course-info"><strong>{c.title}</strong><small>{c.code}{c.year_of_study?" · Year "+c.year_of_study:""}</small></span><ArrowRight size={15}/></button>)}</div>:<div className="ace-empty"><Layers3 size={18}/> No courses match your search.</div>}
    {filtered.length>8&&<button className="ace-see-all" onClick={()=>setShowAll(v=>!v)}>{showAll?"Show fewer":"See all "+filtered.length+" courses"} <ArrowRight size={14}/></button>}{issue&&<p className="status" role="status">{issue}</p>}
-  </section>
-  <section className="ace-discovery"><div className="ace-section-heading"><div><span className="ace-label">READING LIBRARY</span><h2>From the library</h2></div><button className="ace-see-all" onClick={onLibrary}>Browse library <ArrowRight size={14}/></button></div>
-   <div className="ace-reading-list">{recommended.length?recommended.map((m,i)=><a key={m.id} href={m.url} target="_blank" rel="noopener noreferrer" className="ace-reading-row"><span className={"ace-reading-art ace-color-"+i%4}><BookOpen size={19}/></span><span><small>{m.provider} · {m.kind}</small><strong>{m.title}</strong><em>{m.subject}</em></span><ArrowUpRight size={15}/></a>):<button className="ace-empty" onClick={onLibrary}><LibraryBig size={17}/> Explore the open resource library <ArrowRight size={14}/></button>}</div>
   </section>
   <section className="ace-footer-nudge"><div><span className="ace-label">BETTER TOGETHER</span><h3>Don't study alone.</h3><p>Turn what you're learning into a shared note or start a discussion with your group.</p></div><button onClick={onSpaces}>Explore groups <ArrowRight size={15}/></button></section>
  </div>
