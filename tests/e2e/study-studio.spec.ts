@@ -270,3 +270,12 @@ test("deleting a guest notebook removes it from the local library",async({page})
  await page.getByRole("button",{name:"Delete notebook"}).click();
  await expect(page.getByText("Temporary revision notes")).toHaveCount(0);
 });
+
+
+test("weekly study goal persists on the device",async({page})=>{
+ await expect(page.getByLabel("Weekly study goal")).toHaveValue("180");
+ await page.getByLabel("Weekly study goal").selectOption("240");
+ await expect(page.getByLabel("Weekly study goal")).toHaveValue("240");
+ await page.reload();
+ await expect(page.getByLabel("Weekly study goal")).toHaveValue("240");
+});
