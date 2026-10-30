@@ -890,3 +890,8 @@ p{line-height:1.65}
   html{scroll-behavior:auto}
   *,*::before,*::after{transition:none!important;animation:none!important}
 }
+
+
+/* Quick contribution action on compact screens. */
+.mobile-create-quick{display:none;place-items:center;width:35px;height:35px;flex-shrink:0;border:1px solid var(--line);border-radius:9px;background:var(--soft);color:var(--accent)}
+@media(max-width:720px){.mobile-create-quick{display:grid}}
