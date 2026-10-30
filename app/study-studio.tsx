@@ -8,7 +8,7 @@ type Notebook={id:string;title:string;courseCode?:string|null;tags?:string[];sou
 function isCardRecord(value:unknown):value is Card{
  if(!value||typeof value!=="object")return false;
  const card=value as Partial<Card>;
- return typeof card.id==="string"&&card.id.length<=80&&typeof card.front==="string"&&card.front.length<=2000&&typeof card.back==="string"&&card.back.length<=5000&&Number.isFinite(card.next)&&Number.isFinite(card.interval)&&Number.isFinite(card.ease)&&Number.isInteger(card.reviews)&&card.reviews>=0&&(card.lastGrade===undefined||(Number.isInteger(card.lastGrade)&&card.lastGrade>=0&&card.lastGrade<=3));
+ return typeof card.id==="string"&&card.id.length<=80&&typeof card.front==="string"&&card.front.length<=2000&&typeof card.back==="string"&&card.back.length<=5000&&Number.isFinite(card.next)&&Number.isFinite(card.interval)&&Number.isFinite(card.ease)&&typeof card.reviews==="number"&&Number.isInteger(card.reviews)&&card.reviews>=0&&(card.lastGrade===undefined||(typeof card.lastGrade==="number"&&Number.isInteger(card.lastGrade)&&card.lastGrade>=0&&card.lastGrade<=3));
 }
 
 type Mode="read"|"guide"|"ask"|"cards"|"quiz"|"listen";
