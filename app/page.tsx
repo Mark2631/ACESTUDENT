@@ -26,7 +26,7 @@ async function upload(e:React.FormEvent){
  if(!supabase||!user){setNotice("Your session has expired. Sign in again, then retry.");return}
  if(!file){setNotice("Choose a PDF first.");return}
  const name=file.name.toLowerCase();
- if(!name.endsWith(".pdf")||(file.type&&file.type!=="application/pdf")){setNotice("This file does not look like a PDF. Choose a .pdf file.");return}
+ if(!name.endsWith(".pdf")){setNotice("This file does not look like a PDF. Choose a .pdf file.");return}
  if(file.size<8||file.size>15*1024*1024){setNotice("PDFs must be larger than 0 bytes and no bigger than 15 MB.");return}
  const signature=await file.slice(0,5).text();
  if(signature!=="%PDF-"){setNotice("This file is not a readable PDF. Try opening it first, then export or download it as PDF.");return}
