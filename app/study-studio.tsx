@@ -37,7 +37,7 @@ function removeSourceBlock(text:string,source:StudySource):{source:string;remove
  const kept=blocks.filter(block=>{
   const header=block.match(/^SOURCE:\\s*(.+)$/im)?.[1]?.trim();if(!header)return true;
   const id=header.match(/\\[ACE_SOURCE_ID=([^\\]]+)\\]/i)?.[1];
-  if(id)return id!==source.id;
+  if(id){if(id===source.id){removed=true;return false}return true}
   if(!removed&&header===source.name){removed=true;return false}
   return true;
  });
