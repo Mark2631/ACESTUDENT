@@ -1,4 +1,4 @@
-import {createEmptyCard,fsrs,Rating,State,type Card as FSRSCard,type CardInput} from "ts-fsrs";
+import {createEmptyCard,fsrs,Rating,State,type Card as FSRSCard,type CardInput,type Grade} from "ts-fsrs";
 
 export type PersistedFSRSCard={
  due:string;
@@ -68,7 +68,7 @@ export function scheduleFSRSReview(
  now:number=Date.now()
 ):{memory:PersistedFSRSCard;dueAt:number;scheduledDays:number;difficulty:number;repetitions:number;lapses:number}{
  const card:CardInput=saved&&isPersistedFSRSCard(saved)?toInput(saved):legacy.reviews>0?fromLegacy(legacy,now):createEmptyCard(new Date(now));
- const rating=[Rating.Again,Rating.Hard,Rating.Good,Rating.Easy][grade];
+ const rating=([Rating.Again,Rating.Hard,Rating.Good,Rating.Easy] as const)[grade] as Grade;
  const result=scheduler.next(card,new Date(now),rating);
  const memory=toPersisted(result.card);
  return {memory,dueAt:result.card.due.getTime(),scheduledDays:result.card.scheduled_days,difficulty:result.card.difficulty,repetitions:result.card.reps,lapses:result.card.lapses};
@@ -81,6 +81,5 @@ export function getFSRSSchedulePreview(saved:PersistedFSRSCard|undefined,legacy:
 }
 export function getRetrievability(memory:PersistedFSRSCard|undefined,now:number=Date.now()):number|null{
  if(!memory||!isPersistedFSRSCard(memory)||!memory.last_review)return null;
- const elapsed=Math.max(0,(now-Date.parse(memory.last_review))/DAY);
  return scheduler.get_retrievability(toInput(memory),new Date(now),false);
 }
