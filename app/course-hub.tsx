@@ -9,6 +9,7 @@ type Book={id:string,title:string,provider:string,kind:string,url:string,subject
 type Quiz={id:string,title:string,course_code:string,description:string|null};
 type StudentMaterial={id:string,title:string,description:string|null,kind:string,course_code:string,storage_path:string};
 type CourseSpace={id:string,title:string,description:string,meeting_url:string|null,course_code:string};
+const codeVariants=(code:string)=>{const normalized=code.replace(/\s+/g,"").toUpperCase();const spaced=normalized.replace(/^([A-Z]+)(\d+)$/,"$1 $2");return [...new Set([code,normalized,spaced])];};
 const normalizeCode=(value:string)=>value.replace(/\s+/g,"").toUpperCase();
 export default function CourseHub({user,code,onBack,onQuiz,onUpload,onSpaces}:{user:User,code:string,onBack:()=>void,onQuiz:(code:string,quizId:string)=>void,onUpload:(code:string,title:string)=>void,onSpaces:(code:string,spaceId?:string)=>void}){
  const[studentMaterials,setStudentMaterials]=useState<StudentMaterial[]>([]),[spaces,setSpaces]=useState<CourseSpace[]>([]),[opening,setOpening]=useState<string|null>(null),[downloading,setDownloading]=useState<string|null>(null),[saved,setSaved]=useState<string[]>([]),[unit,setUnit]=useState<Unit|null>(null),[links,setLinks]=useState<Book[]>([]),[quizzes,setQuizzes]=useState<Quiz[]>([]),[done,setDone]=useState<string[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState("");
