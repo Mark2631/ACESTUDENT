@@ -23,6 +23,11 @@ test("subject explorer exposes real topics and a clear account boundary for save
  await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();
 });
 
+test("the practice shortcut opens the community practice arena, not Study Studio",async({page})=>{
+ await page.goto("/");
+ await page.getByRole("button",{name:/Practice arena/}).click();
+ await expect(page.getByRole("heading",{name:"Practice with Ace Student"})).toBeVisible();
+});
 test("major URLs load directly without losing their destination",async({page})=>{
  await page.goto("/library");
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
