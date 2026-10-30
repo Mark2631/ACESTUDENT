@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: ace-quality-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ace-quality-${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build-and-browser-tests:
