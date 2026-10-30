@@ -26,7 +26,7 @@ function parseDelimitedRow(line:string,delimiter:string):string[]{
  values.push(value.trim());return values
 }
 function parseCards(text:string):Card[]{
- const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const seen=new Set<string>();const explicit:Card[]=[];
+ const lines=text.split(/\r?\n/).map(x=>x.replace(/^\uFEFF/,"").trim()).filter(Boolean);const seen=new Set<string>();const explicit:Card[]=[];
  const header=lines[0]?.match(/^(front|question|term|prompt)\s*([,;\t])\s*(back|answer|definition)$/i);
  if(header){
   for(const line of lines.slice(1)){const fields=parseDelimitedRow(line,header[2]);const front=fields[0]??"",back=fields.slice(1).join(" · ");if(front.length<2||back.length<4||seen.has(front.toLowerCase()))continue;seen.add(front.toLowerCase());explicit.push({id:crypto.randomUUID(),front,back,next:0,interval:0,ease:2.5,reviews:0})}
@@ -126,7 +126,7 @@ async function importFile(file?:File){
  if(file.size>15*1024*1024){setNotice("Files must be smaller than 15 MB.");return}
  const extension=file.name.toLowerCase().split(".").pop()||"";
  try{
-  if(extension==="json"){const data=JSON.parse(await file.text()) as {format?:string;version?:number;notebook?:Notebook};const n=data.notebook;if(data.format!=="ace-study-notebook"||data.version!==1||!n||typeof n.title!=="string"||typeof n.source!=="string"||!Array.isArray(n.cards)||n.cards.length>250||!n.cards.every(isCardRecord)){setNotice("This is not a valid Ace notebook backup.");return}if(n.source.length>1_900_000||n.cards.length>250){setNotice("This notebook backup exceeds import limits.");return}const restored:Notebook={...n,id:crypto.randomUUID(),created:Date.now(),updated:Date.now(),cards:n.cards.map(c=>({...c,id:crypto.randomUUID()}))};setNotebooks(old=>[restored,...old]);setSelected(restored.id);setCreate(false);setNotice("Notebook and review history restored. A fresh copy was created.");return}
+  if(extension==="json"){const data=JSON.parse(await file.text()) as {format?:string;version?:number;notebook?:Notebook};const n=data.notebook;if(data.format!=="ace-study-notebook"||data.version!==1||!n||typeof n.title!=="string"||typeof n.source!=="string"||!Array.isArray(n.cards)||n.cards.length>250||!n.cards.every(isCardRecord)){setNotice("This is not a valid Ace notebook backup.");return}if(n.source.length>1_900_000||n.cards.length>250){setNotice("This notebook backup exceeds import limits.");return}const restored:Notebook={...n,id:crypto.randomUUID(),created:Date.now(),updated:Date.now(),cards:n.cards.map(c=>({...c,id:crypto.randomUUID()}))};if(JSON.stringify([restored,...notebooks]).length>2_200_000){setNotice("This backup exceeds the remaining offline storage. Export or remove notebooks before restoring it.");return}setNotebooks(old=>[restored,...old]);setSelected(restored.id);setCreate(false);setNotice("Notebook and review history restored. A fresh copy was created.");return}
   if(extension==="pdf"||file.type==="application/pdf"){
    setNotice("Reading PDF pages on this device…");
    const pdfjs=await import("pdfjs-dist/build/pdf.mjs");
