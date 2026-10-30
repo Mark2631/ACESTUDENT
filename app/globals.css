@@ -88,3 +88,61 @@ html,body{background:var(--bg);color:var(--ink)}.side,.bottom,.card,.upload,.sig
 .pathway-toolbar{justify-content:flex-start;padding-bottom:6px}.pathway-toolbar>.eyebrow{padding:0 4px;white-space:nowrap}.course-pathway-label{font-size:10px;color:var(--sub);font-weight:450;letter-spacing:.01em}.pathway-toolbar .school-years{flex-wrap:wrap}.pathway-toolbar .school-years button{white-space:nowrap}
 
 .count-pill{display:inline-flex;align-items:center;justify-content:center;min-width:1.7rem;height:1.35rem;padding:0 .45rem;border:1px solid var(--border);border-radius:999px;font-size:.72rem;font-weight:700;color:var(--muted);vertical-align:middle;margin-left:.3rem}
+
+
+/* Focused product pass: clearer hierarchy, better reading rhythm, stronger interaction states. */
+:root,[data-theme="dark"]{--bg:#0a0d14;--surface:#111722;--surface2:#182231;--line:#263449;--ink:#edf3fc;--sub:#9baac0;--accent:#8cb4ff;--button:#356fe6;--soft:#172b49}
+[data-theme="light"]{--bg:#f4f7fb;--surface:#fff;--surface2:#edf2f9;--line:#dbe4f0;--ink:#142238;--sub:#61718a;--accent:#245bd1;--button:#245bd1;--soft:#e7efff}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.01em}
+.shell{max-width:1600px;grid-template-columns:250px minmax(0,1fr)}
+.side{padding:26px 17px;border-right:1px solid var(--line);box-shadow:8px 0 35px rgba(0,0,0,.06)}
+.brand{margin:0 8px 34px;font-size:22px;letter-spacing:-1px}
+.navitem{min-height:46px;border-radius:12px;transition:background .18s,color .18s,transform .18s}
+.navitem:hover{background:var(--surface2);color:var(--ink);transform:translateX(2px)}
+.navitem.active{box-shadow:inset 3px 0 var(--accent);background:var(--soft);color:var(--accent)}
+.main{padding:30px clamp(20px,3vw,48px) 120px}
+h1{font-size:clamp(28px,3vw,38px);line-height:1.1;letter-spacing:-1.5px}
+h2{letter-spacing:-.65px}
+.eyebrow{font-size:10px;letter-spacing:.14em;color:var(--accent);margin-top:30px}
+.search{max-width:800px;min-height:48px;border-radius:14px;background:var(--surface);box-shadow:0 4px 18px rgba(0,0,0,.035)}
+.search:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
+.hero{border:1px solid color-mix(in srgb,var(--accent) 23%,var(--line));background:radial-gradient(ellipse at 90% 0%,color-mix(in srgb,var(--accent) 18%,transparent),transparent 52%),var(--surface);border-radius:22px;padding:clamp(22px,3vw,34px);box-shadow:0 14px 38px rgba(0,0,0,.06)}
+.hero h2{font-size:clamp(22px,2.3vw,29px);letter-spacing:-1px}
+.btn{border-radius:12px;min-height:42px;box-shadow:0 2px 0 rgba(0,0,0,.08);transition:transform .16s,filter .16s,box-shadow .16s}
+.btn:hover:not(:disabled){filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 7px 18px rgba(40,100,220,.18)}
+.btn:active:not(:disabled){transform:translateY(0)}
+.panel,.card,.empty,.upload,.signin{border-radius:18px;box-shadow:0 8px 26px rgba(0,0,0,.025)}
+.panel{padding:24px}
+.cards,.open-grid{gap:18px}
+.card,.open-card,.space-card{transition:transform .18s,border-color .18s,box-shadow .18s}
+.card:hover,.open-card:hover,.space-card:hover{transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 50%,var(--line));box-shadow:0 14px 35px rgba(0,0,0,.09)}
+.open-card{gap:12px}
+.open-card h3,.space-card h3{font-size:19px;letter-spacing:-.45px}
+.open-card .eyebrow,.space-card .eyebrow{margin-top:0}
+.control{border-radius:12px;min-height:46px;transition:border-color .15s,box-shadow .15s}
+textarea.control{min-height:auto;resize:vertical}
+.control:focus{border-color:var(--accent);outline:0;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 15%,transparent)}
+.upload{max-width:780px;padding:clamp(20px,3vw,32px)}
+.file-dropzone{display:flex;align-items:center;gap:16px;padding:20px;border:1.5px dashed color-mix(in srgb,var(--accent) 60%,var(--line));border-radius:16px;background:color-mix(in srgb,var(--soft) 38%,var(--surface));color:var(--accent);margin-top:7px;flex-wrap:wrap}
+.file-dropzone>div{flex:1;min-width:160px}
+.file-dropzone b{color:var(--ink);overflow-wrap:anywhere}
+.file-dropzone .muted{margin:5px 0 0;font-size:12px}
+.file-picker{flex-basis:100%;min-height:auto;padding:9px;background:var(--surface);color:var(--sub);font-size:13px}
+.file-picker::file-selector-button{border:0;border-radius:9px;background:var(--soft);color:var(--accent);font-weight:700;padding:9px 12px;margin-right:12px;cursor:pointer}
+.status{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;line-height:1.55}
+.discussion{display:flex;flex-direction:column;gap:12px}
+.post{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:17px 19px}
+.post p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65}
+.space-header{background:radial-gradient(ellipse at top right,color-mix(in srgb,var(--accent) 13%,transparent),transparent 58%),var(--surface)}
+.space-card{width:100%;text-align:left;cursor:pointer}
+.space-card .muted{margin:0}
+.empty{padding:clamp(28px,5vw,52px);background:var(--surface)}
+.section{margin-top:42px}
+.chip{transition:background .15s,border-color .15s}
+.chip:hover{border-color:var(--accent)}
+.feature-grid>button{transition:transform .18s,border-color .18s}
+.feature-grid>button:hover{transform:translateY(-2px);border-color:var(--accent)}
+::selection{background:color-mix(in srgb,var(--accent) 35%,transparent)}
+@media(max-width:1050px){.shell{grid-template-columns:210px minmax(0,1fr)}.main{padding:24px 24px 110px}}
+@media(max-width:700px){.shell{display:block}.main{padding:16px 15px 105px}.side{display:none}.hero{border-radius:18px;padding:19px}.hero .row{align-items:flex-start;flex-direction:column}.hero .btn{white-space:normal}.open-grid{grid-template-columns:1fr;gap:12px}.open-card{padding:18px}.panel{padding:18px}.file-dropzone{padding:15px;gap:12px}.file-picker{width:100%}.search{max-width:none}.eyebrow{margin-top:24px}.section{margin-top:32px}.bottom{backdrop-filter:blur(18px);background:color-mix(in srgb,var(--surface) 92%,transparent)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
