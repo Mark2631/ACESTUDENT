@@ -14,7 +14,15 @@ test("visitors see actual learning before an account wall",async({page})=>{
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
  await expect(page.getByRole("heading",{name:/Free learning resources/})).toBeVisible();
 });
-test("major URLs load directly without losing their destination",async({page})=>{
+test("subject explorer exposes real topics and a clear account boundary for saved learning plans",async({page})=>{
+ await page.goto("/");
+ await page.getByRole("button",{name:/Business & enterprise/}).click();
+ await expect(page.getByRole("button",{name:/Accounting/})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Economics/})).toBeVisible();
+ await page.getByRole("button",{name:"Sign in to follow"}).first().click();
+ await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();
+});
+\ntest("major URLs load directly without losing their destination",async({page})=>{
  await page.goto("/library");
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
  await page.reload();
