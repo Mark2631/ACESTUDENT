@@ -348,3 +348,24 @@ test("complete Ace backup carries saved audio recaps into a fresh notebook",asyn
  await expect(page.getByText(/SAVED IN THIS NOTEBOOK/)).toBeVisible();
  await expect(page.getByText(/Portable lecture notes · Recap/)).toBeVisible();
 });
+
+
+test("students can remove one source without deleting the other source",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.locator('input[type="file"]').setInputFiles([
+  {name:"economics-core.txt",mimeType:"text/plain",buffer:Buffer.from("Opportunity cost: The value of the next best alternative forgone.")},
+  {name:"economics-markets.txt",mimeType:"text/plain",buffer:Buffer.from("Market equilibrium: A price at which quantity supplied equals quantity demanded.")}
+ ]);
+ await expect(page.getByText(/Added economics-markets.txt/)).toBeVisible();
+ await page.getByRole("button",{name:"Remove economics-core.txt"}).click();
+ await expect(page.getByText("economics-core.txt")).toHaveCount(0);
+ await expect(page.getByText("economics-markets.txt")).toBeVisible();
+ await expect(page.getByLabel("Study material")).not.toContainText("Opportunity cost");
+ await expect(page.getByLabel("Study material")).toContainText("Market equilibrium");
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await expect(page.getByRole("heading",{name:"economics-core"})).toBeVisible();
+ await expect(page.getByText("1 SOURCES IN THIS NOTEBOOK")).toBeVisible();
+ await page.getByRole("button",{name:"Remove economics-markets.txt"}).click();
+ await expect(page.getByText("0 SOURCES IN THIS NOTEBOOK")).toHaveCount(0);
+ await expect(page.getByRole("textbox",{name:"Notebook material"})).not.toContainText("Market equilibrium");
+});
