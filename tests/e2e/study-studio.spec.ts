@@ -256,7 +256,7 @@ test("interleaved practice alternates between independent notebooks",async({page
  await page.getByRole("button",{name:"Start mixed practice"}).click();
  await expect(page.getByRole("heading",{name:"Think across your subjects"})).toBeVisible();
  await expect(page.getByText("Microeconomics",{exact:true})).toBeVisible();
- await page.getByRole("button",{name:"A"}).click();
+ await page.locator(".studio-answer-list button").first().click();
  await page.getByRole("button",{name:"Next question"}).click();
  await expect(page.getByText("Management",{exact:true})).toBeVisible();
 });
@@ -266,7 +266,6 @@ test("deleting a guest notebook removes it from the local library",async({page})
  await page.getByLabel("Notebook name").fill("Temporary revision notes");
  await page.getByLabel("Study material").fill("Revenue: Income generated from ordinary business activities.");
  await page.getByRole("button",{name:"Create notebook"}).click();
- await page.getByRole("button",{name:"Delete notebook"}).click();
  page.once("dialog",dialog=>dialog.accept());
  await page.getByRole("button",{name:"Delete notebook"}).click();
  await expect(page.getByText("Temporary revision notes")).toHaveCount(0);
