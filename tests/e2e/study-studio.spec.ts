@@ -164,3 +164,24 @@ test("students can highlight source passages and keep private annotations",async
  await page.getByRole("button",{name:"Start"}).click();
  await expect(page.getByText(/Open a notebook before starting/)).toBeVisible();
 });
+
+
+test("source mind map turns notebook ideas into an inspectable visual index",async({page})=>{
+ await page.getByRole("button",{name:"New notebook"}).click();
+ await page.getByLabel("Notebook name").fill("Principles of Economics");
+ await page.getByLabel("Study material").fill([
+  "Opportunity cost: The value of the next best alternative given up when making a choice.",
+  "Supply: The quantity producers are willing to sell at a given price.",
+  "Demand: The quantity consumers are willing and able to purchase at different prices."
+ ].join(String.fromCharCode(10)));
+ await page.getByRole("button",{name:"Create notebook"}).click();
+ await page.getByRole("tab",{name:"Mind map"}).click();
+ await expect(page.getByRole("heading",{name:"See how this notebook is organised"})).toBeVisible();
+ await expect(page.getByText("Principles of Economics",{exact:true})).toBeVisible();
+ await expect(page.getByRole("button",{name:/Term 01/})).toBeVisible();
+ await page.getByRole("button",{name:/Term 01/}).click();
+ await expect(page.getByText(/The value of the next best alternative/)).toBeVisible();
+ await page.getByRole("button",{name:/Find this in my source/}).click();
+ await expect(page.getByRole("heading",{name:"Find answers in your material"})).toBeVisible();
+ await expect(page.getByText(/value of the next best alternative/)).toBeVisible();
+});
