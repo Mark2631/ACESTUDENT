@@ -3,7 +3,7 @@ import {useEffect,useMemo,useRef,useState} from "react";
 import {supabase} from "@/lib/supabase";
 import {deleteStudyAudio,formatAudioDuration,getStudyAudio,listStudyAudio,saveStudyAudio,type AudioNoteMeta} from "./study-studio-audio";
 import type {User} from "@supabase/supabase-js";
-import {ArrowLeft,ArrowRight,BookOpen,Brain,CheckCircle2,ChevronLeft,ChevronRight,Clock3,Download,FileText,GitBranch,Headphones,Layers,Mic,MicOff,Pause,Play,Plus,RotateCcw,Save,Search,Shuffle,Target,Trash2,Users,Volume2,VolumeX,X} from "lucide-react";
+import {ArrowLeft,ArrowRight,BookOpen,Brain,CalendarDays,CheckCircle2,ChevronLeft,ChevronRight,Clock3,Download,FileText,GitBranch,Headphones,Layers,Mic,MicOff,Pause,Play,Plus,RotateCcw,Save,Search,Shuffle,Target,Trash2,Users,Volume2,VolumeX,X} from "lucide-react";
 type Card={id:string;front:string;back:string;next:number;interval:number;ease:number;reviews:number;lastGrade?:number;lastReviewed?:number;lapses?:number};
 type Highlight={id:string;quote:string;note:string;page:string;created:number};
 type StudySource={id:string;name:string;format:string;characters:number;pages:number|null;addedAt:number};
@@ -316,7 +316,7 @@ async function downloadNotebookBackup(){
  if(!notebook)return;
  try{
   const zipModule=await import("jszip");const Zip=zipModule.default;const zip=new Zip();
-  const audio=await listStudyAudio(notebook.id);const audioFiles:{id:string;path:string;name:string;mimeType:string;size:number;createdAt:number;durationMs:number}[]=[];
+  const audio=await listStudyAudio(notebook.id);if(audio.length>30){setNotice("This notebook has more than 30 audio notes. Download or remove some before creating a complete archive.");return}const audioFiles:{id:string;path:string;name:string;mimeType:string;size:number;createdAt:number;durationMs:number}[]=[];
   let total=0;
   for(const item of audio.slice(0,30)){
    const stored=await getStudyAudio(item.id);if(!stored)continue;
