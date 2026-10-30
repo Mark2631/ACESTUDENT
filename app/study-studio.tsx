@@ -185,6 +185,7 @@ function attachImportedSource(file:File,extracted:string,format:string,pages:num
  const metadata:StudySource={id:crypto.randomUUID(),name:file.name,format,characters:extracted.length,pages,addedAt:Date.now()};
  const target=notebook?(notebooksRef.current.find(n=>n.id===notebook.id)??notebook):null;
  if(target&&!create){
+  if(source!==target.source){setNotice("Save your current edits before adding another source, so nothing is overwritten.");return}
   const separator="\n\nSOURCE: "+file.name+"\n\n";
   const combined=(target.source?target.source+separator:"")+extracted;
   if(combined.length>1_900_000){setNotice("This notebook has reached its 1.9 MB source limit. Create another notebook for this file.");return}
