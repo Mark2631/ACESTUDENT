@@ -1,5 +1,5 @@
 import {test,expect} from "@playwright/test";
-test.beforeEach(async({page})=>{await page.goto("/");await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible()});
+test.beforeEach(async({page})=>{await page.goto("/account");await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible()});
 test("sign-in is focused and supports recovery",async({page})=>{
  await expect(page.locator("#email")).toHaveAttribute("type","email");
  await expect(page.locator("#password")).toHaveAttribute("type","password");
@@ -20,7 +20,7 @@ test("production PWA registers its offline-safe service worker",async({page})=>{
  expect(manifest.display).toBe("standalone");
 });
 test("a reset query parameter cannot bypass the recovery session",async({page})=>{
- await page.goto("/?reset");
+ await page.goto("/account?reset");
  await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();
  await expect(page.getByRole("heading",{name:"Choose a new password"})).toHaveCount(0);
 });
