@@ -12,7 +12,7 @@ import type { User } from "@supabase/supabase-js";
 
 type LearningArea = { slug: string; title: string; description: string; sort_order: number };
 type LearningSubject = { slug: string; title: string; description: string; parent_slug: string; keywords: string[] };
-type OpenResource = { id: string; title: string; provider: string; kind: string; subject: string; description: string | null; url: string; related_codes: string[] };
+type OpenResource = { id: string; slug: string; title: string; subject_slug: string | null; subject_label: string; summary: string; reading_minutes: number; illustration: string; level: string };
 type Notebook = { id: string; title: string; course_code: string | null; updated_at: string; cards: unknown; attempts: number; correct: number };
 
 const areaIcons = [BookOpen, Code2, Calculator, Atom, Wrench, HeartPulse, Users, Palette, Compass, Layers3];
@@ -72,7 +72,7 @@ export default function WorkspaceHome({
       const requests = [
         supabase.from("ace_learning_areas").select("slug,title,description,sort_order").eq("kind", "discipline").eq("active", true).order("sort_order"),
         supabase.from("ace_learning_areas").select("slug,title,description,parent_slug,keywords").eq("kind", "subject").eq("active", true).order("sort_order"),
-        supabase.from("ace_open_resources").select("id,title,provider,kind,subject,description,url,related_codes").eq("hidden", false).order("title").limit(80)
+        supabase.from("ace_lessons").select("id,slug,title,subject_slug,subject_label,summary,reading_minutes,illustration,level").eq("published", true).order("title").limit(80)
       ] as const;
       const [disciplines, topics, open] = await Promise.all(requests);
       let recent: Notebook[] = [];
@@ -117,40 +117,21 @@ export default function WorkspaceHome({
   );
   const followedSubjects = subjects.filter(subject => followed.includes(subject.slug));
   const resourcePicks = useMemo(() => {
-    const targets = followedSubjects.length ? followedSubjects : subjects;
-    const ranked = resources.map(resource => {
-      const haystack = (resource.title + " " + resource.subject + " " + (resource.description ?? "")).toLowerCase();
-      const subjectName = resource.subject.toLowerCase();
-      let score = 0;
-      for (const target of targets) {
-        const label = target.title.toLowerCase();
-        if (subjectName === label) score = Math.max(score, 5);
-        else if (subjectName.includes(label) || label.includes(subjectName)) score = Math.max(score, 3);
-        for (const keyword of target.keywords ?? []) {
-          if (keyword.trim().length > 2 && haystack.includes(keyword.toLowerCase())) score = Math.max(score, 2);
-        }
+    const ranked = resources.map(resource => ({
+      resource,
+      score: followed.includes(resource.subject_slug ?? "") ? 5 : 0
+    })).sort((a,b)=>b.score-a.score||a.resource.title.localeCompare(b.resource.title));
+    const featured:OpenResource[]=[];
+    const subjectsSeen=new Set<string>();
+    for(const item of ranked){
+      if(!subjectsSeen.has(item.resource.subject_label)){
+        featured.push(item.resource);
+        subjectsSeen.add(item.resource.subject_label);
       }
-      if (["official data", "primary legal text", "open course"].includes(resource.kind.toLowerCase())) score += 0.15;
-      return { resource, score };
-    }).sort((a, b) => b.score - a.score || a.resource.title.localeCompare(b.resource.title));
-    const chosen: OpenResource[] = [];
-    const seenSubjects = new Set<string>();
-    for (const item of ranked) {
-      const key = item.resource.subject.toLowerCase();
-      if (!seenSubjects.has(key)) {
-        chosen.push(item.resource);
-        seenSubjects.add(key);
-      }
-      if (chosen.length === 3) break;
+      if(featured.length===3)break;
     }
-    if (chosen.length < 3) {
-      for (const item of ranked) {
-        if (!chosen.some(resource => resource.id === item.resource.id)) chosen.push(item.resource);
-        if (chosen.length === 3) break;
-      }
-    }
-    return chosen;
-  }, [resources, subjects, followedSubjects]);
+    return featured;
+  }, [resources,followed]);
   const latestNotebook = notebooks[0];
   const notebookCardCount = notebooks.reduce((total, item) => total + (Array.isArray(item.cards) ? item.cards.length : 0), 0);
   const displayName = name.trim().split(/\s+/)[0];
@@ -269,12 +250,12 @@ export default function WorkspaceHome({
           </section>
 
           <section className="home-side-panel home-resources-panel">
-            <div className="home-side-heading"><div><span className="home-eyebrow">OPEN KNOWLEDGE</span><h2>Good places to start</h2></div><button aria-label="Open library" onClick={onLibrary}><ArrowRight size={15} /></button></div>
+            <div className="home-side-heading"><div><span className="home-eyebrow">READY TO READ</span><h2>Start with a lesson</h2></div><button aria-label="Open library" onClick={onLibrary}><ArrowRight size={15} /></button></div>
             {resourcePicks.length ? <div className="home-resource-list">{resourcePicks.map(resource => (
-              <button key={resource.id} onClick={() => onResource(resource.id)}>
-                <span className="home-resource-kind">{resource.kind}</span><strong>{resource.title}</strong><small>{resource.subject} · {resource.provider}</small>
+              <button key={resource.id} onClick={() => onResource(resource.slug)}>
+                <span className="home-resource-kind">{resource.level} · {resource.reading_minutes} MIN</span><strong>{resource.title}</strong><small>{resource.subject_label} · Read inside Ace</small>
               </button>
-            ))}</div> : <div className="home-side-empty"><BookOpen size={19} /><p>Open books, courses and official learning sources will appear here.</p><button onClick={onLibrary}>Open library</button></div>}
+            ))}</div> : <div className="home-side-empty"><BookOpen size={19} /><p>Original Ace lessons are being prepared for your study library.</p><button onClick={onLibrary}>Open library</button></div>}
           </section>
 
           <section className="home-side-note">
