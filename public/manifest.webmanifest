@@ -2,12 +2,12 @@
   "id": "/",
   "name": "Ace Student",
   "short_name": "Ace Student",
-  "description": "Learn. Practice. Excel.",
+  "description": "Your private study workspace for notes, revision and learning with peers.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#090d13",
-  "theme_color": "#0b121c",
+  "background_color": "#f5f4ef",
+  "theme_color": "#f5f4ef",
   "icons": [
     {
       "src": "/icon.svg",
