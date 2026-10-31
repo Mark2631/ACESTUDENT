@@ -69,6 +69,7 @@ test("the workspace has no sideways overflow on a narrow phone",async({page})=>{
 });
 
 test("students can read original lessons and reveal a recall answer without outbound links",async({page})=>{
+ test.skip(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,"Requires configured Supabase credentials and seeded lesson data");
  await page.goto("/library");
  await expect(page.getByRole("heading",{name:"Learn something. Understand it."})).toBeVisible();
  await expect(page.locator(".ace-lesson-card").first()).toBeVisible();
