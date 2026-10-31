@@ -28,7 +28,7 @@ export default function CourseHub({user,code,onBack,onQuiz,onUpload,onSpaces,onS
   setUnit(a.data??null);
   const label=(a.data?.title??"").toLowerCase();
   const candidates=(b.data??[]) as Lesson[];
-  const matched=candidates.filter(x=>label.includes(x.subject_label.toLowerCase())||x.subject_label.toLowerCase().split(/[^a-z]+/).some(word=>word.length>5&&label.includes(word)));
+  const matched=candidates.filter(x=>label.includes(x.subject_label.toLowerCase())||x.subject_label.toLowerCase().split(/[^a-z]+/).some((word:string)=>word.length>5&&label.includes(word)));
   setLessons((matched.length?matched:candidates).slice(0,4));
   setQuizzes((c.data??[]).filter(x=>normalise(x.course_code)===normalized));
   setDone((d.data??[]).map(x=>x.quiz_id));
