@@ -42,5 +42,5 @@ test("guest practice exposes a real subject-specific quiz",async({page})=>{
 });
 test("legacy Groups URL resolves to the Groups destination",async({page})=>{
  await page.goto("/groups");
- await expect(page).toHaveURL(/\\/spaces$/);
+ await expect(page).toHaveURL(new RegExp("/spaces$"));
 });
