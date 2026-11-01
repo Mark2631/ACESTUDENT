@@ -14,7 +14,7 @@ test("major URLs load directly without losing their destination",async({page})=>
  await page.reload();
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
  await page.goto("/practice");
- await expect(page.getByRole("heading",{name:"Practice with Ace Student"})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Practice what you're studying"})).toBeVisible();
  await page.goto("/spaces");
  await expect(page.getByRole("heading",{name:"Study with your peers"})).toBeVisible();
  await page.goto("/notes");
@@ -30,4 +30,17 @@ test("the workspace has no sideways overflow on a narrow phone",async({page})=>{
  await page.goto("/");
  await expect(page.getByRole("heading",{name:"Your learning, organized."})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
+});
+
+test("guest practice exposes a real subject-specific quiz",async({page})=>{
+ await page.goto("/practice");
+ await page.getByRole("button",{name:"Mathematics"}).click();
+ await expect(page.getByText("If 3x + 5 = 20, what is x?")).toBeVisible();
+ await page.getByRole("button",{name:"Business & economics"}).click();
+ await expect(page.getByText("What does opportunity cost measure?")).toBeVisible();
+ await expect(page.getByRole("button",{name:/Check answers/})).toBeDisabled();
+});
+test("legacy Groups URL resolves to the Groups destination",async({page})=>{
+ await page.goto("/groups");
+ await expect(page).toHaveURL(new RegExp("/spaces$"));
 });
