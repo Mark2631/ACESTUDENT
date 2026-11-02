@@ -47,7 +47,7 @@ export default function BbaPilot({
       const programme = await supabase.from("ace_programmes").select("id")
         .eq("name", "Bachelor of Business Administration")
         .eq("school", "School of Business and Economics")
-        .maybeSingle().abortSignal(controller.signal);
+        .abortSignal(controller.signal).maybeSingle();
       if (programme.error || !programme.data) {
         setIssue("The MUST School of Business & Economics BBA catalogue is not available. Other programmes will appear only after their unit maps are verified.");
         setUnits([]); setQuizzes([]); setPapers([]);
