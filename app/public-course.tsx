@@ -21,7 +21,7 @@ export default function PublicCourse({code,onBack,onSignIn}:{code:string;onBack:
   const matched=(b.data??[]).filter(lesson=>label.includes(lesson.subject_label.toLowerCase())||lesson.subject_label.toLowerCase().split(/[^a-z]+/).some((word:string)=>word.length>5&&label.includes(word)));
   setUnit(a.data??null);
   setLessons(matched.slice(0,4));
-  setDocuments(c.data??[]);setLoading(false)
+  setDocuments((c.data??[]).filter(x=>x.kind!=="Model answer"));setLoading(false)
  }void load();return()=>{alive=false}},[code]);
  return <section className="public-course">
   <button className="text-link" onClick={onBack}><ArrowLeft size={17}/> All courses</button>
