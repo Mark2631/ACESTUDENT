@@ -20,7 +20,7 @@ export default function PublicCourse({code,onBack,onSignIn}:{code:string;onBack:
   const label=(a.data?.title??"").toLowerCase();
   const matched=(b.data??[]).filter(lesson=>label.includes(lesson.subject_label.toLowerCase())||lesson.subject_label.toLowerCase().split(/[^a-z]+/).some((word:string)=>word.length>5&&label.includes(word)));
   setUnit(a.data??null);
-  setLessons((matched.length?matched:(b.data??[])).slice(0,4));
+  setLessons(matched.slice(0,4));
   setDocuments(c.data??[]);setLoading(false)
  }void load();return()=>{alive=false}},[code]);
  return <section className="public-course">
