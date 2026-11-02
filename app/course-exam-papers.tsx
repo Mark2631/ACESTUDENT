@@ -25,9 +25,10 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
     setLoading(true); setIssue("");
     const ownRequest = user ? supabase.from("ace_resources").select("id,title,storage_path,status,created_at,related_paper_id")
         .eq("uploader_id", user.id).eq("kind", "Model answer").eq("course_code", code).eq("status", "pending").order("created_at", { ascending: false }) : Promise.resolve({ data: [], error: null });
+    const paperQuery = supabase.from("ace_open_resources").select("id,title,subject,provider,url,attribution,description")
+      .eq("kind", "Past paper").eq("provider", "MUST examination archive").contains("related_codes", [code]).order("title");
     const [paperRows, answerRows, ownRows] = await Promise.all([
-      supabase.from("ace_open_resources").select("id,title,subject,provider,url,attribution,description")
-        .eq("hidden", false).eq("kind", "Past paper").eq("provider", "MUST examination archive").contains("related_codes", [code]).order("title"),
+      user ? paperQuery : paperQuery.eq("hidden", false),
       supabase.from("ace_resources").select("id,title,storage_path,status,created_at,related_paper_id")
         .eq("status", "approved").eq("kind", "Model answer").eq("course_code", code).order("created_at", { ascending: false }),
       ownRequest
@@ -128,7 +129,9 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
             );
           })}
         </div>
-      ) : <div className="ace-exam-empty">No MUST past paper has been mapped to this unit yet. We will add papers only when the source and unit code can be checked.</div>}
+      ) : <div className="ace-exam-empty">{user
+        ? "No MUST past paper has been mapped to this unit yet. We will add papers only when the source and unit code can be checked."
+        : "Sign in to view the authenticated MUST examination archive for this unit. Only verified paper-to-unit mappings are shown."}</div>}
       {issue && <p className="status" role="alert">{issue} <button className="text-link" onClick={() => void load()}>Retry</button></p>}
       {notice && <p className="status" role="status">{notice}</p>}
       {reading && <div className="ace-paper-reader-backdrop" role="presentation" onMouseDown={event => { if (event.target === event.currentTarget) setReading(null); }}>
