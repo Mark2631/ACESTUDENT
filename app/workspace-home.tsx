@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Brain, BookOpen, FileText, Users } from "lucide-react";
+import { ArrowRight, Brain, BookOpen, CalendarDays, FileText, Users } from "lucide-react";
 import type { User } from "@supabase/supabase-js";
 import LearningProgress from "./learning-progress";
 import BbaPilot from "./bba-pilot";
@@ -43,6 +43,7 @@ export default function WorkspaceHome({
               <button onClick={onLibrary}><BookOpen size={19}/><span><strong>Learning library</strong><small>Lessons and curated course materials</small></span><ArrowRight size={15}/></button>
               <button onClick={onNotes}><FileText size={19}/><span><strong>Shared revision notes</strong><small>Collaborate with your course mates</small></span><ArrowRight size={15}/></button>
               <button onClick={onSpaces}><Users size={19}/><span><strong>Study discussions</strong><small>Ask questions and work through difficult topics</small></span><ArrowRight size={15}/></button>
+              <button onClick={onPlanner}><CalendarDays size={19}/><span><strong>Study planner</strong><small>Plan revision around your exam timetable</small></span><ArrowRight size={15}/></button>
             </div>
           </section>
         </>
