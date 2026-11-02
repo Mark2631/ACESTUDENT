@@ -83,10 +83,12 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
   async function openAnswer(answer: Answer) {
     if (!supabase || openingAnswer) return;
     setOpeningAnswer(answer.id);
+    const popup = window.open("about:blank", "_blank");
     const { data, error } = await supabase.storage.from("ace-submissions").createSignedUrl(answer.storage_path, 300);
     setOpeningAnswer("");
-    if (error || !data?.signedUrl) { setNotice("This answer could not be opened. Try again."); return; }
-    window.open(data.signedUrl, "_blank", "noopener,noreferrer");
+    if (error || !data?.signedUrl) { popup?.close(); setNotice("This answer could not be opened. Try again."); return; }
+    if (popup) popup.location.href = data.signedUrl;
+    else window.location.assign(data.signedUrl);
   }
 
   return (
