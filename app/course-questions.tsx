@@ -121,6 +121,20 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
 
   useEffect(() => { void load(); }, [code, user.id]);
 
+  useEffect(() => {
+    if (!supabase) return;
+    const refresh = () => { void load(); };
+    const channel = supabase.channel("ace-bba-qna-" + code + "-" + user.id)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "ace_course_questions", filter: "course_code=eq." + code }, refresh)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ace_course_questions", filter: "course_code=eq." + code }, refresh)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "ace_course_answers" }, refresh)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ace_course_answers" }, refresh)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "ace_course_answer_reviews" }, refresh)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ace_course_answer_reviews" }, refresh)
+      .subscribe();
+    return () => { void supabase.removeChannel(channel); };
+  }, [code, user.id]);
+
   const visibleQuestions = useMemo(() => questions.filter(question =>
     [question.title, question.body, question.question_type].join(" ").toLowerCase().includes(search.toLowerCase())
   ), [questions, search]);
@@ -249,11 +263,14 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
     setWorking("");
   }
 
-  async function shareQuestionImage(question: CourseQuestion) {
+  async function shareQuestionImage(question: CourseQuestion, forAi: boolean) {
     if (!question.image_path) return;
     const signedUrl = mediaUrls[question.image_path];
     if (!signedUrl) { setIssue("The screenshot is still loading. Try again."); return; }
-    const text = "Help me understand and solve this " + courseTitle + " question. Explain the relevant concept and reasoning step by step, and distinguish what is visible from assumptions.\n\n" + question.title + "\n" + question.body;
+    const context = question.title + "\n" + question.body;
+    const text = forAi
+      ? "Help me understand and solve this " + courseTitle + " question. Explain the relevant concept and reasoning step by step, distinguish what is visible from assumptions, and do not invent facts.\n\n" + context
+      : "Can you work through this " + courseTitle + " question with me? Share your approach or point out what I may be missing.\n\n" + context + "\n\nUnit discussion: " + window.location.href;
     try {
       const response = await fetch(signedUrl);
       if (!response.ok) throw new Error("Screenshot download failed.");
@@ -261,17 +278,27 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
       const extension = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
       const file = new File([blob], "ace-question." + extension, { type: blob.type || "image/jpeg" });
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ title: "Ace Student · " + code, text, files: [file] });
+        await navigator.share({
+          title: "Ace Student · " + code,
+          text,
+          files: [file]
+        });
       } else {
-        await navigator.clipboard.writeText(text + "\n\nOpen the question thread in Ace Student: " + window.location.href);
-        setNotice("AI prompt copied. This browser cannot attach the screenshot; open the image and use your device's Share action.");
+        await navigator.clipboard.writeText(text + "\n\nThe screenshot is available in the Ace Student thread: " + window.location.href);
+        setNotice(forAi
+          ? "AI prompt copied. This browser cannot attach the image; open the screenshot and use your device's Share action."
+          : "Question context copied. Open the screenshot in Ace Student and share it from your device.");
       }
     } catch (error) {
       if (error instanceof Error && error.name === "AbortError") return;
       try {
-        await navigator.clipboard.writeText(text + "\n\nOpen the question thread in Ace Student: " + window.location.href);
-        setNotice("AI prompt copied. Share the screenshot separately from the question thread.");
-      } catch { setIssue("Could not share the screenshot. Open the image and use your device's Share action."); }
+        await navigator.clipboard.writeText(text + "\n\nOpen the screenshot in Ace Student: " + window.location.href);
+        setNotice(forAi
+          ? "AI prompt copied. Share the screenshot separately from the question thread."
+          : "Question text copied. Share the screenshot separately from the question thread.");
+      } catch {
+        setIssue("Could not share the screenshot. Open the image and use your device's Share action.");
+      }
     }
   }
 
@@ -333,7 +360,7 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
             {selectedQuestion.image_path && mediaUrls[selectedQuestion.image_path] && <img className="cq-attachment" src={mediaUrls[selectedQuestion.image_path]} alt="Screenshot attached to the question"/>}
             <div className="cq-question-tools">
               <button onClick={() => void shareQuestion(selectedQuestion, false)}><Share2 size={14}/> Share</button>
-              <button onClick={() => void shareQuestion(selectedQuestion, true)}><Sparkles size={14}/> Send to AI</button>{selectedQuestion.image_path && <button onClick={() => void shareQuestionImage(selectedQuestion)}><FileImage size={14}/> Send screenshot to AI</button>}
+              <button onClick={() => void shareQuestion(selectedQuestion, true)}><Sparkles size={14}/> Send to AI</button>{selectedQuestion.image_path && <button onClick={() => void shareQuestionImage(selectedQuestion, false)}><Share2 size={14}/> Share screenshot</button><button onClick={() => void shareQuestionImage(selectedQuestion, true)}><FileImage size={14}/> Send screenshot to AI</button>}
               {selectedQuestion.author_id === user.id && <button onClick={() => void toggleResolved()}><CheckCircle2 size={14}/>{selectedQuestion.is_resolved ? "Reopen question" : "Mark resolved"}</button>}
             </div>
           </article>
