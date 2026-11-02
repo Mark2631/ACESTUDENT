@@ -334,7 +334,10 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
           <div className="cq-answers-heading"><h3>{selectedAnswers.length} peer {selectedAnswers.length === 1 ? "answer" : "answers"}</h3><span>Each answer needs a review</span></div>
           {selectedAnswers.length ? selectedAnswers.map(answer => {
             const review = reviewByAnswer.get(answer.id);
-            const canReview = selectedQuestion.author_id === user.id || isReviewer;
+            // No one may evaluate their own answer. A question host or an authorised reviewer can evaluate peers.
+            const canReview = answer.author_id !== user.id && (selectedQuestion.author_id === user.id || isReviewer);
+            // A question host cannot overwrite a moderator's evaluation unless they are themselves an authorised reviewer.
+            const canEditReview = !review || review.reviewer_id === user.id || isReviewer;
             const draft = reviewDrafts[answer.id] ?? { verdict: review?.verdict ?? "correct", feedback: review?.feedback ?? "" };
             return <article className="cq-answer-card" key={answer.id}>
               <div className="cq-answer-meta"><span>{answer.author_id === user.id ? "Your answer" : "Student answer"}</span><span>{new Date(answer.created_at).toLocaleString()}</span></div>
@@ -345,7 +348,7 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
                 {review.feedback && <p>{review.feedback}</p>}
                 <small>Reviewed {new Date(review.reviewed_at).toLocaleString()}</small>
               </div> : <p className="cq-awaiting">Awaiting evaluation by the question host.</p>}
-              {canReview && <details className="cq-review-form" open={!review}>
+              {canReview && canEditReview && <details className="cq-review-form" open={!review}>
                 <summary>{review ? "Update evaluation" : "Evaluate this answer"}</summary>
                 <label className="field">Evaluation</label>
                 <select className="control" value={draft.verdict} onChange={event => setReviewDrafts(items => ({ ...items, [answer.id]: { ...draft, verdict: event.target.value as Verdict } }))}>
