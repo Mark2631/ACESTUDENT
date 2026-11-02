@@ -7,6 +7,7 @@ import "./ace-campus-ui.css";
 import "./bba-pilot.css";
 import "./course-exam-papers.css";
 import "./question-sharing.css";
+import "./guest-practice.css";
 import "./course-questions.css";
 import { PWARegister } from "./pwa-register";
 export const metadata: Metadata = {
