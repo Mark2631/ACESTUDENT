@@ -16,7 +16,7 @@ VALUES
   jsonb_build_object('question','How does workforce planning differ from recruitment?','answer','Workforce planning identifies future people and skill requirements and compares them with current capacity. Recruitment is one possible response used to attract applicants when a staffing gap exists.'),
   jsonb_build_object('question','Why should selection criteria be linked to job analysis?','answer','Job analysis identifies actual duties and competencies. Linking selection to it makes decisions more relevant, consistent, explainable and defensible.'),
   jsonb_build_object('question','Name two ways an organisation can evaluate training effectiveness.','answer','It can assess demonstrated skill or knowledge before and after training and examine whether performance or work outcomes improve after employees return to the role.')
- ),'people','emerald',true),
+ ),'briefcase','sage',true),
 
 ('bba-business-law-contracts','Business law: agreements, contracts and remedies in Kenya','business-law','Business Law','Intermediate',12,
  'Build a foundation for analysing business agreements: identify the parties, offer, acceptance, consideration, intention, capacity, terms and possible remedies. Original Ace introduction for BFB3201; verify legal rules against current Kenyan legislation and cases.',
@@ -46,7 +46,7 @@ VALUES
   jsonb_build_object('question','What is the difference between a business idea and an opportunity?','answer','An idea is a proposed solution. An opportunity has evidence of a meaningful customer problem, a reachable market and a plausible way to create and capture value.'),
   jsonb_build_object('question','Why are questions about recent customer behaviour stronger than asking if someone likes an idea?','answer','Recent behaviour provides evidence of actual needs, choices and spending. Positive opinions about a hypothetical idea may not translate into adoption or payment.'),
   jsonb_build_object('question','What should a useful pilot measure?','answer','It should measure the assumption being tested using observable behaviour such as paid conversion, repeat use, delivery time, customer acquisition cost or contribution margin.')
- ),'lightbulb','amber',true),
+ ),'briefcase','amber',true),
 
 ('bba-leadership-practice','Leadership: influence, decisions and team performance','leadership','Leadership','Intermediate',9,
  'Understand leadership as influence toward shared goals, distinguish it from management, and examine how context, ethics, motivation and communication shape team performance. Original Ace introduction for BFB3203.',
@@ -61,7 +61,7 @@ VALUES
   jsonb_build_object('question','Why is leadership not identical to management?','answer','Leadership emphasises influence and direction, while management emphasises coordination and execution. In practice, effective managers and leaders often need both.'),
   jsonb_build_object('question','What is the central idea of a situational leadership approach?','answer','The most effective behaviour depends on the task, context and needs or capability of the people involved; no single style is best in every situation.'),
   jsonb_build_object('question','Why should a leader evaluate more than short-term output?','answer','Short-term output may conceal burnout, turnover, poor conduct, low trust or capability gaps that damage long-term organisational performance.')
- ),'leadership','emerald',true),
+ ),'brain','sage',true),
 
 ('bba-public-relations-trust','Public relations: build trust with planned communication','public-relations','Public Relations','Intermediate',10,
  'Learn how organisations research publics, set communication objectives, choose channels, manage relationships and evaluate outcomes. Original Ace introduction for BFB3205; distinguish strategic public relations from simply posting on social media.',
@@ -76,7 +76,7 @@ VALUES
   jsonb_build_object('question','How is public relations different from publicity?','answer','Publicity is one communication output. Public relations is a broader planned function that researches publics, manages relationships, communicates and evaluates outcomes.'),
   jsonb_build_object('question','What is the difference between an output and an outcome in PR evaluation?','answer','An output is an activity or item produced, such as a press release. An outcome is a resulting change in understanding, attitude, trust or behaviour.'),
   jsonb_build_object('question','What should a crisis update include when facts are still emerging?','answer','It should state verified facts, acknowledge affected people, explain immediate actions, identify what is not yet known and give a clear time or channel for the next update.')
- ),'megaphone','violet',true),
+ ),'market','slate',true),
 
 ('bba-cost-accounting-decisions','Cost accounting: classify costs and support decisions','cost-accounting','Cost Accounting','Intermediate',12,
  'Build a practical foundation for cost classification, costing methods, cost behaviour, contribution and break-even analysis. Original Ace introduction for BFC3227; follow the lecturer's prescribed methods and formats.',
