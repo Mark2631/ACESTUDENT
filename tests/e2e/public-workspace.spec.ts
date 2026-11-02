@@ -1,31 +1,32 @@
 import {test,expect} from "@playwright/test";
-test("visitors see actual learning before an account wall",async({page})=>{
+test("the homepage is a focused MUST BBA course map",async({page})=>{
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"Make your next hour count."})).toBeVisible();
- await expect(page.getByRole("heading",{name:"Find the subject you need"})).toBeVisible();
- await expect(page.getByRole("button",{name:/Business & enterprise/})).toBeVisible();
- await expect(page.getByRole("button",{name:/Computing & technology/})).toBeVisible();
- await page.getByRole("button",{name:/Business & enterprise/}).click();
- await expect(page.getByRole("button",{name:/Accounting/})).toBeVisible();
- await page.locator(".v2-topic-open").filter({hasText:"Accounting"}).click();
- await expect(page.getByRole("heading",{name:"Shared student documents"})).toBeVisible();
- await page.locator(".navitem").filter({hasText:"Learning library"}).click();
- await expect(page).toHaveURL(/\/library$/);
- await expect(page.getByRole("heading",{name:"Shared student documents"})).toBeVisible();
- await expect(page.getByRole("heading",{name:"Learn something. Understand it."})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Your BBA study desk"})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Bachelor of Business Administration"})).toBeVisible();
+ await expect(page.getByText("School of Business & Economics")).toBeVisible();
+ await expect(page.locator(".bba-unit-card").filter({hasText:"BFB3200"})).toBeVisible();
+ await expect(page.getByText("YOUR 2026 Y2S1 TIMETABLE").first()).toBeVisible();
+ await expect(page.getByText("CONFIRM CURRENT REGISTRATION")).toBeVisible();
+ await expect(page.getByLabel("Year")).toHaveValue("2");
+ await expect(page.getByLabel("Semester")).toHaveValue("1");
 });
-test("subject explorer exposes real topics and a clear account boundary for saved learning plans",async({page})=>{
+test("a BBA unit opens its official past-paper workspace without sign-in",async({page})=>{
  await page.goto("/");
- await page.getByRole("button",{name:/Business & enterprise/}).click();
- await expect(page.getByRole("button",{name:/Accounting/})).toBeVisible();
- await expect(page.getByRole("button",{name:/Economics/})).toBeVisible();
- await page.locator(".v2-follow").first().click();
- await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();
+ await page.locator(".bba-unit-card").filter({hasText:"BFB3201"}).getByRole("button",{name:"Open unit"}).click();
+ await expect(page.getByRole("heading",{name:"Business Law"})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Past papers & model answers"})).toBeVisible();
+ await expect(page.getByText("Business Law, January 2026")).toBeVisible();
+ await expect(page.getByText("MUST examination archive").first()).toBeVisible();
 });
-
-test("the practice shortcut opens the community practice arena, not Study Studio",async({page})=>{
+test("students can select another semester and see only the mapped BBA units",async({page})=>{
  await page.goto("/");
- await page.locator(".v2-quicklink").filter({hasText:"Practice"}).click();
+ await page.getByLabel("Semester").selectOption("2");
+ await expect(page.locator(".bba-unit-card").filter({hasText:"BFB3250"})).toBeVisible();
+ await expect(page.locator(".bba-unit-card").filter({hasText:"BFB3200"})).toHaveCount(0);
+});
+test("the practice shortcut opens the exam practice arena",async({page})=>{
+ await page.goto("/");
+ await page.locator(".bba-action-grid").getByRole("button",{name:/Practise for exams/}).click();
  await expect(page.getByRole("heading",{name:"Practice what you're studying"})).toBeVisible();
 });
 test("major URLs load directly without losing their destination",async({page})=>{
@@ -50,8 +51,8 @@ test("desktop and phone use deliberately different navigation layouts",async({pa
  await page.goto("/");
  await expect(page.locator(".side")).toBeVisible();
  await expect(page.locator(".bottom")).toBeHidden();
- await expect(page.locator(".ace-home-v2")).toBeVisible();
- await expect(page.locator(".v2-hero")).toBeVisible();
+ await expect(page.locator(".ace-bba-home")).toBeVisible();
+ await expect(page.locator(".bba-unit-grid")).toBeVisible();
  await page.setViewportSize({width:390,height:844});
  await expect(page.locator(".side")).toBeVisible();
  await expect(page.locator(".bottom")).toBeVisible();
@@ -59,7 +60,7 @@ test("desktop and phone use deliberately different navigation layouts",async({pa
 test("the workspace has no sideways overflow on a narrow phone",async({page})=>{
  await page.setViewportSize({width:360,height:780});
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"Make your next hour count."})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Your BBA study desk"})).toBeVisible();
  await expect(page.locator(".side")).toBeVisible();
  await expect(page.locator(".bottom")).toBeVisible();
  await expect(page.getByRole("button",{name:"Create on Ace Student"})).toBeVisible();
