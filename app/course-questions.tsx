@@ -360,7 +360,7 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
             {selectedQuestion.image_path && mediaUrls[selectedQuestion.image_path] && <img className="cq-attachment" src={mediaUrls[selectedQuestion.image_path]} alt="Screenshot attached to the question"/>}
             <div className="cq-question-tools">
               <button onClick={() => void shareQuestion(selectedQuestion, false)}><Share2 size={14}/> Share</button>
-              <button onClick={() => void shareQuestion(selectedQuestion, true)}><Sparkles size={14}/> Send to AI</button>{selectedQuestion.image_path && <button onClick={() => void shareQuestionImage(selectedQuestion, false)}><Share2 size={14}/> Share screenshot</button><button onClick={() => void shareQuestionImage(selectedQuestion, true)}><FileImage size={14}/> Send screenshot to AI</button>}
+              <button onClick={() => void shareQuestion(selectedQuestion, true)}><Sparkles size={14}/> Send to AI</button>{selectedQuestion.image_path && <><button onClick={() => void shareQuestionImage(selectedQuestion, false)}><Share2 size={14}/> Share screenshot</button><button onClick={() => void shareQuestionImage(selectedQuestion, true)}><FileImage size={14}/> Send screenshot to AI</button></>}
               {selectedQuestion.author_id === user.id && <button onClick={() => void toggleResolved()}><CheckCircle2 size={14}/>{selectedQuestion.is_resolved ? "Reopen question" : "Mark resolved"}</button>}
             </div>
           </article>
