@@ -3,6 +3,7 @@ import {useEffect,useState} from "react";
 import Link from "next/link";
 import {ArrowLeft,ArrowRight,BookOpen,FileText,GraduationCap,LockKeyhole} from "lucide-react";
 import {supabase} from "@/lib/supabase";
+import CourseExamPapers from "./course-exam-papers";
 type Unit={code:string;title:string;year_of_study:number|null;semester:number|null};
 type Lesson={id:string;slug:string;title:string;subject_label:string;summary:string;reading_minutes:number};
 type Document={id:string;title:string;kind:string;course_code:string};
@@ -31,6 +32,7 @@ export default function PublicCourse({code,onBack,onSignIn}:{code:string;onBack:
    <h2 className="section"><BookOpen size={19}/> Open learning resources</h2>
    <p className="muted">Original Ace lessons to build foundational knowledge. General lessons are shown when a course-specific lesson isn't available.</p>
    {lessons.length?<div className="open-grid">{lessons.map(m=><article key={m.id} className="panel open-card"><div className="eyebrow">{m.subject_label} · {m.reading_minutes} min</div><h3>{m.title}</h3><p className="muted">{m.summary}</p><Link className="btn secondary" href={"/library?lesson="+encodeURIComponent(m.slug)}>Read inside Ace <ArrowRight size={16}/></Link></article>)}</div>:<div className="empty"><GraduationCap/><h3>No lessons available yet</h3><p className="muted">New readings are being added to Ace's own learning library.</p></div>}
+   <CourseExamPapers user={null} code={code} courseTitle={unit?.title ?? code} onSignIn={onSignIn}/>
    <h2 className="section"><FileText size={19}/> Student documents</h2>
    {documents.length?<div className="open-grid">{documents.map(m=><Link key={m.id} className="panel open-card" href={"/read/"+encodeURIComponent(m.id)}><div className="eyebrow">{m.kind}</div><h3>{m.title}</h3><span className="text-link">Read on Ace Student</span></Link>)}</div>:<div className="empty"><FileText/><h3>No approved student uploads for this unit</h3><p className="muted">Contributions will appear here once reviewed.</p></div>}
   </>}
