@@ -6,6 +6,7 @@ test("the homepage is a focused MUST BBA course map",async({page})=>{
  await expect(page.getByText("School of Business & Economics")).toBeVisible();
  await expect(page.locator(".bba-unit-card").filter({hasText:"BFB3200"})).toBeVisible();
  await expect(page.getByText("YOUR 2026 Y2S1 TIMETABLE").first()).toBeVisible();
+ await expect(page.locator(".bba-unit-current")).toHaveCount(6);
  await expect(page.getByText("CONFIRM CURRENT REGISTRATION")).toBeVisible();
  await expect(page.getByLabel("Year")).toHaveValue("2");
  await expect(page.getByLabel("Semester")).toHaveValue("1");
@@ -45,6 +46,20 @@ test("public course deep links work without authentication",async({page})=>{
  await page.goto("/courses/BFB3201");
  await expect(page.getByText("EXPLORE A COURSE")).toBeVisible();
  await expect(page.getByRole("heading",{name:"Open learning resources"})).toBeVisible();
+});
+test("all six initial BBA units have matching in-app concept lessons",async({page})=>{
+ const lessons=[
+  ["BFB3200","Human resource management: from workforce planning to performance"],
+  ["BFB3201","Business law: agreements, contracts and remedies in Kenya"],
+  ["BFB3202","Entrepreneurship: test an opportunity before investing"],
+  ["BFB3203","Leadership: influence, decisions and team performance"],
+  ["BFB3205","Public relations: build trust with planned communication"],
+  ["BFC3227","Cost accounting: classify costs and support decisions"]
+ ];
+ for(const [code,title] of lessons){
+  await page.goto("/courses/"+code);
+  await expect(page.getByRole("heading",{name:title})).toBeVisible();
+ }
 });
 test("desktop and phone use deliberately different navigation layouts",async({page})=>{
  await page.setViewportSize({width:1440,height:900});
