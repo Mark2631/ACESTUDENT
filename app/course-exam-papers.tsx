@@ -15,7 +15,7 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
   const [loading, setLoading] = useState(true);
   const [issue, setIssue] = useState("");
   const [uploadingFor, setUploadingFor] = useState("");
-  const [file, setFile] = useState<File | null>(null);
+  const [filesByPaper, setFilesByPaper] = useState<Record<string, File | null>>({});
   const [notice, setNotice] = useState("");
   const [reading, setReading] = useState<Paper | null>(null);
   const [openingAnswer, setOpeningAnswer] = useState("");
@@ -46,6 +46,7 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
   useEffect(() => { void load(); }, [code, user?.id]);
 
   async function submitAnswer(paper: Paper) {
+    const file = filesByPaper[paper.id];
     if (!supabase || !user || !file || uploadingFor) return;
     if (!file.name.toLowerCase().endsWith(".pdf") || file.size < 8 || file.size > 15 * 1024 * 1024) {
       setNotice("Choose a PDF between 8 bytes and 15 MB."); return;
@@ -58,7 +59,7 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
       const upload = await supabase.storage.from("ace-submissions").upload(path, file, { contentType: "application/pdf", upsert: false });
       if (upload.error) throw new Error(upload.error.message);
       const saved = await supabase.from("ace_resources").insert({
-        title: "Model answer — " + paper.title,
+        title: ("Model answer — " + paper.title).slice(0, 140),
         description: "Student-submitted model answer linked to " + paper.title + ". Pending content review.",
         course_code: code,
         course_name: courseTitle,
@@ -72,7 +73,7 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
         await supabase.storage.from("ace-submissions").remove([path]);
         throw new Error(saved.error.message);
       }
-      setFile(null);
+      setFilesByPaper(current => ({ ...current, [paper.id]: null }));
       setNotice("Submitted. Your PDF is private until a reviewer approves it.");
       await load();
     } catch (error) {
@@ -121,8 +122,8 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
                   {user ? <details className="ace-answer-upload">
                     <summary><UploadCloud size={14}/> Upload a model answer for this paper</summary>
                     <p>Upload your own worked solution as a PDF. It stays private until reviewed.</p>
-                    <input type="file" accept="application/pdf,.pdf" onChange={event => setFile(event.target.files?.[0] ?? null)} aria-label={"Choose model answer PDF for " + paper.title}/>
-                    <button className="btn" onClick={() => void submitAnswer(paper)} disabled={!file || !!uploadingFor}>{uploadingFor === paper.id ? "Uploading…" : "Submit for review"}</button>
+                    <input type="file" accept="application/pdf,.pdf" onChange={event => setFilesByPaper(current => ({ ...current, [paper.id]: event.target.files?.[0] ?? null }))} aria-label={"Choose model answer PDF for " + paper.title}/>
+                    <button className="btn" onClick={() => void submitAnswer(paper)} disabled={!filesByPaper[paper.id] || !!uploadingFor}>{uploadingFor === paper.id ? "Uploading…" : "Submit for review"}</button>
                   </details> : <button className="text-link" onClick={onSignIn}>Sign in to contribute a model answer</button>}
                 </div>
               </article>
