@@ -109,3 +109,6 @@
 }
 @media(max-width:410px){.ace-library-lesson-grid{grid-template-columns:1fr}.ace-lesson-art{min-height:125px}.ace-lesson-card h2{font-size:16px}.ace-reader-hero .ace-lesson-art.large{display:none}}
 @media(prefers-reduced-motion:reduce){.ace-lesson-card{transition:none}}
+
+.ace-make-cards-button{display:inline-flex;align-items:center;gap:8px;min-height:39px;margin:10px 0 0;padding:9px 12px;border:1px solid var(--accent);border-radius:8px;background:var(--soft);color:var(--accent);font-size:10px;font-weight:850}
+.ace-make-cards-button:hover{filter:brightness(.97)}
