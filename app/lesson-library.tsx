@@ -26,7 +26,7 @@ function LessonIllustration({lesson,large=false}:{lesson:AceLesson;large?:boolea
   <div className="ace-art-stamp">ACE / STUDY</div>
  </div>;
 }
-function LessonReader({lesson,onClose,onNext,nextLesson}:{lesson:AceLesson;onClose:()=>void;onNext:()=>void;nextLesson:AceLesson|null}){
+function LessonReader({lesson,onClose,onNext,nextLesson,onMakeCards}:{lesson:AceLesson;onClose:()=>void;onNext:()=>void;nextLesson:AceLesson|null;onMakeCards:(lesson:AceLesson)=>void}){
  const[revealed,setRevealed]=useState<number[]>([]);
  const[completed,setCompleted]=useState(false);
  const [activeSection,setActiveSection]=useState(0);
@@ -44,13 +44,13 @@ function LessonReader({lesson,onClose,onNext,nextLesson}:{lesson:AceLesson;onClo
    <aside className="ace-reader-toc"><span className="ace-lesson-kicker">ON THIS PAGE</span><nav>{lesson.sections.map((section,i)=><button className={activeSection===i?"active":""} onClick={()=>{setActiveSection(i);document.getElementById("ace-lesson-"+i)?.scrollIntoView({behavior:"smooth",block:"start"})}} key={i}><span>{String(i+1).padStart(2,"0")}</span>{section.heading}</button>)}</nav><div className="ace-reader-outcomes"><strong>What you'll learn</strong>{lesson.learning_outcomes?.map((v,i)=><span key={i}><Check size={13}/>{v}</span>)}</div></aside>
    <article className="ace-reader-article">{lesson.sections.map((section,i)=><section key={i} id={"ace-lesson-"+i} className="ace-reader-section"><div className="ace-lesson-kicker">PART {String(i+1).padStart(2,"0")}</div><h2>{section.heading}</h2><p>{section.body}</p>{section.example&&<div className="ace-lesson-example"><span>PUT IT INTO PRACTICE</span><p>{section.example}</p></div>}</section>)}
     <section className="ace-lesson-review"><span className="ace-lesson-kicker">RETRIEVAL PRACTICE</span><h2>Check what you remember</h2><p>Try answering before revealing each explanation.</p>{lesson.review_questions.map((item,i)=><div className="ace-recall-row" key={i}><button onClick={()=>setRevealed(prev=>prev.includes(i)?prev.filter(x=>x!==i):[...prev,i])} aria-expanded={revealed.includes(i)}><span>{i+1}. {item.question}</span><ChevronDown size={17}/></button>{revealed.includes(i)&&<p>{item.answer}</p>}</div>)}
-     <button className="ace-complete-button" onClick={markRead}>{completed?<><CheckCircle2 size={17}/> Lesson completed</>:<><Check size={17}/> Mark lesson complete</>}</button>
+     <button className="ace-complete-button" onClick={markRead}>{completed?<><CheckCircle2 size={17}/> Lesson completed</>:<><Check size={17}/> Mark lesson complete</>}</button><button className="ace-make-cards-button" onClick={()=>onMakeCards(lesson)}><Layers3 size={16}/> Turn this lesson into revision cards</button>
     </section><div className="ace-reader-finish"><div><strong>Keep the momentum.</strong><p>{nextLesson?"Your next lesson is ready.":"Explore more subjects in your library."}</p></div><button onClick={nextLesson?onNext:onClose}>{nextLesson?"Next lesson":"Back to lessons"} <ArrowRight size={16}/></button></div>
    </article>
   </div>
  </div>;
 }
-export default function LessonLibrary({query,initialLessonSlug="",user,onSignIn}:{query:string;initialLessonSlug?:string;user:User|null;onSignIn:()=>void}){
+export default function LessonLibrary({query,initialLessonSlug="",user,onSignIn,onMakeCards}:{query:string;initialLessonSlug?:string;user:User|null;onSignIn:()=>void;onMakeCards:(lesson:AceLesson)=>void}){
  const[lessons,setLessons]=useState<AceLesson[]>([]),[loading,setLoading]=useState(true),[error,setError]=useState("");
  const[retryCount,setRetryCount]=useState(0);
  const[active,setActive]=useState("All subjects"),[term,setTerm]=useState(""),[selected,setSelected]=useState(""),[completed,setCompleted]=useState<string[]>([]);
@@ -84,7 +84,7 @@ export default function LessonLibrary({query,initialLessonSlug="",user,onSignIn}
  const next=lesson?lessons[(lessons.indexOf(lesson)+1)%lessons.length]:null;
  const close=useCallback(()=>{setSelected("");if(window.location.pathname==="/library")window.history.replaceState(null,"","/library")},[]);
  function open(slug:string){setSelected(slug);if(window.location.pathname==="/library")window.history.replaceState(null,"","/library?lesson="+encodeURIComponent(slug));window.scrollTo({top:0,behavior:"smooth"})}
- if(lesson)return <LessonReader lesson={lesson} onClose={close} nextLesson={next?.slug!==lesson.slug?next:null} onNext={()=>{if(next)open(next.slug)}}/>;
+ if(lesson)return <LessonReader lesson={lesson} onClose={close} nextLesson={next?.slug!==lesson.slug?next:null} onNext={()=>{if(next)open(next.slug)}} onMakeCards={onMakeCards}/>;
  return <section className="ace-library-v2">
  <div className="ace-library-intro"><div><span className="ace-lesson-kicker">ACE / ORIGINAL LEARNING</span><h1>Learn something. Understand it.</h1><p>Actual lessons, examples and recall questions. Everything is readable here — no redirects, no empty collections.</p></div><div className="ace-library-symbol" aria-hidden="true"><BookOpen size={45} strokeWidth={1.3}/></div></div>
  <div className="ace-library-toolbar"><label><Search size={17}/><input aria-label="Search lessons" placeholder="Search lessons and topics" value={term} onChange={e=>setTerm(e.target.value)}/></label><span>{lessons.length} lessons in your library</span></div>
