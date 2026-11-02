@@ -51,7 +51,40 @@ export function OpenLibrary({query,user,onSignIn,initialResourceId}:{query:strin
 }
 export function Arena({user,courseCode,quizId,onClearQuiz,onStudyMistakes}:{user:User,courseCode?:string,quizId?:string,onClearQuiz:()=>void,onStudyMistakes:(title:string,source:string,courseCode:string)=>void}){
  const[autoOpenedQuizId,setAutoOpenedQuizId]=useState("");const[quizzes,setQuizzes]=useState<Quiz[]>([]),[attempts,setAttempts]=useState<Attempt[]>([]),[xp,setXp]=useState(0),[busy,setBusy]=useState(true),[chosen,setChosen]=useState<Quiz|null>(null),[questions,setQuestions]=useState<Question[]>([]),[answers,setAnswers]=useState<Record<string,number>>({}),[result,setResult]=useState<Result|null>(null),[issue,setIssue]=useState(""),[working,setWorking]=useState(false);const[screenshotQuestion,setScreenshotQuestion]=useState<Question|null>(null),screenshotInput=useRef<HTMLInputElement>(null);
- async function reload(){if(!supabase)return;const [q,a,x]=await Promise.all([supabase.from("ace_quizzes").select("id,title,course_code,description").eq("status","published").order("created_at"),supabase.from("ace_quiz_attempts").select("id,quiz_id,correct_count,total_count,xp_awarded").eq("user_id",user.id),supabase.from("ace_xp").select("xp").eq("user_id",user.id).maybeSingle()]);if(q.error)setIssue("Unable to load challenges.");else setQuizzes(q.data??[]);setAttempts(a.data??[]);setXp(x.data?.xp??0);setBusy(false)}
+ async function reload(){
+  if(!supabase)return;
+  setBusy(true);setIssue("");
+  try{
+   const programme=await supabase.from("ace_programmes").select("id")
+    .eq("name","Bachelor of Business Administration")
+    .eq("school","School of Business and Economics").maybeSingle();
+   if(programme.error||!programme.data)throw new Error("The MUST BBA pilot catalogue is unavailable.");
+   const catalogue=await supabase.from("ace_course_catalog").select("code")
+    .eq("programme_id",programme.data.id);
+   if(catalogue.error)throw catalogue.error;
+   let codes=(catalogue.data??[]).map(row=>row.code);
+   if(courseCode)codes=codes.filter(code=>code.replace(/\\s+/g,"").toUpperCase()===courseCode.replace(/\\s+/g,"").toUpperCase());
+   if(!codes.length){setQuizzes([]);setAttempts([]);setXp(0);setBusy(false);return;}
+   const quizResult=await supabase.from("ace_quizzes").select("id,title,course_code,description")
+    .eq("status","published").in("course_code",codes).order("created_at");
+   if(quizResult.error)throw quizResult.error;
+   const quizIds=(quizResult.data??[]).map(row=>row.id);
+   const [attemptResult,xpResult]=await Promise.all([
+    quizIds.length
+     ? supabase.from("ace_quiz_attempts").select("id,quiz_id,correct_count,total_count,xp_awarded").eq("user_id",user.id).in("quiz_id",quizIds)
+     : Promise.resolve({data:[],error:null}),
+    supabase.from("ace_xp").select("xp").eq("user_id",user.id).maybeSingle()
+   ]);
+   if(attemptResult.error)throw attemptResult.error;
+   if(xpResult.error)throw xpResult.error;
+   setQuizzes(quizResult.data??[]);
+   setAttempts(attemptResult.data??[]);
+   setXp(xpResult.data?.xp??0);
+  }catch(error){
+   setIssue(error instanceof Error?error.message:"Unable to load BBA practice.");
+   setQuizzes([]);setAttempts([]);
+  }finally{setBusy(false);}
+ }
  useEffect(()=>{void reload()},[user.id]);
  useEffect(()=>{if(!quizId||busy||chosen||autoOpenedQuizId===quizId)return;const match=quizzes.find(q=>q.id===quizId&&(!courseCode||q.course_code===courseCode));if(match){setAutoOpenedQuizId(quizId);void begin(match);}else if(quizzes.length)setIssue("Selected quiz is unavailable.")},[quizId,busy,quizzes,courseCode,chosen,autoOpenedQuizId]);
  async function begin(q:Quiz){if(!supabase)return;setIssue("");setChosen(q);setResult(null);setAnswers({});setQuestions([]);const {data,error}=await supabase.rpc("ace_get_questions",{p_quiz:q.id});if(error){setIssue(error.message);return}setQuestions(data??[]);if(attempts.some(x=>x.quiz_id===q.id)){const reviewed=await supabase.rpc("ace_review_attempt",{p_quiz:q.id});if(!reviewed.error&&reviewed.data?.[0]){const a=reviewed.data[0];setAnswers(a.answers as Record<string,number>);setResult({correct_count:a.correct_count,total_count:a.total_count,xp_awarded:a.xp_awarded,explanations:a.explanations})}else setIssue("Could not load your graded review.")}}
