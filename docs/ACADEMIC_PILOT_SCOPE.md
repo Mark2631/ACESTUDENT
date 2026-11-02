@@ -4,8 +4,7 @@
 
 The first institutional pilot is limited to Meru University of Science and Technology (MUST), School of Business and Economics, Bachelor of Business Administration (BBA). Do not surface other MUST schools, other universities or unrelated general learning disciplines as equal catalogue destinations in the pilot experience.
 
-The programme catalogue contains 65 mapped BBA unit records across Years 1–4. It separates common units from the Finance & Accounting and Project Management pathways. This is a working map, not a declaration that the public university curriculum is complete or current. The MUST SBE public BBA structure is an older published page and must be confirmed with the department before it is treated as the current approved curriculum:
-- https://www.must.ac.ke/sbe/comment-page-1/
+The programme catalogue contains 65 mapped BBA unit records across Years 1–4. It separates common units from the Finance & Accounting and Project Management pathways. This is a working map, not a declaration that the public university curriculum is complete or current. The current MUST SBE undergraduate page lists BBA among the school programmes but does not provide a complete semester-by-semester unit map. The course list must be confirmed with the department before it is treated as the current approved curriculum:
 - https://sbe.must.ac.ke/undergraduate/
 
 ## Year 2 Semester 1 initial cohort
@@ -21,7 +20,7 @@ The six units in the user's supplied 2026 Y2S1 timetable are the initial pilot c
 | BFB3205 | Public Relations |
 | BFC3227 | Cost Accounting |
 
-The older published BBA course structure also lists BFB3204 Business English in Y2S1. It remains visible in the course map but is flagged for current-registration confirmation because it is absent from the supplied 2026 timetable. Do not silently delete it or represent it as registered by every student.
+The existing BBA catalogue snapshot also lists BFB3204 Business English in Y2S1. It remains visible in the course map but is flagged for current-registration confirmation because it is absent from the supplied 2026 timetable. Do not silently delete it or represent it as registered by every student.
 
 The connected catalogue currently has 7 Y2S1 common-unit records, 13 published practice quizzes across those records, and 11 official MUST past-paper links mapped to those units. The six timetable units each have two published quizzes. Business English currently has one. These are live catalogue counts, not student activity or pass-rate claims.
 
@@ -63,7 +62,7 @@ Migration: 20261102090000_ace_model_answer_paper_link.sql.
 
 ## Official university portals
 
-- SBE programme and curriculum: https://www.must.ac.ke/sbe/comment-page-1/
+- SBE undergraduate programmes: https://sbe.must.ac.ke/undergraduate/
 - Undergraduate programmes: https://sbe.must.ac.ke/undergraduate/
 - Official examination archive: https://exampapers.must.ac.ke/
 - MUST Library: https://library.must.ac.ke/
