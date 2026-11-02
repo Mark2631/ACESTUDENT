@@ -180,9 +180,31 @@ type Challenge={id:string,creator_id:string,quiz_id:string,title:string,ends_at:
 type Standing={participant:string,display_name:string,score:number|null,total:number|null,earned_xp:number|null,completed_at:string|null};
 export function PeerChallenges({user,quizzes,courseCode}:{user:User,quizzes:Quiz[],courseCode?:string}){
  const[play,setPlay]=useState(false),[refreshTick,setRefreshTick]=useState(0),[challenges,setChallenges]=useState<Challenge[]>([]),[joined,setJoined]=useState<string[]>([]),[selected,setSelected]=useState<Challenge|null>(null),[standings,setStandings]=useState<Standing[]>([]),[title,setTitle]=useState(""),[quizId,setQuizId]=useState(""),[creating,setCreating]=useState(false),[openForm,setOpenForm]=useState(false),[issue,setIssue]=useState("");
- async function reload(){if(!supabase)return;const [a,b]=await Promise.all([supabase.from("ace_challenges").select("*").order("created_at",{ascending:false}).limit(100),supabase.from("ace_challenge_members").select("challenge_id").eq("user_id",user.id)]);setChallenges(a.data??[]);setJoined((b.data??[]).map(x=>x.challenge_id));if(a.error||b.error)setIssue("Competition list unavailable.")}
- useEffect(()=>{void reload()},[user.id]);
- useEffect(()=>{const id=new URLSearchParams(window.location.search).get("challenge");if(!id||!supabase)return;void supabase.from("ace_challenges").select("*").eq("id",id).maybeSingle().then(({data})=>{if(data)setSelected(data)})},[]);
+ async function reload(){
+  if(!supabase)return;
+  const quizIds=quizzes.map(item=>item.id);
+  if(!quizIds.length){setChallenges([]);setJoined([]);return;}
+  const{data,error}=await supabase.from("ace_challenges").select("*")
+   .in("quiz_id",quizIds).order("created_at",{ascending:false}).limit(100);
+  if(error){setIssue("Competition list unavailable.");return;}
+  const rows=(data??[]) as Challenge[];
+  const ids=rows.map(item=>item.id);
+  const members=ids.length
+   ? await supabase.from("ace_challenge_members").select("challenge_id").eq("user_id",user.id).in("challenge_id",ids)
+   : {data:[],error:null};
+  setChallenges(rows);
+  setJoined((members.data??[]).map(item=>item.challenge_id));
+  if(members.error)setIssue("Your competition memberships could not be loaded.");
+ }
+ useEffect(()=>{void reload()},[user.id,quizzes.map(item=>item.id).join("|")]);
+ useEffect(()=>{
+  const id=new URLSearchParams(window.location.search).get("challenge");
+  if(!id||!supabase||!quizzes.length)return;
+  void supabase.from("ace_challenges").select("*").eq("id",id).maybeSingle().then(({data})=>{
+   if(data&&quizzes.some(item=>item.id===data.quiz_id))setSelected(data);
+   else if(data)setIssue("This competition is outside the MUST BBA pilot.");
+  });
+ },[quizzes.map(item=>item.id).join("|")]);
  useEffect(()=>{if(!selected||!supabase||!joined.includes(selected.id))return;void supabase.rpc("ace_challenge_standings",{p_challenge:selected.id}).then(({data,error})=>{if(error)setIssue(error.message);else setStandings(data??[])})},[selected?.id,joined,refreshTick]);
  async function create(e:React.FormEvent){e.preventDefault();if(!supabase||!quizId)return;setCreating(true);setIssue("");const{data,error}=await supabase.from("ace_challenges").insert({creator_id:user.id,title:title.trim(),quiz_id:quizId}).select("*").single();if(error){setIssue(error.message);setCreating(false);return}const enrollment=await supabase.from("ace_challenge_members").insert({challenge_id:data.id,user_id:user.id});if(enrollment.error)setIssue("Competition created, but joining failed: "+enrollment.error.message);setSelected(data);setTitle("");setOpenForm(false);await reload();setCreating(false)}
  async function join(c:Challenge){if(!supabase)return;setIssue("");const{error}=await supabase.from("ace_challenge_members").upsert({challenge_id:c.id,user_id:user.id},{onConflict:"challenge_id,user_id",ignoreDuplicates:true});if(error)setIssue(error.message);else{setJoined(x=>x.includes(c.id)?x:[...x,c.id]);setSelected(c)}}
