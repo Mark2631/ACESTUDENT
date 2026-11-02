@@ -4,6 +4,7 @@ import "./fieldnotes.css";
 import "./lesson-library.css";
 import "./ace-product-polish.css";
 import "./ace-campus-ui.css";
+import "./bba-pilot.css";
 import { PWARegister } from "./pwa-register";
 export const metadata: Metadata = {
  metadataBase: new URL("https://ace-student.vercel.app"),
