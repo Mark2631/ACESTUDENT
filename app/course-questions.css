@@ -1,0 +1,69 @@
+/* Unit-level discussion and answer review */
+.ace-course-questions{margin:30px 0;padding:19px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--ink)}
+.cq-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:15px}
+.cq-heading h2{margin:5px 0;font-family:"Manrope",sans-serif;font-size:20px;font-weight:850;letter-spacing:-.045em}
+.cq-heading p{max-width:670px;margin:4px 0 0;color:var(--sub);font-size:11px;line-height:1.6}
+.cq-question-form,.cq-answer-form{display:flex;flex-direction:column;gap:9px;margin:14px 0;padding:15px;border:1px solid var(--line);border-radius:10px;background:var(--surface2)}
+.cq-question-form .field,.cq-answer-form .field{margin:2px 0 0}
+.cq-question-form .control,.cq-answer-form .control{width:100%;min-width:0}
+.cq-question-form textarea,.cq-answer-form textarea{resize:vertical;min-height:94px}
+.cq-image-input{display:flex;align-items:center;gap:8px;min-height:38px;padding:9px 11px;border:1px dashed var(--line);border-radius:8px;background:var(--surface);color:var(--accent);font-size:10px;font-weight:750;cursor:pointer}
+.cq-question-form input[type=file],.cq-answer-form input[type=file]{width:100%;max-width:100%;font-size:9px;color:var(--sub)}
+.cq-filter{display:flex;align-items:center;gap:9px;max-width:440px;min-height:38px;margin:12px 0;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--sub)}
+.cq-filter input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--ink);font-size:11px}
+.cq-question-list{display:grid;gap:8px;margin-top:12px}
+.cq-question-row{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;padding:13px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);text-align:left}
+.cq-question-row:hover{border-color:var(--accent);background:var(--surface2)}
+.cq-question-row>svg{flex:0 0 auto;color:var(--accent)}
+.cq-question-row-main{display:flex;flex-direction:column;gap:5px;min-width:0}
+.cq-question-row-main small{color:var(--accent);font-size:8px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.cq-question-row-main strong{font-size:12px;font-weight:850;line-height:1.4}
+.cq-question-row-main>span{color:var(--sub);font-size:10px;line-height:1.55}
+.cq-thread{display:grid;gap:11px}
+.cq-back{display:inline-flex;align-items:center;gap:6px;justify-self:start;padding:0;border:0;background:transparent;color:var(--accent);font-size:10px;font-weight:850}
+.cq-question-card,.cq-answer-card{padding:15px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.cq-card-meta,.cq-answer-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;color:var(--sub);font-size:8px}
+.cq-card-meta span:first-child{color:var(--accent);font-weight:900;letter-spacing:.08em;text-transform:uppercase}
+.cq-card-meta span:last-child{padding:4px 7px;border:1px solid var(--line);border-radius:20px;background:var(--surface2);font-weight:750}
+.cq-question-card h3{margin:9px 0;font-family:"Manrope",sans-serif;font-size:16px;font-weight:850;line-height:1.35;letter-spacing:-.025em}
+.cq-question-card>p,.cq-answer-card>p{margin:8px 0;color:var(--ink);font-size:11px;line-height:1.7;white-space:pre-wrap}
+.cq-attachment{display:block;max-width:100%;max-height:480px;margin:11px 0;border:1px solid var(--line);border-radius:8px;background:var(--surface2);object-fit:contain}
+.cq-question-tools{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px;padding-top:11px;border-top:1px solid var(--line)}
+.cq-question-tools button{display:inline-flex;align-items:center;gap:6px;min-height:32px;padding:7px 9px;border:1px solid var(--line);border-radius:7px;background:var(--surface);color:var(--accent);font-size:9px;font-weight:850}
+.cq-question-tools button:hover{border-color:var(--accent);background:var(--soft)}
+.cq-answers-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:3px}
+.cq-answers-heading h3{margin:0;font-size:13px;font-weight:850}
+.cq-answers-heading span{color:var(--sub);font-size:9px}
+.cq-answer-card{display:grid;gap:8px}
+.cq-answer-meta{color:var(--sub)}
+.cq-awaiting{margin:0!important;padding:8px 10px;border-radius:7px;background:var(--surface2);color:var(--sub)!important;font-size:9px!important}
+.cq-review-result{padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--surface2)}
+.cq-review-result strong{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:900}
+.cq-review-result p{margin:6px 0 0;color:var(--ink);font-size:10px;line-height:1.6;white-space:pre-wrap}
+.cq-review-result small{display:block;margin-top:6px;color:var(--sub);font-size:8px}
+.cq-review-correct{border-color:#a4d8c4;background:#eef8f3;color:#176849}
+.cq-review-partly_correct{border-color:#e5cf9e;background:#fbf6e8;color:#8a641e}
+.cq-review-needs_revision{border-color:#e2b4b4;background:#fcf0f0;color:#9c3f3f}
+.cq-review-form{padding:11px;border:1px solid var(--line);border-radius:8px;background:var(--surface2)}
+.cq-review-form summary{cursor:pointer;color:var(--accent);font-size:9px;font-weight:900;list-style:none}
+.cq-review-form summary::-webkit-details-marker{display:none}
+.cq-review-form .field{margin:9px 0 5px;font-size:10px}
+.cq-review-form .control{width:100%;min-height:34px;font-size:10px}
+.cq-review-form textarea{resize:vertical;min-height:54px}
+.cq-review-form .btn{min-height:33px;margin-top:9px;padding:7px 10px;font-size:9px}
+.cq-answer-form h3{margin:0;font-size:12px;font-weight:850}
+.cq-empty{padding:17px;border:1px dashed var(--line);border-radius:9px;color:var(--sub);font-size:10px;line-height:1.6}
+[data-theme="dark"] .cq-review-correct{border-color:#356b56;background:#1e3b31;color:#a9e0c6}
+[data-theme="dark"] .cq-review-partly_correct{border-color:#705d34;background:#362e20;color:#f1d18b}
+[data-theme="dark"] .cq-review-needs_revision{border-color:#704144;background:#3c272a;color:#f2b5b9}
+@media(max-width:700px){
+ .ace-course-questions{margin:22px 0;padding:13px}
+ .cq-heading{flex-direction:column;gap:10px}
+ .cq-heading h2{font-size:17px}
+ .cq-heading>.btn{min-height:36px}
+ .cq-question-form,.cq-answer-form{padding:11px}
+ .cq-question-row{padding:10px;gap:8px}
+ .cq-question-card,.cq-answer-card{padding:11px}
+ .cq-answers-heading{align-items:flex-start;flex-direction:column;gap:4px}
+ .cq-question-tools button{font-size:8px}
+}
