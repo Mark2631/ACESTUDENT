@@ -3,6 +3,7 @@ import "./globals.css";
 import "./fieldnotes.css";
 import "./lesson-library.css";
 import "./ace-product-polish.css";
+import "./ace-campus-ui.css";
 import { PWARegister } from "./pwa-register";
 export const metadata: Metadata = {
  metadataBase: new URL("https://ace-student.vercel.app"),
@@ -15,8 +16,8 @@ export const metadata: Metadata = {
  twitter: { card: "summary", title: "Ace Student", description: "Find it. Understand it. Practice it." },
  robots: { index: true, follow: true },
 };
-export const viewport: Viewport = { themeColor: "#12191c", width: "device-width", initialScale: 1, viewportFit: "cover" };
-const themeBootstrap = "try { var theme = localStorage.getItem('ace-theme') || localStorage.getItem('ace-theme-v2'); document.documentElement.dataset.theme = theme === 'light' ? 'light' : 'dark'; } catch (error) { document.documentElement.dataset.theme = 'dark'; }";
+export const viewport: Viewport = { themeColor: "#f3f6fc", width: "device-width", initialScale: 1, viewportFit: "cover" };
+const themeBootstrap = "try { var theme = localStorage.getItem('ace-theme') || localStorage.getItem('ace-theme-v2'); document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : 'light'; } catch (error) { document.documentElement.dataset.theme = 'light'; }";
 export default function RootLayout({ children }: { children: React.ReactNode }) {
  return <html lang="en" suppressHydrationWarning><head><script dangerouslySetInnerHTML={{__html:themeBootstrap}} /></head><body>{children}<PWARegister /></body></html>;
 }
