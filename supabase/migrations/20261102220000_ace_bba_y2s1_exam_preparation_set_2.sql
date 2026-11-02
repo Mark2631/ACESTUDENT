@@ -14,7 +14,7 @@ WITH new_quizzes(id,title,course_code,description,status) AS (
 ),
 upserted_quizzes AS (
   INSERT INTO public.ace_quizzes (id,title,course_code,description,status)
-  SELECT id,title,course_code,description,status FROM new_quizzes
+  SELECT id::uuid,title,course_code,description,status FROM new_quizzes
   ON CONFLICT (id) DO UPDATE SET
     title = EXCLUDED.title,
     course_code = EXCLUDED.course_code,
@@ -87,7 +87,7 @@ question_data(id,course_code,sort_order,prompt,options,correct_index,explanation
 )
 INSERT INTO public.ace_questions (id,quiz_id,prompt,options,correct_index,explanation,sort_order)
 SELECT
-  q.id,
+  q.id::uuid,
   u.id,
   q.prompt,
   q.options,
