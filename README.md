@@ -58,3 +58,8 @@ Practice quizzes allow one XP-earning attempt per question set. Each peer compet
 The Vercel GitHub integration is now connected to `Mark2631/ACESTUDENT`. On October 27, 2026, Vercel reached the Hobby deployment limit of 100 deployments per 24 hours; newer commits may pass GitHub CI yet remain undeployed. Verify the latest deployment SHA before treating new changes as live. Avoid per-file deploy-triggering commits while quota is limited.
 
 See [full scope and release plan](docs/FULL_SCOPE_AND_RELEASE_PLAN.md).
+
+
+## SBE Year 2 Semester 1 learning workflow
+
+The SBE pilot now has in-app guided concept lessons and knowledge checks for the seven mapped BBA Year 2 Semester 1 units. Official MUST past papers remain clearly attributed to the university archive. Students can submit their own PDF model answers against a specific paper; they remain private until an authorised reviewer approves them. Study Spaces support question threads, answer replies, shareable question links, copyable AI tutoring prompts, and human answer evaluation by the question author or space host. These community marks are not AI grades or official lecturer marks. Apply `20261102_ace_sbe_question_threads_and_model_answers.sql` after the documented earlier migrations before using the new workflows. This feature branch has not been merged or deployed, and the shared Nexus database has not been changed from this session.

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, BookOpen, CheckCircle2, RotateCcw } from "lucide-react";
+import { ArrowRight, BookOpen, RotateCcw } from "lucide-react";
 
 type Check = {
   prompt: string;

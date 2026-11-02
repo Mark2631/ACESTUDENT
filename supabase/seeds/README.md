@@ -33,3 +33,8 @@ The published MUST School of Business & Economics course-structure page is histo
 Source discrepancies were found: the older course-structure page lists Company Law as BFB 3400 while an official 2024/25 exam PDF labels it BFC 3400; the older structure also uses BFC 3429 for different Finance-option subjects in different semesters. The catalogue uses BFC3400 based on the exam paper and maps BFC3429 once as International Finance based on the official examination archive. Confirm these codes with the department before treating them as definitive.
 
 MIT OpenCourseWare materials are not MUST examination papers. OpenStax and Saylor materials are supplementary resources, not claims of exact alignment with a lecturer's syllabus. The US-context business-law resources are explicitly caveated and must not be used as substitutes for Kenyan legislation, cases or regulator guidance.
+
+
+## SBE content and model-answer workflow
+
+The Year 2 Semester 1 course workspace includes fourteen original, locally stored concept lessons in `app/course-lessons.tsx` for all seven mapped units. They are authored study notes with short knowledge checks, not official lecture notes or a claim of department approval. Official papers continue to link to the MUST examination archive; model answers can be attached to the exact paper from the Course Hub and are subject to the existing reviewer workflow. The November 2026 workflow migration adds a `Model answer` resource kind with a paper-reference constraint.

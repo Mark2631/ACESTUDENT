@@ -20,6 +20,11 @@ Supabase project: the isolated Ace Student tables live in the existing shared Ne
 16. `20261027_ace_scheduled_study_sessions.sql`
 17. `20261027_ace_safe_meeting_url_constraints.sql`
 18. `20261027_ace_verified_business_resources_and_mapping.sql`
+19. `20261030_ace_bba_pathways.sql`
+20. `20261030_ace_native_collaborative_notes.sql`
+21. `20261102_ace_sbe_question_threads_and_model_answers.sql`
+
+The November 2026 SBE workflow migration is additive. It does not rewrite existing attempts or posts. Apply it only after the earlier Ace Student migrations and only once to a new/updated database. Do not re-run the existing already-applied migrations on the shared Nexus project.
 
 Then run these seed scripts once, in order:
 
@@ -41,6 +46,8 @@ Test with SQL in `supabase/tests`. Transactional integration scripts use `BEGIN`
 - App clients use only the publishable key; no service-role key should appear in source.
 - Reviewers are intentionally not seeded. A trusted operator appoints real registered reviewers.
 - RLS policy checks are not a replacement for real OAuth/password, storage upload, and multi-user browser tests.
+- The SBE question-thread migration grants answer-marking updates only to the question author or space owner and keeps the post body outside the update grant.
+- Model-answer submissions reference an existing visible MUST past-paper resource and remain private pending reviewer approval.
 
 ## Next improvement
 

@@ -36,7 +36,7 @@ Editorial research references:
 
 ## Student workflow
 
-Academic directory → select university/programme/unit → **Course Hub** → verified sources with publisher links, bookmark and report controls → course-specific Arena quiz selection → secure score, explanation, XP and missed-question recall deck. Students can share notes in the same unit; uploaded PDFs are not available to the public before review.
+SBE pilot workflow → choose a BBA year and semester → open a unit → use original Ace guided lessons and knowledge checks → review official MUST archive papers → read or contribute a reviewer-approved model answer attached to that exact paper → practise a course quiz → review secure grading, explanations and missed-question recall → ask or answer questions in a course Study Space. Question threads support a shareable deep link and a copyable AI tutoring prompt. The question author or Study Space host can mark peer answers from 0–10 and provide feedback; this is a human peer/host evaluation, not automated AI grading or an official lecturer mark. Student PDFs stay private until a reviewer approves them.
 
 ## Pending before wider academic rollout
 
@@ -45,6 +45,16 @@ Academic directory → select university/programme/unit → **Course Hub** → v
 3. Auth/signup testing with real accounts, complete OAuth/redirect validation and confirmation-email policy review for shared Supabase.
 4. Device/browser smoke tests of PDF uploads, moderation approval, saved links and peer competitions with multiple participants.
 5. Automated link-health checks and media accessibility audits.
-6. Larger question banks, detailed worked solutions and topic-level mastery data to support sustainable revision.
+6. Larger question banks, rubric-backed answer review, and topic-level mastery data to support sustainable revision.
+7. Test the new model-answer moderation and question-thread evaluation flows with at least two real student accounts before general rollout.
 
 The source content and SQL seed scripts are versioned under `supabase/seeds/`. `ace_verified_must_bba_curriculum.sql` seeds the mapped catalogue and official archive links; `ace_original_bba_practice.sql`, `ace_additional_core_practice.sql`, `ace_foundation_pathway_practice.sql`, `ace_final_pathway_practice.sql` and `ace_international_finance_practice.sql` seed original quizzes and explanations. All are idempotent. Both scripts are designed to be idempotent and should remain reproducible and auditable. Avoid inserting fake students, scores, or social engagement for visual effect.
+
+
+## November 2026 SBE learning additions
+
+The Year 2 Semester 1 workspace now includes fourteen original guided lessons across BFB3200 Human Resource Management I, BFB3201 Business Law, BFB3202 Introduction to Entrepreneurship, BFB3203 Principles of Leadership, BFB3204 Business English, BFB3205 Public Relations and BFC3227 Cost Accounting. Each lesson contains objectives, concept explanations, an applied example and a short knowledge check. These are internal Ace Student study notes and must not be represented as official lecturer notes.
+
+Model-answer PDFs are stored as student contributions with a foreign-key reference to the exact `ace_open_resources` past-paper record. The new database migration only permits the Model answer resource type when it references a visible record whose kind is `Past paper` and whose course mapping includes the same unit code. Files remain pending moderation until an authorised reviewer approves them.
+
+Study Space posts now distinguish messages, questions and answer replies. A question can be shared via a link or copied as a structured prompt for an external AI tutor. Answers may be scored from 0–10 with written feedback by the original question author or the Study Space host. These marks are peer/host feedback only; no automated AI grade or official university mark is claimed. Apply the new migration before using these features.
