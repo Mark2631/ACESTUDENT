@@ -7,7 +7,7 @@ import BbaPilot from "./bba-pilot";
 
 export default function WorkspaceHome({
   user, name, onLibrary, onPractice, onSpaces, onAccount, onNotes,
-  onPlanner, onStudio, onArea, onResource
+  onPlanner, onStudio, onArea
 }: {
   user: User | null;
   name: string;
@@ -19,7 +19,6 @@ export default function WorkspaceHome({
   onPlanner: () => void;
   onStudio: () => void;
   onArea: (code: string) => void;
-  onResource: (id: string) => void;
 }) {
   return (
     <main className="ace-bba-home">
