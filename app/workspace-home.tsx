@@ -164,116 +164,104 @@ export default function WorkspaceHome({
   }
 
   return (
-    <div className="ace-home">
-      <header className="home-heading">
+    <div className="ace-home-v2">
+      <header className="v2-home-heading">
         <div>
-          <span className="home-eyebrow">YOUR STUDY DESK <i /></span>
-          <h1>{user && displayName ? `${greeting()}, ${displayName}.` : "Make room for progress."}</h1>
-          <p>Pick up where you left off, or find something worth learning today.</p>
+          <span className="v2-kicker">YOUR LEARNING SPACE</span>
+          <h1>{user && displayName ? "Welcome back, " + displayName + "." : "Make your next hour count."}</h1>
+          <p>Course materials, useful lessons and focused practice — organised in one place.</p>
         </div>
-        <button className="home-create-button" onClick={onStudio}><Plus size={17} /> New notebook</button>
+        <button className="v2-heading-action" onClick={onStudio}><Plus size={16} /> New study pack</button>
       </header>
 
-      <section className="home-overview" aria-label="Your learning overview">
-        <div><span>Notebooks</span><strong>{user ? notebookCount : "—"}</strong><small>{user ? "Saved to your study space" : "Sign in to save your work"}</small></div>
-        <div><span>Study cards</span><strong>{user ? notebookCardCount : "—"}</strong><small>{user ? "Across your latest four notebooks" : "Built from your own material"}</small></div>
-        <div><span>Subjects followed</span><strong>{user ? followed.length : "—"}</strong><small>Areas you want to explore</small></div>
+      <section className="v2-hero" aria-label="Continue learning">
+        <div className="v2-hero-main">
+          <span className="v2-kicker">PICK UP WHERE YOU LEFT OFF</span>
+          <h2>{latestNotebook ? latestNotebook.title : "Build a study space around your material."}</h2>
+          <p>{latestNotebook
+            ? "Your notebook was " + relativeDate(latestNotebook.updated_at).toLowerCase() + ". Continue reading, revising cards or checking what you remember."
+            : "Bring in lecture notes or a presentation. Turn your material into a focused place to read, revise and test your recall."}</p>
+          <div className="v2-hero-actions">
+            <button className="v2-primary-action" onClick={onStudio}><Brain size={15} /> {latestNotebook ? "Continue studying" : "Create your first notebook"} <ArrowRight size={14} /></button>
+            <button className="v2-secondary-action" onClick={onLibrary}><BookOpen size={15} /> Browse learning library</button>
+          </div>
+        </div>
+        <div className="v2-hero-side" aria-hidden="true">
+          <div className="v2-study-card">
+            <div className="v2-study-card-top"><span>ACE / STUDY STUDIO</span><span>01</span></div>
+            <div className="v2-study-card-icon"><BookOpen size={20} /></div>
+            <strong>{user ? (notebookCount ? notebookCount + " saved notebooks" : "Your study space") : "Explore as a guest"}</strong>
+            <small>{user ? (latestNotebook ? notebookCardCount + " cards in recent notebooks" : "Your notes stay private to you") : "Create an account when you want to save work"}</small>
+          </div>
+        </div>
       </section>
 
-      {user && <LearningProgress user={user} onPractice={onPractice} />}
+      <nav className="v2-quicklinks" aria-label="Study shortcuts">
+        <button className="v2-quicklink" onClick={onPractice}><span className="v2-quick-icon"><Brain size={17} /></span><span><strong>Practice</strong><small>Test your understanding</small></span><ArrowRight size={14} /></button>
+        <button className="v2-quicklink" onClick={onPlanner}><span className="v2-quick-icon"><CalendarDays size={17} /></span><span><strong>Study planner</strong><small>Organise your week</small></span><ArrowRight size={14} /></button>
+        <button className="v2-quicklink" onClick={onNotes}><span className="v2-quick-icon"><FileText size={17} /></span><span><strong>Shared notes</strong><small>Write with classmates</small></span><ArrowRight size={14} /></button>
+        <button className="v2-quicklink" onClick={onSpaces}><span className="v2-quick-icon"><Users size={17} /></span><span><strong>Study groups</strong><small>Work through ideas together</small></span><ArrowRight size={14} /></button>
+      </nav>
 
-      <div className="home-columns">
-        <div className="home-primary-column">
-          <section className="home-resume-card">
-            <div className="home-resume-copy">
-              <span className="home-eyebrow">THE NEXT STEP</span>
-              <h2>{latestNotebook ? "Continue your last notebook." : "Turn your notes into a study session."}</h2>
-              <p>{latestNotebook
-                ? `Pick up ${latestNotebook.title} and continue reading, reviewing cards or testing your recall.`
-                : "Bring in a PDF, presentation or your own notes. Ace helps you organise the material and practise what matters."}</p>
-              <button onClick={onStudio}>{latestNotebook ? "Open Study Studio" : "Create your first notebook"} <ArrowRight size={15} /></button>
-            </div>
-            <div className="home-resume-art" aria-hidden="true">
-              <div className="home-paper home-paper-back" />
-              <div className="home-paper home-paper-front"><span /><span /><span /><b>ACE / 01</b></div>
-              <div className="home-orbit" />
-            </div>
-            {latestNotebook && <div className="home-resume-meta"><span>{latestNotebook.course_code || "Personal notebook"}</span><span>{relativeDate(latestNotebook.updated_at)}</span></div>}
-          </section>
+      {user && <div className="v2-progress-wrap"><LearningProgress user={user} onPractice={onPractice} /></div>}
 
-          <section className="home-tools-section">
-            <div className="home-section-heading"><div><span className="home-eyebrow">YOUR TOOLS</span><h2>Everything you need to study</h2></div></div>
-            <div className="home-tools-grid">
-              <button onClick={onStudio}><span className="home-tool-icon indigo"><Brain size={18} /></span><span><strong>Study Studio</strong><small>Read, revise and remember</small></span><ArrowRight size={15} /></button>
-              <button onClick={onLibrary}><span className="home-tool-icon green"><BookOpen size={18} /></span><span><strong>Learning library</strong><small>Find notes and open resources</small></span><ArrowRight size={15} /></button>
-              <button onClick={onPractice}><span className="home-tool-icon amber"><Sparkles size={18} /></span><span><strong>Practice arena</strong><small>Test yourself and track results</small></span><ArrowRight size={15} /></button>
-              <button onClick={onPlanner}><span className="home-tool-icon blue"><CalendarDays size={18} /></span><span><strong>Study planner</strong><small>Keep deadlines in sight</small></span><ArrowRight size={15} /></button>
-              <button onClick={onNotes}><span className="home-tool-icon rose"><FileText size={18} /></span><span><strong>Shared notes</strong><small>Write and compare ideas</small></span><ArrowRight size={15} /></button>
-              <button onClick={onSpaces}><span className="home-tool-icon slate"><Users size={18} /></span><span><strong>Study groups</strong><small>Learn with other students</small></span><ArrowRight size={15} /></button>
-            </div>
-          </section>
-
-          <section className="home-discovery-section">
-            <div className="home-section-heading home-discovery-heading">
-              <div><span className="home-eyebrow">FIND YOUR SUBJECT</span><h2>Explore learning areas</h2><p>Start broad. Follow a subject when it feels relevant.</p></div>
-              <label className="home-area-search"><Search size={15} /><input aria-label="Search learning areas" placeholder="Search subjects" value={search} onChange={event => setSearch(event.target.value)} /></label>
-            </div>
-            {loading ? <div className="home-loading" role="status" aria-live="polite">Loading learning areas…</div> : filteredAreas.length ? (
-              <div className="home-area-grid">
-                {(showAllAreas ? filteredAreas : filteredAreas.slice(0, 8)).map((area, index) => {
-                  const Icon = areaIcons[index % areaIcons.length];
-                  const topics = subjects.filter(subject => subject.parent_slug === area.slug);
-                  const isExpanded = expanded.includes(area.slug);
-                  return (
-                    <article className={"home-area-card " + (isExpanded ? "expanded" : "")} key={area.slug}>
-                      <button className="home-area-main" onClick={() => toggleExpanded(area.slug)} aria-expanded={isExpanded}>
-                        <span className={"home-area-icon home-area-" + (index % 5)}><Icon size={18} /></span>
-                        <span><strong>{area.title}</strong><small>{area.description}</small></span>
-                        <span className="home-area-count">{topics.length} topics</span>
-                      </button>
-                      {isExpanded && <div className="home-topic-list">{topics.slice(0, 8).map(subject => (
-                        <div key={subject.slug}>
-                          <button className="home-topic-open" onClick={() => onArea(subject.slug)}><strong>{subject.title}</strong><small>{subject.description}</small></button>
-                          <button className={"home-follow " + (followed.includes(subject.slug) ? "following" : "")} disabled={busySlug === subject.slug} onClick={() => void toggleSubject(subject)}>
-                            {followed.includes(subject.slug) ? <><Check size={13} /> Following</> : user ? "Follow" : "Sign in"}
-                          </button>
-                        </div>
-                      ))}</div>}
-                    </article>
-                  );
-                })}
-              </div>
-            ) : <div className="home-loading">No learning areas match that search.</div>}
-            {filteredAreas.length > 8 && <button className="home-text-link" onClick={() => setShowAllAreas(value => !value)}>{showAllAreas ? "Show fewer learning areas" : "View all " + filteredAreas.length + " learning areas"} <ArrowRight size={14} /></button>}
-            <button className="home-text-link" onClick={onLibrary}>Browse the full learning library <ArrowRight size={14} /></button>
-          </section>
+      {user && <section className="v2-section">
+        <div className="v2-section-heading">
+          <div><span className="v2-kicker">YOUR LEARNING PLAN</span><h2>Subjects you follow</h2><p>Shortcuts to the topics you have chosen to keep close.</p></div>
         </div>
+        {followedSubjects.length ? <div className="v2-path-list">{followedSubjects.slice(0, 10).map(subject => (
+          <button key={subject.slug} onClick={() => onArea(subject.slug)}><BookOpen size={13} /> {subject.title} <ArrowRight size={12} /></button>
+        ))}</div> : <div className="v2-home-empty">You have not followed a subject yet. Open a learning area below and add the topics that matter to your course.</div>}
+      </section>}
 
-        <aside className="home-side-column">
-          <section className="home-side-panel">
-            <div className="home-side-heading"><div><span className="home-eyebrow">YOUR LEARNING PLAN</span><h2>Subjects to follow</h2></div><span>{followed.length}</span></div>
-            {followedSubjects.length ? <div className="home-followed-list">{followedSubjects.slice(0, 6).map(subject => (
-              <button key={subject.slug} onClick={() => onArea(subject.slug)}><span>{subject.title}</span><ArrowRight size={14} /></button>
-            ))}</div> : <div className="home-side-empty"><Compass size={19} /><p>Choose a subject that matters to you. It will stay here as a shortcut.</p><button onClick={() => document.querySelector(".home-discovery-section")?.scrollIntoView({ behavior: "smooth", block: "start" })}>Explore subjects</button></div>}
-          </section>
+      <section className="v2-section">
+        <div className="v2-section-heading">
+          <div><span className="v2-kicker">BROWSE BY INTEREST</span><h2>Find the subject you need</h2><p>Explore by discipline, then open a topic to find focused lessons.</p></div>
+          <label className="v2-area-search"><Search size={15} /><input aria-label="Search learning areas" placeholder="Search subjects" value={search} onChange={event => setSearch(event.target.value)} /></label>
+        </div>
+        {loading ? <div className="v2-home-empty" role="status" aria-live="polite">Loading learning areas…</div> : filteredAreas.length ? (
+          <div className="v2-area-grid">
+            {(showAllAreas ? filteredAreas : filteredAreas.slice(0, 8)).map((area, index) => {
+              const Icon = areaIcons[index % areaIcons.length];
+              const topics = subjects.filter(subject => subject.parent_slug === area.slug);
+              const isExpanded = expanded.includes(area.slug);
+              return (
+                <article className={"v2-area-card " + (isExpanded ? "expanded" : "")} key={area.slug}>
+                  <button className="v2-area-main" onClick={() => toggleExpanded(area.slug)} aria-expanded={isExpanded}>
+                    <span className={"v2-area-icon tone-" + (index % 5)}><Icon size={17} /></span>
+                    <span className="v2-area-copy"><strong>{area.title}</strong><small>{area.description}</small><span className="v2-area-count">{topics.length} TOPICS</span></span>
+                  </button>
+                  {isExpanded && <div className="v2-topic-list">{topics.slice(0, 8).map(subject => (
+                    <div key={subject.slug}>
+                      <button className="v2-topic-open" onClick={() => onArea(subject.slug)}><strong>{subject.title}</strong><small>{subject.description}</small></button>
+                      <button className={"v2-follow " + (followed.includes(subject.slug) ? "following" : "")} disabled={busySlug === subject.slug} onClick={() => void toggleSubject(subject)}>
+                        {followed.includes(subject.slug) ? <><Check size={12} /> Saved</> : user ? "Follow" : "Sign in"}
+                      </button>
+                    </div>
+                  ))}</div>}
+                </article>
+              );
+            })}
+          </div>
+        ) : <div className="v2-home-empty">No learning areas match that search.</div>}
+        {filteredAreas.length > 8 && <button className="v2-text-link" onClick={() => setShowAllAreas(value => !value)}>{showAllAreas ? "Show fewer subjects" : "View all " + filteredAreas.length + " subjects"} <ArrowRight size={13} /></button>}
+      </section>
 
-          <section className="home-side-panel home-resources-panel">
-            <div className="home-side-heading"><div><span className="home-eyebrow">READY TO READ</span><h2>Start with a lesson</h2></div><button aria-label="Open library" onClick={onLibrary}><ArrowRight size={15} /></button></div>
-            {resourcePicks.length ? <div className="home-resource-list">{resourcePicks.map(resource => (
-              <button key={resource.id} onClick={() => onResource(resource.slug)}>
-                <span className="home-resource-kind">{resource.level} · {resource.reading_minutes} MIN</span><strong>{resource.title}</strong><small>{resource.subject_label} · Read inside Ace</small>
-              </button>
-            ))}</div> : <div className="home-side-empty"><BookOpen size={19} /><p>Original Ace lessons are being prepared for your study library.</p><button onClick={onLibrary}>Open library</button></div>}
-          </section>
+      <section className="v2-section">
+        <div className="v2-section-heading">
+          <div><span className="v2-kicker">READY WHEN YOU ARE</span><h2>Start with a lesson</h2><p>Original Ace learning material, available to read inside the app.</p></div>
+          <button className="v2-text-link" onClick={onLibrary}>Open full library <ArrowRight size={13} /></button>
+        </div>
+        {resourcePicks.length ? <div className="v2-lesson-grid">{resourcePicks.map(resource => (
+          <button className="v2-lesson-card" key={resource.id} onClick={() => onResource(resource.slug)}>
+            <span className="v2-lesson-top"><span className="v2-lesson-icon"><BookOpen size={16} /></span><small>{resource.level} · {resource.reading_minutes} MIN</small></span>
+            <strong>{resource.title}</strong>
+            <span>{resource.subject_label} · Read in Ace</span>
+          </button>
+        ))}</div> : <div className="v2-home-empty">No published lessons are available in this view yet. Open the full library to browse available material.</div>}
+      </section>
 
-          <section className="home-side-note">
-            <span className="home-note-mark">“</span>
-            <p>Make learning active. Read a little, recall a little, then check what you actually remember.</p>
-            <button onClick={onStudio}>Start a study session <ArrowRight size={14} /></button>
-          </section>
-        </aside>
-      </div>
-      {issue && <p className="home-issue" role="status">{issue} <button type="button" className="text-link" onClick={() => { setLoading(true); setRetryCount(value => value + 1); }}>Try again</button></p>}
+      {issue && <p className="v2-home-issue" role="status">{issue} <button type="button" className="v2-text-link" onClick={() => { setLoading(true); setRetryCount(value => value + 1); }}>Try again</button></p>}
     </div>
   );
 }
