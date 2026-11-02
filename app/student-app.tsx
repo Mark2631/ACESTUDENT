@@ -30,7 +30,7 @@ async function load(){
  try{
   const programme=await supabase.from("ace_programmes").select("id")
    .eq("name","Bachelor of Business Administration")
-   .eq("school","School of Business and Economics").maybeSingle().abortSignal(controller.signal);
+   .eq("school","School of Business and Economics").abortSignal(controller.signal).maybeSingle();
   if(programme.error||!programme.data)throw new Error("The MUST BBA pilot catalogue is unavailable.");
   const catalogue=await supabase.from("ace_course_catalog").select("code,title")
    .eq("programme_id",programme.data.id).order("code").abortSignal(controller.signal);
