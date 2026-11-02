@@ -156,7 +156,7 @@ export default function BbaPilot({
                   <div className="bba-unit-card-top"><span>{unit.code}</span>{currentFocus && <small>YOUR 2026 Y2S1 TIMETABLE</small>}{curriculumNote && <small>CONFIRM CURRENT REGISTRATION</small>}</div>
                   <h3>{unit.title}</h3>
                   <div className="bba-unit-stats"><span><ClipboardList size={13}/>{user ? quizCount + " quizzes" : "Sign in for quizzes"}</span><span><FileText size={13}/>{paperCount} past papers</span></div>
-                  {curriculumNote && <p className="bba-curriculum-note">Listed in MUST's published BBA structure, but not in the six units on your supplied 2026 Y2S1 timetable. Confirm against your registered units.</p>}
+                  {curriculumNote && <p className="bba-curriculum-note">Present in the existing BBA catalogue, but absent from the six units on your supplied 2026 Y2S1 timetable. Confirm against your registered units.</p>}
                   <button onClick={() => onOpenCourse(unit.code)}>Open unit <ArrowRight size={14}/></button>
                 </article>
               );
