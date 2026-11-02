@@ -7,3 +7,5 @@
 .guest-practice-next{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;margin-top:13px;padding:8px 12px;border:1px solid var(--button);border-radius:8px;background:var(--button);color:white;font-size:10px;font-weight:850}.guest-practice-next:disabled{opacity:.45;cursor:not-allowed}
 .guest-practice-result{display:flex;flex-direction:column;align-items:flex-start;padding:20px;border:1px solid var(--line);border-radius:11px;background:var(--bg)}.guest-practice-result-icon{display:grid;place-items:center;width:39px;height:39px;margin-bottom:12px;border-radius:10px;background:var(--soft);color:var(--accent)}.guest-practice-result h3{margin:7px 0;font-family:"Manrope",sans-serif;font-size:23px;font-weight:850}.guest-practice-result p{margin:0;color:var(--sub);font-size:11px;line-height:1.6}
 @media(max-width:600px){.guest-practice{margin:18px auto;padding:13px}.guest-practice-heading h2{font-size:19px}.guest-practice-card{padding:12px}.guest-practice-card h3{font-size:13px}.guest-practice-progress{font-size:7px}}
+
+.guest-practice-sample-note{margin:7px 0 0;color:var(--sub);font-size:9px;font-style:italic}
