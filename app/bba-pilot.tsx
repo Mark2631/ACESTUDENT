@@ -9,7 +9,6 @@ type Unit = { code: string; title: string; year_of_study: number | null; semeste
 type Quiz = { id: string; course_code: string };
 type Paper = { id: string; title: string; subject: string; kind: string; provider: string; url: string; description: string | null; related_codes: string[] };
 
-const PROGRAMME_ID = "b93bfd2c-ce49-479e-8c17-e12b321e9dd9";
 
 const COHORT_FOCUS = new Set(["BFB3200", "BFB3201", "BFB3202", "BFB3203", "BFB3205", "BFC3227"]);
 
@@ -45,9 +44,19 @@ export default function BbaPilot({
         setLoading(false);
         return;
       }
+      const programme = await supabase.from("ace_programmes").select("id")
+        .eq("name", "Bachelor of Business Administration")
+        .eq("school", "School of Business and Economics")
+        .maybeSingle().abortSignal(controller.signal);
+      if (programme.error || !programme.data) {
+        setIssue("The MUST School of Business & Economics BBA catalogue is not available. Other programmes will appear only after their unit maps are verified.");
+        setUnits([]); setQuizzes([]); setPapers([]);
+        setLoading(false); window.clearTimeout(timeout);
+        return;
+      }
       const [catalogue, quizRows, paperRows, profile] = await Promise.all([
         supabase.from("ace_course_catalog").select("code,title,year_of_study,semester,pathway")
-          .eq("programme_id", PROGRAMME_ID).order("code").abortSignal(controller.signal),
+          .eq("programme_id", programme.data.id).order("code").abortSignal(controller.signal),
         user ? supabase.from("ace_quizzes").select("id,course_code").eq("status", "published").abortSignal(controller.signal) : Promise.resolve({ data: [], error: null }),
         supabase.from("ace_open_resources").select("id,title,subject,kind,provider,url,description,related_codes")
           .eq("hidden", false).eq("kind", "Past paper").eq("provider", "MUST examination archive").abortSignal(controller.signal),
