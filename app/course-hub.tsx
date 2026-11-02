@@ -34,7 +34,7 @@ export default function CourseHub({user,code,onBack,onQuiz,onUpload,onSpaces,onS
   setLessons(matched.slice(0,4));
   setQuizzes((c.data??[]).filter(x=>normalise(x.course_code)===normalized));
   setDone((d.data??[]).map(x=>x.quiz_id));
-  setStudentMaterials((e.data??[]).filter(x=>normalise(x.course_code)===normalized));
+  setStudentMaterials((e.data??[]).filter(x=>normalise(x.course_code)===normalized&&x.kind!=="Model answer"));
   setSpaces((f.data??[]).filter(x=>normalise(x.course_code)===normalized).slice(0,6));
   if(a.error||b.error||c.error||d.error||e.error||f.error)setIssue("Some course information could not be loaded.");
   setLoading(false)
