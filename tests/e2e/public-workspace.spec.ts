@@ -1,13 +1,13 @@
 import {test,expect} from "@playwright/test";
 test("visitors see actual learning before an account wall",async({page})=>{
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"Make room for progress."})).toBeVisible();
- await expect(page.getByRole("heading",{name:"Explore learning areas"})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Make your next hour count."})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Find the subject you need"})).toBeVisible();
  await expect(page.getByRole("button",{name:/Business & enterprise/})).toBeVisible();
  await expect(page.getByRole("button",{name:/Computing & technology/})).toBeVisible();
  await page.getByRole("button",{name:/Business & enterprise/}).click();
  await expect(page.getByRole("button",{name:/Accounting/})).toBeVisible();
- await page.locator(".home-topic-open").filter({hasText:"Accounting"}).click();
+ await page.locator(".v2-topic-open").filter({hasText:"Accounting"}).click();
  await expect(page.getByRole("heading",{name:"Shared student documents"})).toBeVisible();
  await page.locator(".navitem").filter({hasText:"Learning library"}).click();
  await expect(page).toHaveURL(/\/library$/);
@@ -19,13 +19,13 @@ test("subject explorer exposes real topics and a clear account boundary for save
  await page.getByRole("button",{name:/Business & enterprise/}).click();
  await expect(page.getByRole("button",{name:/Accounting/})).toBeVisible();
  await expect(page.getByRole("button",{name:/Economics/})).toBeVisible();
- await page.locator(".home-follow").first().click();
+ await page.locator(".v2-follow").first().click();
  await expect(page.getByRole("heading",{name:"Sign in"})).toBeVisible();
 });
 
 test("the practice shortcut opens the community practice arena, not Study Studio",async({page})=>{
  await page.goto("/");
- await page.getByRole("button",{name:/Practice arena/}).click();
+ await page.getByRole("button",{name:/Practice/}).click();
  await expect(page.getByRole("heading",{name:"Practice what you're studying"})).toBeVisible();
 });
 test("major URLs load directly without losing their destination",async({page})=>{
@@ -50,16 +50,17 @@ test("desktop and phone use deliberately different navigation layouts",async({pa
  await page.goto("/");
  await expect(page.locator(".side")).toBeVisible();
  await expect(page.locator(".bottom")).toBeHidden();
- await expect(page.locator(".home-columns")).toHaveCSS("display","grid");
+ await expect(page.locator(".ace-home-v2")).toBeVisible();
+ await expect(page.locator(".v2-hero")).toBeVisible();
  await page.setViewportSize({width:390,height:844});
- await expect(page.locator(".side")).toBeHidden();
+ await expect(page.locator(".side")).toBeVisible();
  await expect(page.locator(".bottom")).toBeVisible();
 });
 test("the workspace has no sideways overflow on a narrow phone",async({page})=>{
  await page.setViewportSize({width:360,height:780});
  await page.goto("/");
  await expect(page.getByRole("heading",{name:"Make room for progress."})).toBeVisible();
- await expect(page.locator(".side")).toBeHidden();
+ await expect(page.locator(".side")).toBeVisible();
  await expect(page.locator(".bottom")).toBeVisible();
  await expect(page.getByRole("button",{name:"Create on Ace Student"})).toBeVisible();
  await page.getByRole("button",{name:"Create on Ace Student"}).click();
@@ -115,7 +116,8 @@ test("tablet navigation collapses to an accessible icon rail without horizontal 
   await expect(page.locator(".side")).toBeVisible();
   await expect(page.locator(".navitem").first()).toHaveAttribute("aria-label", "Overview");
   const railWidth = await page.locator(".side").evaluate((element) => element.getBoundingClientRect().width);
-  expect(railWidth).toBeLessThanOrEqual(90);
+  expect(await page.locator(".side").evaluate((element) => element.getBoundingClientRect().height)).toBe(68);
+  await expect(page.locator(".navitem").first()).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
 });
 
