@@ -55,9 +55,9 @@ export default function GuestPractice() {
   return (
     <section className="guest-practice" aria-label="BBA sample practice">
       <header className="guest-practice-heading">
-        <span className="guest-practice-kicker"><Sparkles size={13}/> OPEN SAMPLE PRACTICE</span>
-        <h2>Test what you know</h2>
-        <p>Try a short business-focused sample before creating an account. These are practice questions, not official MUST examination questions.</p>
+        <span className="guest-practice-kicker"><Sparkles size={13}/> TRY A QUICK SESSION · NO ACCOUNT REQUIRED</span>
+        <h2>Practice what you're studying</h2>
+        <p>Try a short business-focused sample before creating an account. These are practice questions, not official MUST examination questions.</p><p className="guest-practice-sample-note">Sample practice questions for exploration — not official exam questions.</p>
       </header>
       <div className="guest-practice-categories" role="group" aria-label="Practice topic">
         {categories.map((name) => <button type="button" key={name} className={category === name ? "active" : ""} onClick={() => chooseCategory(name)}>{name}</button>)}
@@ -71,14 +71,14 @@ export default function GuestPractice() {
           <button type="button" className="guest-practice-next" onClick={restart}><RotateCcw size={14}/> Try again</button>
         </div>
       ) : question ? (
-        <div className="guest-practice-card">
+        <div className="guest-practice-card guest-questions">
           <div className="guest-practice-progress">
             <span>QUESTION {index + 1} OF {questions.length}</span>
             <span>{score} correct so far</span>
           </div>
           <div className="guest-practice-progress-track"><span style={{width: ((index + 1) / questions.length * 100) + "%"}}/></div>
           <h3>{question.prompt}</h3>
-          <div className="guest-practice-options">
+          <div className="guest-practice-options quiz-options">
             {question.options.map((option, optionIndex) => {
               const isCorrect = optionIndex === question.answer;
               const isSelected = selected === optionIndex;
