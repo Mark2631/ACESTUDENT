@@ -25,7 +25,7 @@ test("subject explorer exposes real topics and a clear account boundary for save
 
 test("the practice shortcut opens the community practice arena, not Study Studio",async({page})=>{
  await page.goto("/");
- await page.getByRole("button",{name:/Practice/}).click();
+ await page.locator(".v2-quicklink").filter({hasText:"Practice"}).click();
  await expect(page.getByRole("heading",{name:"Practice what you're studying"})).toBeVisible();
 });
 test("major URLs load directly without losing their destination",async({page})=>{
