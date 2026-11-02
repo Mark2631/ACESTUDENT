@@ -51,7 +51,7 @@ export default function BbaPilot({
         supabase.from("ace_open_resources").select("id,title,subject,kind,provider,url,description,related_codes")
           .eq("hidden", false).eq("kind", "Past paper").eq("provider", "MUST examination archive").abortSignal(controller.signal),
         user ? supabase.from("ace_student_profiles").select("year_of_study,programme,institution")
-          .eq("user_id", user.id).maybeSingle().abortSignal(controller.signal) : Promise.resolve({ data: null, error: null })
+          .eq("user_id", user.id).abortSignal(controller.signal).maybeSingle() : Promise.resolve({ data: null, error: null })
       ]);
       if (!active) return;
       if (catalogue.error) setIssue("BBA course units could not be loaded. Retry to reconnect.");
