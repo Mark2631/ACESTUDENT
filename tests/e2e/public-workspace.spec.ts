@@ -2,11 +2,19 @@ import {test,expect} from "@playwright/test";
 test("visitors see actual learning before an account wall",async({page})=>{
  await page.goto("/");
  await expect(page.getByRole("heading",{name:"Your learning, organized."})).toBeVisible();
- await expect(page.getByRole("heading",{name:"Explore courses"})).toBeVisible();
+ await expect(page.getByText(/Meru University of Science and Technology · School of Business & Economics/i)).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Find your next unit"})).toBeVisible();
  await page.getByRole("button",{name:"Library",exact:true}).first().click();
  await expect(page).toHaveURL(/\/library$/);
  await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
  await expect(page.getByRole("heading",{name:/Free learning resources/})).toBeVisible();
+});
+test("guests can start business practice directly from the home screen",async({page})=>{
+ await page.goto("/");
+ await page.getByRole("button",{name:"Try a practice question"}).click();
+ await expect(page).toHaveURL(/\/practice$/);
+ await expect(page.getByRole("heading",{name:"Practice what you're studying"})).toBeVisible();
+ await expect(page.getByText("What does opportunity cost measure?")).toBeVisible();
 });
 test("major URLs load directly without losing their destination",async({page})=>{
  await page.goto("/library");
