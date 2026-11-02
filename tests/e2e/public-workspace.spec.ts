@@ -85,13 +85,15 @@ test("the workspace has no sideways overflow on a narrow phone",async({page})=>{
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
 });
 
-test("students can read original lessons and reveal a recall answer without outbound links",async({page})=>{
+test("students can read all six BBA unit lessons and reveal recall answers inside Ace",async({page})=>{
  test.skip(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,"Requires configured Supabase credentials and seeded lesson data");
  await page.goto("/library");
  await expect(page.getByRole("heading",{name:"Learn something. Understand it."})).toBeVisible();
  await expect(page.locator(".ace-lesson-card").first()).toBeVisible();
  const lessonCount=await page.locator(".ace-lesson-card").count();
- expect(lessonCount).toBeGreaterThan(5);
+ expect(lessonCount).toBe(6);
+ await expect(page.getByText("Javascript state, events and user interactions")).toHaveCount(0);
+ await expect(page.getByText("How to design a fair experiment")).toHaveCount(0);
  await page.locator(".ace-lesson-card").first().click();
  await expect(page.locator(".ace-reader-article")).toBeVisible();
  await expect(page.getByText("RETRIEVAL PRACTICE")).toBeVisible();
@@ -101,6 +103,24 @@ test("students can read original lessons and reveal a recall answer without outb
  await expect(page.getByRole("button",{name:"Lesson completed"})).toBeVisible();
  await page.getByRole("button",{name:"All lessons"}).click();
  await expect(page.locator(".ace-lesson-card").first()).toBeVisible();
+});
+
+
+test("guest practice exposes only BBA business and quantitative foundations",async({page})=>{
+ await page.goto("/practice");
+ const subjects=page.locator(".guest-practice .chips button");
+ await expect(subjects).toHaveCount(2);
+ await expect(subjects.filter({hasText:"Business & economics"})).toBeVisible();
+ await expect(subjects.filter({hasText:"Business mathematics & statistics"})).toBeVisible();
+ await expect(subjects.filter({hasText:"Biology"})).toHaveCount(0);
+ await expect(subjects.filter({hasText:"Computer science"})).toHaveCount(0);
+});
+
+test("only the six verified BBA concept lessons are exposed in the pilot library",async({page})=>{
+ await page.goto("/library");
+ await expect(page.locator(".ace-lesson-card")).toHaveCount(6);
+ await expect(page.getByText("Business law: agreements, contracts and remedies in Kenya")).toBeVisible();
+ await expect(page.getByText("Cost accounting: classify costs and support decisions")).toBeVisible();
 });
 
 test("visitors can try the sample practice session before signing in", async ({ page }) => {
