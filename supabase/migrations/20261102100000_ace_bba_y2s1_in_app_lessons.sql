@@ -3,7 +3,7 @@
 INSERT INTO public.ace_lessons
   (slug,title,subject_slug,subject_label,level,reading_minutes,summary,learning_outcomes,sections,review_questions,illustration,accent,published)
 VALUES
-('bba-hrm-foundations','Human resource management: from workforce planning to performance','human-resource-management','Human Resource Management','Intermediate',10,
+('bba-hrm-foundations','Human resource management: from workforce planning to performance',NULL,'Human Resource Management','Intermediate',10,
  'Understand how an organisation plans, attracts, develops, supports and evaluates the people needed to deliver its objectives. Original Ace introduction for BFB3200; follow the current lecturer outline for examinable detail.',
  ARRAY['Explain the purpose and scope of human resource management','Distinguish workforce planning, recruitment and selection','Connect training, performance management and employee relations'],
  jsonb_build_array(
@@ -18,7 +18,7 @@ VALUES
   jsonb_build_object('question','Name two ways an organisation can evaluate training effectiveness.','answer','It can assess demonstrated skill or knowledge before and after training and examine whether performance or work outcomes improve after employees return to the role.')
  ),'briefcase','sage',true),
 
-('bba-business-law-contracts','Business law: agreements, contracts and remedies in Kenya','business-law','Business Law','Intermediate',12,
+('bba-business-law-contracts','Business law: agreements, contracts and remedies in Kenya',NULL,'Business Law','Intermediate',12,
  'Build a foundation for analysing business agreements: identify the parties, offer, acceptance, consideration, intention, capacity, terms and possible remedies. Original Ace introduction for BFB3201; verify legal rules against current Kenyan legislation and cases.',
  ARRAY['Identify the elements commonly examined when analysing contract formation','Distinguish terms, representations and factors that may affect consent','Explain why breach and remedies require analysis of facts and applicable law'],
  jsonb_build_array(
@@ -33,7 +33,7 @@ VALUES
   jsonb_build_object('question','What is a sound structure for answering a business-law problem question?','answer','Identify the issue, state the relevant legal principle, apply the principle to the specific facts, and give a reasoned conclusion with any necessary qualification.')
  ),'scales','indigo',true),
 
-('bba-entrepreneurship-opportunity','Entrepreneurship: test an opportunity before investing','entrepreneurship','Entrepreneurship','Intermediate',10,
+('bba-entrepreneurship-opportunity','Entrepreneurship: test an opportunity before investing',NULL,'Entrepreneurship','Intermediate',10,
  'Move from an idea to an evidence-based opportunity using customer discovery, feasibility, business models and early experiments. Original Ace introduction for BFB3202; use the lecturer’s prescribed frameworks and local examples.',
  ARRAY['Distinguish a business idea from a tested opportunity','Use customer discovery to investigate a problem','Assess market, operational and financial feasibility','Design a small experiment before committing significant resources'],
  jsonb_build_array(
@@ -48,7 +48,7 @@ VALUES
   jsonb_build_object('question','What should a useful pilot measure?','answer','It should measure the assumption being tested using observable behaviour such as paid conversion, repeat use, delivery time, customer acquisition cost or contribution margin.')
  ),'briefcase','amber',true),
 
-('bba-leadership-practice','Leadership: influence, decisions and team performance','leadership','Leadership','Intermediate',9,
+('bba-leadership-practice','Leadership: influence, decisions and team performance',NULL,'Leadership','Intermediate',9,
  'Understand leadership as influence toward shared goals, distinguish it from management, and examine how context, ethics, motivation and communication shape team performance. Original Ace introduction for BFB3203.',
  ARRAY['Distinguish leadership from management while recognising their overlap','Compare trait, behavioural and situational approaches','Explain how motivation, communication and ethics affect teams'],
  jsonb_build_array(
@@ -63,7 +63,7 @@ VALUES
   jsonb_build_object('question','Why should a leader evaluate more than short-term output?','answer','Short-term output may conceal burnout, turnover, poor conduct, low trust or capability gaps that damage long-term organisational performance.')
  ),'brain','sage',true),
 
-('bba-public-relations-trust','Public relations: build trust with planned communication','public-relations','Public Relations','Intermediate',10,
+('bba-public-relations-trust','Public relations: build trust with planned communication',NULL,'Public Relations','Intermediate',10,
  'Learn how organisations research publics, set communication objectives, choose channels, manage relationships and evaluate outcomes. Original Ace introduction for BFB3205; distinguish strategic public relations from simply posting on social media.',
  ARRAY['Define public relations as a planned relationship-management function','Identify publics and set measurable communication objectives','Choose channels and messages that fit the situation','Evaluate communication using outcomes rather than exposure alone'],
  jsonb_build_array(
@@ -78,7 +78,7 @@ VALUES
   jsonb_build_object('question','What should a crisis update include when facts are still emerging?','answer','It should state verified facts, acknowledge affected people, explain immediate actions, identify what is not yet known and give a clear time or channel for the next update.')
  ),'market','slate',true),
 
-('bba-cost-accounting-decisions','Cost accounting: classify costs and support decisions','cost-accounting','Cost Accounting','Intermediate',12,
+('bba-cost-accounting-decisions','Cost accounting: classify costs and support decisions',NULL,'Cost Accounting','Intermediate',12,
  'Build a practical foundation for cost classification, costing methods, cost behaviour, contribution and break-even analysis. Original Ace introduction for BFC3227; follow the lecturer''s prescribed methods and formats.',
  ARRAY['Classify costs by traceability, function and behaviour','Distinguish product and period costs','Explain job and process costing at an introductory level','Calculate contribution and break-even output using stated assumptions'],
  jsonb_build_array(
