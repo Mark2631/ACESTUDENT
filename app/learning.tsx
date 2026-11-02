@@ -24,7 +24,17 @@ export function OpenLibrary({query,user,onSignIn,initialResourceId}:{query:strin
   setBusy(true);setIssue("");
   try{
    if(!supabase)throw new Error("The resource directory is not connected.");
-   const{data,error}=await supabase.from("ace_open_resources").select("*").eq("hidden",false).order("title").abortSignal(controller.signal);
+   const programme=await supabase.from("ace_programmes").select("id")
+    .eq("name","Bachelor of Business Administration")
+    .eq("school","School of Business and Economics").maybeSingle().abortSignal(controller.signal);
+   if(programme.error||!programme.data)throw new Error("The MUST BBA resource catalogue is unavailable.");
+   const catalogue=await supabase.from("ace_course_catalog").select("code")
+    .eq("programme_id",programme.data.id).abortSignal(controller.signal);
+   if(catalogue.error)throw catalogue.error;
+   const codes=(catalogue.data??[]).map(row=>row.code);
+   if(!codes.length){setResources([]);return;}
+   const{data,error}=await supabase.from("ace_open_resources").select("*")
+    .eq("hidden",false).overlaps("related_codes",codes).order("title").abortSignal(controller.signal);
    if(error)throw error;
    if(!live)return;
    setResources(data??[]);
