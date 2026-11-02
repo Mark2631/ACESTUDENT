@@ -46,7 +46,7 @@ export default function BbaPilot({
       const [catalogue, quizRows, paperRows, profile] = await Promise.all([
         supabase.from("ace_course_catalog").select("code,title,year_of_study,semester,pathway")
           .eq("programme_id", PROGRAMME_ID).order("code").abortSignal(controller.signal),
-        supabase.from("ace_quizzes").select("id,course_code").eq("status", "published").abortSignal(controller.signal),
+        user ? supabase.from("ace_quizzes").select("id,course_code").eq("status", "published").abortSignal(controller.signal) : Promise.resolve({ data: [], error: null }),
         supabase.from("ace_open_resources").select("id,title,subject,kind,provider,url,description,related_codes")
           .eq("hidden", false).eq("kind", "Past paper").eq("provider", "MUST examination archive").abortSignal(controller.signal),
         user ? supabase.from("ace_student_profiles").select("year_of_study,programme,institution")
@@ -129,7 +129,7 @@ export default function BbaPilot({
           <label className="bba-search"><Search size={15}/><input value={search} onChange={event => setSearch(event.target.value)} placeholder="Find a unit" aria-label="Find a BBA unit"/></label>
         </div>
         <div className="bba-summary-strip">
-          <span><BookOpen size={15}/>{totalQuizzes} published practice quizzes</span>
+          <span><BookOpen size={15}/>{user ? totalQuizzes + " published practice quizzes" : "Sign in to access course quizzes"}</span>
           <span><FileText size={15}/>{totalPapers} linked past papers</span>
           <span><ShieldCheck size={15}/>Official and student material labelled separately</span>
         </div>
@@ -144,7 +144,7 @@ export default function BbaPilot({
                 <article className={"bba-unit-card " + (currentFocus ? "bba-unit-current" : "")} key={unit.code}>
                   <div className="bba-unit-card-top"><span>{unit.code}</span>{currentFocus && <small>YOUR 2026 Y2S1 TIMETABLE</small>}{curriculumNote && <small>CONFIRM CURRENT REGISTRATION</small>}</div>
                   <h3>{unit.title}</h3>
-                  <div className="bba-unit-stats"><span><ClipboardList size={13}/>{quizCount} quizzes</span><span><FileText size={13}/>{paperCount} past papers</span></div>
+                  <div className="bba-unit-stats"><span><ClipboardList size={13}/>{user ? quizCount + " quizzes" : "Sign in for quizzes"}</span><span><FileText size={13}/>{paperCount} past papers</span></div>
                   {curriculumNote && <p className="bba-curriculum-note">Listed in MUST's published BBA structure, but not in the six units on your supplied 2026 Y2S1 timetable. Confirm against your registered units.</p>}
                   <button onClick={() => onOpenCourse(unit.code)}>Open unit <ArrowRight size={14}/></button>
                 </article>
