@@ -16,7 +16,7 @@ const VISUALS={
  chart:ChartNoAxesCombined,calculator:Wallet,code:Code2,science:FlaskConical,
  briefcase:Layers3,market:Target,books:BookOpen,brain:Brain,globe:GraduationCap,scales:Layers3
 };
-const SECTIONS=["All subjects","Accounting","Economics","Management","Marketing","Entrepreneurship","Programming","Natural Sciences","Mathematics & Statistics","Study Skills"];
+const SECTIONS=["All subjects","Business Law","Cost Accounting","Entrepreneurship","Human Resource Management","Leadership","Public Relations"];
 
 function LessonIllustration({lesson,large=false}:{lesson:AceLesson;large?:boolean}){
  const Icon=VISUALS[lesson.illustration as keyof typeof VISUALS]??BookOpen;
@@ -63,7 +63,7 @@ export default function LessonLibrary({query,initialLessonSlug="",user,onSignIn,
    setLoading(true);setError("");
    try{
     if(!supabase)throw new Error("The study library is not connected.");
-    const{data,error}=await supabase.from("ace_lessons").select("id,slug,title,subject_slug,subject_label,level,reading_minutes,summary,learning_outcomes,sections,review_questions,illustration,accent").eq("published",true).order("title").abortSignal(controller.signal);
+    const{data,error}=await supabase.from("ace_lessons").select("id,slug,title,subject_slug,subject_label,level,reading_minutes,summary,learning_outcomes,sections,review_questions,illustration,accent").eq("published",true).like("slug","bba-%").order("title").abortSignal(controller.signal);
     if(error)throw error;
     if(!live)return;
     setLessons((data??[]) as AceLesson[]);
