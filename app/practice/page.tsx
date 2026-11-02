@@ -1,4 +1,12 @@
 import type { Metadata } from "next";
-import Page from "../page";
-export const metadata: Metadata = { title: "Practice & Quiz Arena | Ace Student", description: "Test your understanding with course-aligned quizzes, explanations and progress tracking.", alternates: { canonical: "/practice" } };
-export default Page;
+import StudentApp from "../student-app";
+
+export const metadata: Metadata = {
+  title: "Practice & Quiz Arena | Ace Student",
+  description: "Try account-free sample practice or test your understanding with course-aligned quizzes and explanations.",
+  alternates: { canonical: "/practice" },
+};
+
+export default function PracticePage() {
+  return <StudentApp initialTab="practice" />;
+}
