@@ -1,6 +1,6 @@
 # Ace Student database deployment order
 
-Supabase project: the isolated Ace Student tables live in the existing shared Nexus project. These migrations are **not alphabetically sortable** because they were incrementally developed on the same date. Apply the following in dependency order on a fresh database. All migrations have already been applied to the connected project. Do not re-run against that database.
+Supabase project: the isolated Ace Student tables live in the existing shared Nexus project. These migrations are **not alphabetically sortable** because they were incrementally developed on the same date. Apply the following in dependency order on a fresh database. Migrations 1–20 are already applied to the existing shared Nexus project. Migration 21 is new and has not been applied; apply it once before using the new SBE question and model-answer features. Do not re-run migrations 1–20 against that database.
 
 1. `20261027_ace_student_resources.sql`
 2. `20261027_ace_student_profiles.sql`

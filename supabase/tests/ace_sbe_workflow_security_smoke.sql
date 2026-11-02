@@ -14,6 +14,14 @@ begin
       and column_name='post_type'
   ) then raise exception 'Question post type missing'; end if;
 
+  if not has_table_privilege('anon','public.ace_course_catalog','SELECT')
+     or not has_table_privilege('anon','public.ace_open_resources','SELECT') then
+    raise exception 'Public course catalogue and open resource reads are not granted';
+  end if;
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='ace_open_resources' and policyname='ace_open_resources_public_read') then
+    raise exception 'Public read policy for visible open resources is missing';
+  end if;
+
   if not exists (
     select 1 from information_schema.columns
     where table_schema='public' and table_name='ace_space_posts'

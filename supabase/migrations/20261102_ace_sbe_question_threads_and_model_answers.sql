@@ -140,3 +140,20 @@ with check (
 
 grant update(score,evaluation_feedback,evaluated_by,evaluated_at)
   on public.ace_space_posts to authenticated;
+
+
+-- Public course directory and open educational resource metadata are read-only.
+-- Student uploads remain governed by the existing approved/owner policies.
+drop policy if exists ace_institutions_public_read on public.ace_institutions;
+create policy ace_institutions_public_read
+  on public.ace_institutions for select to anon using (true);
+drop policy if exists ace_programmes_public_read on public.ace_programmes;
+create policy ace_programmes_public_read
+  on public.ace_programmes for select to anon using (true);
+drop policy if exists ace_catalog_public_read on public.ace_course_catalog;
+create policy ace_catalog_public_read
+  on public.ace_course_catalog for select to anon using (true);
+drop policy if exists ace_open_resources_public_read on public.ace_open_resources;
+create policy ace_open_resources_public_read
+  on public.ace_open_resources for select to anon using (hidden = false);
+grant select on public.ace_institutions, public.ace_programmes, public.ace_course_catalog, public.ace_open_resources to anon;
