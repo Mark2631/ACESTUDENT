@@ -231,6 +231,13 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
 
   async function toggleResolved() {
     if (!supabase || !selectedQuestion || selectedQuestion.author_id !== user.id || working) return;
+    if (!selectedQuestion.is_resolved) {
+      const awaitingReview = selectedAnswers.filter(answer => !reviewByAnswer.has(answer.id)).length;
+      if (awaitingReview > 0) {
+        setIssue("Evaluate all " + awaitingReview + " remaining answer(s) before resolving this question.");
+        return;
+      }
+    }
     setWorking("resolve");
     const { error } = await supabase.from("ace_course_questions")
       .update({ is_resolved: !selectedQuestion.is_resolved }).eq("id", selectedQuestion.id);
