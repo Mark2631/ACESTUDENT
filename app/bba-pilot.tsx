@@ -154,7 +154,7 @@ export default function BbaPilot({
           </div>
         ) : <div className="bba-state">No units are mapped for this year, semester and pathway yet. Check the programme structure or choose another pathway.</div>}
         {issue && <p className="bba-error" role="alert">{issue} <button onClick={() => window.location.reload()}>Refresh</button></p>}
-        <p className="bba-source-note">Course mapping is based on the MUST School of Business & Economics published BBA structure and the existing Ace catalogue. The public structure is historical; confirm current unit registration with the department. Finance & Accounting and Project Management options are separated from common units.</p>
+        <p className="bba-source-note">Course mapping is based on the MUST School of Business & Economics published BBA structure and the existing Ace catalogue. The public structure is historical; confirm current unit registration with the department. Finance & Accounting and Project Management options are separated from common units.</p><div className="bba-official-links"><a href="https://www.must.ac.ke/sbe/comment-page-1/" target="_blank" rel="noopener noreferrer">MUST published BBA structure</a><a href="https://exampapers.must.ac.ke/" target="_blank" rel="noopener noreferrer">Official MUST examination archive</a><a href="https://library.must.ac.ke/" target="_blank" rel="noopener noreferrer">MUST Library</a></div>
       </section>
     </div>
   );
