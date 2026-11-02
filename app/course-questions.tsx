@@ -122,9 +122,10 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
   useEffect(() => { void load(); }, [code, user.id]);
 
   useEffect(() => {
-    if (!supabase) return;
+    const client = supabase;
+    if (!client) return;
     const refresh = () => { void load(); };
-    const channel = supabase.channel("ace-bba-qna-" + code + "-" + user.id)
+    const channel = client.channel("ace-bba-qna-" + code + "-" + user.id)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "ace_course_questions", filter: "course_code=eq." + code }, refresh)
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ace_course_questions", filter: "course_code=eq." + code }, refresh)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "ace_course_answers" }, refresh)
@@ -132,7 +133,7 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "ace_course_answer_reviews" }, refresh)
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "ace_course_answer_reviews" }, refresh)
       .subscribe();
-    return () => { void supabase.removeChannel(channel); };
+    return () => { void client.removeChannel(channel); };
   }, [code, user.id]);
 
   const visibleQuestions = useMemo(() => questions.filter(question =>
