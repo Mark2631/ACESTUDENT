@@ -242,6 +242,32 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
     setWorking("");
   }
 
+  async function shareQuestionImage(question: CourseQuestion) {
+    if (!question.image_path) return;
+    const signedUrl = mediaUrls[question.image_path];
+    if (!signedUrl) { setIssue("The screenshot is still loading. Try again."); return; }
+    const text = "Help me understand and solve this " + courseTitle + " question. Explain the relevant concept and reasoning step by step, and distinguish what is visible from assumptions.\n\n" + question.title + "\n" + question.body;
+    try {
+      const response = await fetch(signedUrl);
+      if (!response.ok) throw new Error("Screenshot download failed.");
+      const blob = await response.blob();
+      const extension = blob.type === "image/png" ? "png" : blob.type === "image/webp" ? "webp" : "jpg";
+      const file = new File([blob], "ace-question." + extension, { type: blob.type || "image/jpeg" });
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({ title: "Ace Student · " + code, text, files: [file] });
+      } else {
+        await navigator.clipboard.writeText(text + "\n\nOpen the question thread in Ace Student: " + window.location.href);
+        setNotice("AI prompt copied. This browser cannot attach the screenshot; open the image and use your device's Share action.");
+      }
+    } catch (error) {
+      if (error instanceof Error && error.name === "AbortError") return;
+      try {
+        await navigator.clipboard.writeText(text + "\n\nOpen the question thread in Ace Student: " + window.location.href);
+        setNotice("AI prompt copied. Share the screenshot separately from the question thread.");
+      } catch { setIssue("Could not share the screenshot. Open the image and use your device's Share action."); }
+    }
+  }
+
   async function shareQuestion(question: CourseQuestion, forAi: boolean) {
     const url = window.location.origin + "/courses/" + encodeURIComponent(code) + "?question=" + encodeURIComponent(question.id);
     const text = forAi
@@ -300,7 +326,7 @@ export default function CourseQuestionBoard({ user, code, courseTitle }: {
             {selectedQuestion.image_path && mediaUrls[selectedQuestion.image_path] && <img className="cq-attachment" src={mediaUrls[selectedQuestion.image_path]} alt="Screenshot attached to the question"/>}
             <div className="cq-question-tools">
               <button onClick={() => void shareQuestion(selectedQuestion, false)}><Share2 size={14}/> Share</button>
-              <button onClick={() => void shareQuestion(selectedQuestion, true)}><Sparkles size={14}/> Send to AI</button>
+              <button onClick={() => void shareQuestion(selectedQuestion, true)}><Sparkles size={14}/> Send to AI</button>{selectedQuestion.image_path && <button onClick={() => void shareQuestionImage(selectedQuestion)}><FileImage size={14}/> Send screenshot to AI</button>}
               {selectedQuestion.author_id === user.id && <button onClick={() => void toggleResolved()}><CheckCircle2 size={14}/>{selectedQuestion.is_resolved ? "Reopen question" : "Mark resolved"}</button>}
             </div>
           </article>
