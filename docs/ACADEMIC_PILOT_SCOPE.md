@@ -66,4 +66,4 @@ Migration: 20261102090000_ace_model_answer_paper_link.sql.
 - Undergraduate programmes: https://sbe.must.ac.ke/undergraduate/
 - Official examination archive: https://exampapers.must.ac.ke/
 - MUST Library: https://library.must.ac.ke/
-- Library past-paper access guide: https://library.must.ac.ke/library-guides/
+- Library past-paper access guide (PDF): https://library.must.ac.ke/wp-content/uploads/2025/04/How-to-Access-Past-papers-compressed.pdf
