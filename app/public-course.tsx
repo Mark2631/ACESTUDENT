@@ -30,7 +30,7 @@ export default function PublicCourse({code,onBack,onSignIn}:{code:string;onBack:
   <p className="muted">Explore student contributions and complete original learning lessons inside Ace Student.</p>
   {loading?<p className="muted">Preparing your learning material…</p>:<>
    <h2 className="section"><BookOpen size={19}/> Open learning resources</h2>
-   <p className="muted">Original Ace lessons to build foundational knowledge. General lessons are shown when a course-specific lesson isn't available.</p>
+   <p className="muted">Ace-authored concept lessons that match this unit. Unrelated readings are not substituted when a course-specific lesson is unavailable.</p>
    {lessons.length?<div className="open-grid">{lessons.map(m=><article key={m.id} className="panel open-card"><div className="eyebrow">{m.subject_label} · {m.reading_minutes} min</div><h3>{m.title}</h3><p className="muted">{m.summary}</p><Link className="btn secondary" href={"/library?lesson="+encodeURIComponent(m.slug)}>Read inside Ace <ArrowRight size={16}/></Link></article>)}</div>:<div className="empty"><GraduationCap/><h3>No lessons available yet</h3><p className="muted">New readings are being added to Ace's own learning library.</p></div>}
    <CourseExamPapers user={null} code={code} courseTitle={unit?.title ?? code} onSignIn={onSignIn}/>
    <h2 className="section"><FileText size={19}/> Student documents</h2>
