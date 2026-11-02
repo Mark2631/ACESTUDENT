@@ -9,6 +9,8 @@ type Unit = { code: string; title: string; year_of_study: number | null; semeste
 type Quiz = { id: string; course_code: string };
 type Paper = { id: string; title: string; subject: string; kind: string; provider: string; url: string; description: string | null; related_codes: string[] };
 
+const PROGRAMME_ID = "b93bfd2c-ce49-479e-8c17-e12b321e9dd9";
+
 const COHORT_FOCUS = new Set(["BFB3200", "BFB3201", "BFB3202", "BFB3203", "BFB3205", "BFC3227"]);
 
 export default function BbaPilot({
