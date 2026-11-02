@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, RotateCcw, Sparkles } from "lucide-react";
 
 type Question = { prompt: string; options: string[]; answer: number; explanation: string };
 const banks: Record<string, Question[]> = {
@@ -19,3 +19,82 @@ const banks: Record<string, Question[]> = {
     {prompt:"A KSh 2,000 item is discounted by 10%. What is the new price?",options:["KSh 1,600","KSh 1,700","KSh 1,800","KSh 1,900"],answer:2,explanation:"Ten per cent of 2,000 is 200, so the discounted price is KSh 1,800."}
   ]
 };
+
+export default function GuestPractice() {
+  const categories = useMemo(() => Object.keys(banks).filter((name) => name.toLowerCase().includes("business")), []);
+  const [category, setCategory] = useState(categories[0] ?? "Business & economics");
+  const questions = banks[category] ?? [];
+  const [index, setIndex] = useState(0);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+  const question = questions[index];
+
+  function chooseCategory(value: string) {
+    setCategory(value);
+    setIndex(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  }
+
+  function next() {
+    if (selected === null) return;
+    if (index >= questions.length - 1) { setFinished(true); return; }
+    setIndex((value) => value + 1);
+    setSelected(null);
+  }
+
+  function restart() {
+    setIndex(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  }
+
+  return (
+    <section className="guest-practice" aria-label="BBA sample practice">
+      <header className="guest-practice-heading">
+        <span className="guest-practice-kicker"><Sparkles size={13}/> OPEN SAMPLE PRACTICE</span>
+        <h2>Test what you know</h2>
+        <p>Try a short business-focused sample before creating an account. These are practice questions, not official MUST examination questions.</p>
+      </header>
+      <div className="guest-practice-categories" role="group" aria-label="Practice topic">
+        {categories.map((name) => <button type="button" key={name} className={category === name ? "active" : ""} onClick={() => chooseCategory(name)}>{name}</button>)}
+      </div>
+      {finished ? (
+        <div className="guest-practice-result" role="status" aria-live="polite">
+          <span className="guest-practice-result-icon"><CheckCircle2 size={22}/></span>
+          <span className="guest-practice-kicker">SAMPLE COMPLETE</span>
+          <h3>{score} out of {questions.length} correct</h3>
+          <p>Sign in to access the full BBA unit quizzes, save attempts and review missed questions.</p>
+          <button type="button" className="guest-practice-next" onClick={restart}><RotateCcw size={14}/> Try again</button>
+        </div>
+      ) : question ? (
+        <div className="guest-practice-card">
+          <div className="guest-practice-progress">
+            <span>QUESTION {index + 1} OF {questions.length}</span>
+            <span>{score} correct so far</span>
+          </div>
+          <div className="guest-practice-progress-track"><span style={{width: ((index + 1) / questions.length * 100) + "%"}}/></div>
+          <h3>{question.prompt}</h3>
+          <div className="guest-practice-options">
+            {question.options.map((option, optionIndex) => {
+              const isCorrect = optionIndex === question.answer;
+              const isSelected = selected === optionIndex;
+              return <button type="button" key={option} disabled={selected !== null} aria-pressed={isSelected} className={selected !== null && isCorrect ? "correct" : isSelected ? "incorrect" : ""} onClick={() => {setSelected(optionIndex);if(isCorrect)setScore((value)=>value+1);}}>
+                <span>{String.fromCharCode(65 + optionIndex)}</span>{option}
+                {selected !== null && isCorrect && <CheckCircle2 size={15}/>}
+              </button>;
+            })}
+          </div>
+          {selected !== null && <div className={"guest-practice-feedback " + (selected === question.answer ? "correct" : "incorrect")} role="status" aria-live="polite">
+            <strong>{selected === question.answer ? "Correct" : "Not quite"}</strong>
+            <p>{question.explanation}</p>
+          </div>}
+          <button type="button" className="guest-practice-next" disabled={selected === null} onClick={next}>{index === questions.length - 1 ? "See my result" : "Next question"} <ArrowRight size={14}/></button>
+        </div>
+      ) : <p className="muted">No sample questions are available for this topic yet.</p>}
+    </section>
+  );
+}
