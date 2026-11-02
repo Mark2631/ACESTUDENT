@@ -59,7 +59,7 @@ test("desktop and phone use deliberately different navigation layouts",async({pa
 test("the workspace has no sideways overflow on a narrow phone",async({page})=>{
  await page.setViewportSize({width:360,height:780});
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"Make room for progress."})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Make your next hour count."})).toBeVisible();
  await expect(page.locator(".side")).toBeVisible();
  await expect(page.locator(".bottom")).toBeVisible();
  await expect(page.getByRole("button",{name:"Create on Ace Student"})).toBeVisible();
