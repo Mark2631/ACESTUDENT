@@ -1,0 +1,111 @@
+
+/* Ace original learning content: native reading experience and lesson illustrations */
+.ace-library-v2,.ace-lesson-reader{max-width:1270px;margin:0 auto;color:var(--ink)}
+.ace-library-intro{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:23px 26px;border:1px solid var(--line);border-radius:17px;background:var(--surface);margin-bottom:21px;overflow:hidden}
+.ace-library-intro h1{margin:8px 0;font-size:clamp(26px,3vw,35px);letter-spacing:-.055em}
+.ace-library-intro p{margin:0;max-width:620px;font-size:13px;color:var(--sub)}
+.ace-library-symbol{display:grid;place-items:center;width:110px;height:108px;flex-shrink:0;background:#e9edf8;color:#435b9b;border-radius:25px;transform:rotate(9deg)}
+.ace-lesson-kicker{color:var(--accent);font-size:9px;font-weight:800;letter-spacing:.13em}
+.ace-library-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:13px 0 15px}
+.ace-library-toolbar label{display:flex;align-items:center;gap:9px;flex:1;max-width:470px;min-height:43px;padding:0 13px;background:var(--surface);border:1px solid var(--line);border-radius:10px;color:var(--sub)}
+.ace-library-toolbar input{flex:1;min-width:0;border:0;outline:0;color:var(--ink);background:transparent;font-size:12px}
+.ace-library-toolbar>span{font-size:11px;color:var(--sub)}
+.ace-library-categories{display:flex;align-items:center;gap:7px;overflow-x:auto;scrollbar-width:thin;padding:0 0 12px;margin:0 0 8px}
+.ace-library-categories button{padding:8px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--sub);font-size:11px;font-weight:700;white-space:nowrap}
+.ace-library-categories button.active{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+.ace-library-lesson-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+.ace-lesson-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:13px;background:var(--surface);text-align:left;transition:transform .16s,border-color .16s,box-shadow .16s}
+.ace-lesson-card:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--accent) 36%,var(--line));box-shadow:var(--shadow)}
+.ace-lesson-art{position:relative;display:grid;place-items:center;min-height:145px;overflow:hidden;background:#e8edf8;color:#425c9b;isolation:isolate}
+.ace-lesson-art svg{position:relative;z-index:2}
+.ace-art-calculator,.ace-art-market{background:#edf0e5;color:#587d61}
+.ace-art-code{background:#e7eaf3;color:#5368a2}
+.ace-art-science{background:#f2e9e1;color:#a57957}
+.ace-art-briefcase{background:#ece9ef;color:#776287}
+.ace-art-books{background:#f1e9d9;color:#a18243}
+.ace-art-lines{position:absolute;inset:0;opacity:.7}
+.ace-art-lines>span{position:absolute;display:block;border:1px solid currentColor;border-radius:50%;opacity:.18}
+.ace-art-lines>span:first-child{width:170px;height:170px;right:-20px;top:-65px}
+.ace-art-lines>span:nth-child(2){width:235px;height:235px;left:-60px;bottom:-130px}
+.ace-art-lines>span:last-child{width:125px;height:125px;right:48%;top:35px}
+.ace-art-stamp{position:absolute;right:12px;bottom:9px;font-size:8px;font-weight:800;letter-spacing:.16em;opacity:.5}
+.ace-lesson-card-body{display:flex;flex-direction:column;flex:1;padding:17px}
+.ace-lesson-card h2{margin:8px 0 7px;font-size:17px;line-height:1.35;letter-spacing:-.035em;color:var(--ink)}
+.ace-lesson-card p{margin:0 0 16px;font-size:11px;line-height:1.65;color:var(--sub);flex:1}
+.ace-lesson-card-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding-top:12px}
+.ace-lesson-card-footer>span{font-size:10px;color:var(--sub)}
+.ace-lesson-card-footer>span:last-child{display:flex;align-items:center;gap:5px;color:var(--accent);font-weight:800}
+.ace-library-loading{padding:30px;border:1px dashed var(--line);border-radius:11px;color:var(--sub);background:var(--surface)}
+.ace-library-footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:18px 0;color:var(--sub);font-size:10px}
+.ace-library-footer span{display:flex;align-items:center;gap:6px}
+.ace-reader-topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 17px;color:var(--sub);font-size:11px}
+.ace-reader-topbar button{display:flex;align-items:center;gap:7px;padding:7px 0;border:0;background:transparent;color:var(--accent);font-size:12px;font-weight:800}
+.ace-reader-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:220px;padding:25px 30px;background:#e9edf8;border:1px solid #dbe2ee;border-radius:15px;color:#253550;overflow:hidden}
+.ace-reader-hero>div:first-child{flex:1;min-width:0}
+.ace-reader-hero h1{margin:9px 0;font-size:clamp(27px,3vw,38px);color:#253550;max-width:660px}
+.ace-reader-hero p{max-width:620px;color:#64718a;font-size:13px}
+.ace-reader-hero .ace-lesson-art.large{min-width:200px;width:220px;min-height:175px;border:1px solid rgba(77,101,149,.16);border-radius:12px;background:#f4f5fc;transform:rotate(3deg)}
+.ace-reader-pills{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin:14px 0 0}
+.ace-reader-pills>span{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.65);padding:7px 9px;border-radius:7px;color:#475c79;font-size:10px;font-weight:750}
+.ace-reader-layout{display:grid;grid-template-columns:245px minmax(0,1fr);gap:36px;align-items:start;padding-top:27px}
+.ace-reader-toc{position:sticky;top:95px;padding:16px;border:1px solid var(--line);border-radius:11px;background:var(--surface)}
+.ace-reader-toc nav{display:flex;flex-direction:column;gap:5px;margin:12px 0}
+.ace-reader-toc nav button{display:flex;align-items:flex-start;gap:10px;width:100%;padding:10px 8px;border:0;border-radius:7px;text-align:left;background:transparent;color:var(--sub);font-size:11px;line-height:1.5}
+.ace-reader-toc nav button>span{font-size:9px;color:var(--accent);font-weight:800}
+.ace-reader-toc nav button.active,.ace-reader-toc nav button:hover{background:var(--soft);color:var(--ink)}
+.ace-reader-outcomes{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:14px}
+.ace-reader-outcomes strong{font-size:11px}
+.ace-reader-outcomes>span{display:flex;align-items:flex-start;gap:7px;color:var(--sub);font-size:10px}
+.ace-reader-outcomes svg{color:var(--accent);flex-shrink:0;margin-top:2px}
+.ace-reader-article{min-width:0;max-width:760px}
+.ace-reader-section{padding:0 0 24px;margin:0 0 26px;border-bottom:1px solid var(--line);scroll-margin-top:110px}
+.ace-reader-section h2{font-size:clamp(21px,2vw,27px);margin:7px 0 12px;line-height:1.25}
+.ace-reader-section>p{font-size:15px;line-height:1.95;color:var(--ink);margin:0 0 20px}
+.ace-lesson-example{padding:16px 17px;border-left:3px solid #779685;border-radius:0 9px 9px 0;background:#ebf1e9;color:#354c3d}
+.ace-lesson-example>span{font-size:9px;font-weight:850;letter-spacing:.14em;color:#4f775e}
+.ace-lesson-example p{font-size:12px;line-height:1.8;margin:7px 0 0}
+.ace-lesson-review{margin:14px 0 20px;padding:21px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+.ace-lesson-review h2{margin:7px 0;font-size:23px}
+.ace-lesson-review>p{margin:0 0 14px;color:var(--sub);font-size:12px}
+.ace-recall-row{border-top:1px solid var(--line)}
+.ace-recall-row button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:13px 0;border:0;background:transparent;text-align:left;color:var(--ink);font-size:12px;font-weight:750}
+.ace-recall-row button[aria-expanded="true"] svg{transform:rotate(180deg)}
+.ace-recall-row>p{margin:0 0 14px;font-size:12px;line-height:1.75;color:var(--sub)}
+.ace-complete-button,.ace-reader-finish button{display:flex;align-items:center;gap:8px;justify-content:center;min-height:40px;padding:9px 13px;border:1px solid var(--button);border-radius:8px;background:var(--button);color:white;font-size:11px;font-weight:750}
+.ace-complete-button{margin-top:17px}
+.ace-reader-finish{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:30px;padding:18px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.ace-reader-finish strong{font-size:14px}
+.ace-reader-finish p{margin:3px 0;color:var(--sub);font-size:11px}
+@media(max-width:1050px){.ace-library-lesson-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.ace-reader-layout{grid-template-columns:190px minmax(0,1fr);gap:20px}.ace-reader-hero .ace-lesson-art.large{width:170px;min-width:170px}}
+@media(max-width:720px){
+ .ace-library-intro{padding:18px;gap:10px}
+ .ace-library-intro h1{font-size:26px}
+ .ace-library-intro p{font-size:11px}
+ .ace-library-symbol{width:64px;height:70px;border-radius:14px}
+ .ace-library-symbol svg{width:30px}
+ .ace-library-toolbar>span{font-size:9px}
+ .ace-library-lesson-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .ace-lesson-art{min-height:115px}
+ .ace-lesson-card-body{padding:12px}
+ .ace-lesson-card h2{font-size:13px}
+ .ace-lesson-card p{font-size:10px}
+ .ace-lesson-kicker{font-size:8px}
+ .ace-lesson-card-footer{align-items:flex-start;flex-direction:column}
+ .ace-reader-hero{padding:18px;min-height:190px}
+ .ace-reader-hero .ace-lesson-art.large{width:115px;min-width:115px;min-height:120px}
+ .ace-reader-hero .ace-lesson-art.large svg{width:45px}
+ .ace-reader-hero h1{font-size:25px}
+ .ace-reader-hero p{font-size:11px}
+ .ace-reader-pills{gap:5px}
+ .ace-reader-pills span{font-size:9px;padding:5px}
+ .ace-reader-layout{display:block;padding-top:16px}
+ .ace-reader-toc{position:static;margin-bottom:25px;padding:12px}
+ .ace-reader-toc nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}
+ .ace-reader-toc nav button{font-size:10px;padding:7px}
+ .ace-reader-outcomes{display:none}
+ .ace-reader-section>p{font-size:14px}
+ .ace-reader-section h2{font-size:22px}
+ .ace-reader-finish{align-items:flex-start;flex-direction:column}
+}
+@media(max-width:410px){.ace-library-lesson-grid{grid-template-columns:1fr}.ace-lesson-art{min-height:125px}.ace-lesson-card h2{font-size:16px}.ace-reader-hero .ace-lesson-art.large{display:none}}
+@media(prefers-reduced-motion:reduce){.ace-lesson-card{transition:none}}

@@ -29,7 +29,7 @@ export default function DocumentReader(){
   <nav style={{display:"flex",alignItems:"center",gap:16,flexWrap:"wrap",marginBottom:18}}>
    <Link href="/" style={{color:"#a8c7ff"}}>← Ace Student</Link>
    <div style={{flex:1,minWidth:180}}><strong>{doc?.title??"Document reader"}</strong>{doc&&<div style={{fontSize:13,opacity:.75}}>{doc.course_code} · {doc.course_name} · {doc.kind}</div>}</div>
-   {url&&<a href={url} download style={{color:"#a8c7ff"}}>Download PDF</a>}
+   {url&&<><Link href={"/studio?importResource="+encodeURIComponent(id)} style={{color:"#b9d8ff",border:"1px solid #34506e",borderRadius:9,padding:"8px 11px",fontSize:13}}>Study this PDF in Studio →</Link><a href={url} download style={{color:"#a8c7ff"}}>Download PDF</a></>}
   </nav>
   {loading?<p role="status">Loading document…</p>:error?<div role="alert">{error} <Link href="/">Return to library</Link></div>:<iframe title={doc?.title??"PDF document"} src={url+"#toolbar=1&navpanes=0"} style={{width:"100%",height:"calc(100dvh - 115px)",border:"1px solid #27354f",borderRadius:12,background:"#fff"}}/>}
  </main>

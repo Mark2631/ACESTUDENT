@@ -36,11 +36,11 @@ test("registration is minimal with four academic years",async({page})=>{
  await expect(page.locator("#fullName")).toHaveCount(0);
 });
 test("theme persists after navigation",async({page})=>{
- await expect(page.locator("html")).toHaveAttribute("data-theme","dark");
+ await expect(page.locator("html")).toHaveAttribute("data-theme","light");
  await page.getByRole("button",{name:"Toggle color theme"}).click();
- await expect(page.locator("html")).toHaveAttribute("data-theme","light");
+ await expect(page.locator("html")).toHaveAttribute("data-theme","dark");
  await page.reload();
- await expect(page.locator("html")).toHaveAttribute("data-theme","light");
+ await expect(page.locator("html")).toHaveAttribute("data-theme","dark");
 });
 test("registration fits a narrow Android viewport",async({page})=>{
  await page.setViewportSize({width:390,height:844});

@@ -1,0 +1,76 @@
+
+/* Final content surfaces and accessible modes. */
+.ace-course-hub{max-width:1180px;margin:0 auto}
+.ace-course-intro{display:flex;align-items:center;justify-content:space-between;gap:20px;margin:18px 0 20px;padding:24px 26px;border:1px solid var(--line);border-radius:15px;background:var(--surface)}
+.ace-course-intro h1{max-width:700px;margin:8px 0;font-size:clamp(27px,3vw,37px)}
+.ace-course-intro p{font-size:12px;color:var(--sub);margin:0}
+.ace-course-badge{display:grid;place-items:center;flex-shrink:0;width:86px;height:86px;border-radius:17px;background:var(--soft);color:var(--accent);transform:rotate(5deg)}
+.ace-course-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:17px 0 21px}
+.ace-course-actions button{display:flex;align-items:center;gap:12px;text-align:left;min-width:0;min-height:76px;padding:15px;border:1px solid var(--line);border-radius:11px;background:var(--surface)}
+.ace-course-actions button>svg:first-child{flex-shrink:0;color:var(--accent)}
+.ace-course-actions button>svg:last-child{flex-shrink:0;color:var(--sub)}
+.ace-course-actions button>span{display:flex;flex-direction:column;flex:1;gap:3px;min-width:0}
+.ace-course-actions button strong{font-size:12px;color:var(--ink)}
+.ace-course-actions button small{font-size:10px;color:var(--sub)}
+.ace-course-actions button:hover{background:var(--surface2);border-color:var(--accent)}
+.ace-course-hub .course-overview{margin:10px 0 18px}
+.ace-course-hub .course-overview .panel{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+.ace-course-hub .open-card{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.ace-course-hub .open-card h3{margin:2px 0;font-size:16px}
+.ace-course-hub .open-card .btn{margin-top:auto}
+.ace-course-hub .home-loading{margin:11px 0 20px}
+.ace-course-hub .row.section{margin-top:27px}
+.ace-course-hub .row.section h2{display:flex;align-items:center;gap:9px}
+@media(max-width:900px){.ace-course-actions{grid-template-columns:1fr}.ace-course-actions button{min-height:63px}}
+@media(max-width:720px){
+ .ace-course-intro{padding:17px 15px;margin-top:13px}
+ .ace-course-intro h1{font-size:25px}
+ .ace-course-badge{width:55px;height:55px;border-radius:12px}
+ .ace-course-badge svg{width:28px}
+ .ace-course-actions{grid-template-columns:1fr;gap:7px}
+ .ace-course-actions button{min-height:59px;padding:11px}
+ .ace-course-hub .row.section{align-items:flex-start;gap:8px;flex-wrap:wrap}
+}
+[data-theme="dark"] .home-resume-card,[data-theme="dark"] .studio-hero,
+[data-theme="dark"] .ace-reader-hero{background:#26354b;border-color:#3a4d63;color:#e9edf9}
+[data-theme="dark"] .home-resume-copy h2,[data-theme="dark"] .studio-hero h1,
+[data-theme="dark"] .ace-reader-hero h1{color:#f1f3fd}
+[data-theme="dark"] .home-resume-copy p,[data-theme="dark"] .studio-hero p,
+[data-theme="dark"] .ace-reader-hero p{color:#bcc8d8}
+[data-theme="dark"] .home-resume-copy .home-eyebrow,[data-theme="dark"] .studio-hero .studio-overline{color:#a5baf1}
+[data-theme="dark"] .home-resume-meta{color:#c3cee0}
+[data-theme="dark"] .home-side-note,[data-theme="dark"] .studio-interleaved-promo{background:#26382f;border-color:#405549;color:#e2f1e6}
+[data-theme="dark"] .home-side-note p,[data-theme="dark"] .studio-interleaved-promo h2{color:#e2f1e6}
+[data-theme="dark"] .home-side-note button,[data-theme="dark"] .studio-interleaved-promo p{color:#b4d1bd}
+[data-theme="dark"] .home-tool-icon.indigo,[data-theme="dark"] .home-tool-icon.green,
+[data-theme="dark"] .home-tool-icon.amber,[data-theme="dark"] .home-tool-icon.blue,
+[data-theme="dark"] .home-tool-icon.rose,[data-theme="dark"] .home-tool-icon.slate,
+[data-theme="dark"] .home-area-icon{background:#2b3d4b;color:#d0dbf3}
+[data-theme="dark"] .home-follow.following,[data-theme="dark"] .studio-sync-state.synced{background:#1e3a30;color:#a7dfbd;border-color:#3a654d}
+[data-theme="dark"] .studio-notebook,.studio-notebook-grid{color:var(--ink)}
+[data-theme="dark"] .studio-book-cover,[data-theme="dark"] .studio-cover-1,
+[data-theme="dark"] .studio-cover-2,[data-theme="dark"] .studio-cover-3{background:#293c4b;color:#c7d5e7}
+[data-theme="dark"] .studio-flashcard{background:#273951;border-color:#426080;color:#eff4fc}
+[data-theme="dark"] .studio-flashcard.flipped{background:#254338;border-color:#38664e;color:#e6faec}
+[data-theme="dark"] .studio-flip-hint{color:#c0cde0}
+[data-theme="dark"] .studio-interleaved-icon{background:#305041;color:#b4dfca}
+[data-theme="dark"] .studio-course-context{background:#26354b;border-color:#3a4d63}
+[data-theme="dark"] .studio-course-context h2{color:#edf2fb}
+[data-theme="dark"] .studio-course-context p{color:#bbcada}
+[data-theme="dark"] .ace-library-symbol{background:#293c4b;color:#cbd8ed}
+[data-theme="dark"] .ace-lesson-art{background:#2b394c;color:#c2d0ec}
+[data-theme="dark"] .ace-art-calculator,[data-theme="dark"] .ace-art-market{background:#2b4236;color:#bcdcc3}
+[data-theme="dark"] .ace-art-code{background:#2c3751;color:#c3d0f2}
+[data-theme="dark"] .ace-art-science{background:#463b33;color:#f0d0b6}
+[data-theme="dark"] .ace-art-briefcase{background:#3c3447;color:#d8c0e0}
+[data-theme="dark"] .ace-art-books{background:#443c2d;color:#e0ca9a}
+[data-theme="dark"] .ace-reader-hero .ace-lesson-art.large{background:#34465e;border-color:#4c6077}
+[data-theme="dark"] .ace-reader-pills>span{background:#34465e;color:#e0eaf8}
+[data-theme="dark"] .ace-lesson-example{background:#253a30;color:#dcebe0;border-color:#608e72}
+[data-theme="dark"] .ace-lesson-example>span{color:#a5d9b7}
+[data-theme="dark"] .ace-answer-list button.correct,[data-theme="dark"] .studio-answer-list button.correct{background:#21432e;border-color:#447453}
+[data-theme="dark"] .studio-answer-list button.wrong{background:#4b292d;border-color:#805257}
+[data-theme="dark"] .studio-listen select{background:var(--surface);color:var(--ink)}
+/* Keep focus targets clear across interaction-heavy student workflows. */
+.ace-lesson-card:focus-visible,.ace-reader-toc button:focus-visible,
+.ace-library-categories button:focus-visible,.ace-course-actions button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
