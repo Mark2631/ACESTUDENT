@@ -8,7 +8,7 @@ import type { User } from "@supabase/supabase-js";
 type Paper = { id: string; title: string; subject: string; provider: string; url: string; attribution: string; description: string | null };
 type Answer = { id: string; title: string; storage_path: string; status: string; created_at: string; related_paper_id: string | null };
 
-export default function CourseExamPapers({ user, code, courseTitle }: { user: User; code: string; courseTitle: string }) {
+export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: { user: User | null; code: string; courseTitle: string; onSignIn?: () => void }) {
   const [papers, setPapers] = useState<Paper[]>([]);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [pending, setPending] = useState<Answer[]>([]);
@@ -23,7 +23,7 @@ export default function CourseExamPapers({ user, code, courseTitle }: { user: Us
   async function load() {
     if (!supabase) { setIssue("Exam papers are unavailable while the library is disconnected."); setLoading(false); return; }
     setLoading(true); setIssue("");
-    const [paperRows, answerRows, ownRows] = await Promise.all([
+    const ownRequest = user ? supabase.from("ace_resources").select("id,title,storage_path,status,created_at,related_paper_id")\n        .eq("uploader_id", user.id).eq("kind", "Model answer").eq("course_code", code).eq("status", "pending").order("created_at", { ascending: false }) : Promise.resolve({ data: [], error: null });\n    const [paperRows, answerRows, ownRows] = await Promise.all([
       supabase.from("ace_open_resources").select("id,title,subject,provider,url,attribution,description")
         .eq("hidden", false).eq("kind", "Past paper").contains("related_codes", [code]).order("title"),
       supabase.from("ace_resources").select("id,title,storage_path,status,created_at,related_paper_id")
@@ -41,10 +41,10 @@ export default function CourseExamPapers({ user, code, courseTitle }: { user: Us
     setLoading(false);
   }
 
-  useEffect(() => { void load(); }, [code, user.id]);
+  useEffect(() => { void load(); }, [code, user?.id]);
 
   async function submitAnswer(paper: Paper) {
-    if (!supabase || !file || uploadingFor) return;
+    if (!supabase || !user || !file || uploadingFor) return;
     if (!file.name.toLowerCase().endsWith(".pdf") || file.size < 8 || file.size > 15 * 1024 * 1024) {
       setNotice("Choose a PDF between 8 bytes and 15 MB."); return;
     }
@@ -114,12 +114,12 @@ export default function CourseExamPapers({ user, code, courseTitle }: { user: Us
                   <div className="ace-answer-panel-title"><CheckCircle2 size={15}/><strong>Model answers</strong><span>{approved.length} approved</span></div>
                   {approved.length ? approved.map(answer => <button className="ace-answer-link" key={answer.id} onClick={() => void openAnswer(answer)} disabled={openingAnswer === answer.id}><FileText size={14}/><span>{answer.title}</span><Download size={14}/></button>) : <p className="ace-answer-empty">No approved model answer for this paper yet.</p>}
                   {own.map(answer => <p className="ace-answer-pending" key={answer.id}>Your submission is awaiting review: {answer.title}</p>)}
-                  <details className="ace-answer-upload">
+                  {user ? <details className="ace-answer-upload">
                     <summary><UploadCloud size={14}/> Upload a model answer for this paper</summary>
                     <p>Upload your own worked solution as a PDF. It stays private until reviewed.</p>
                     <input type="file" accept="application/pdf,.pdf" onChange={event => setFile(event.target.files?.[0] ?? null)} aria-label={"Choose model answer PDF for " + paper.title}/>
                     <button className="btn" onClick={() => void submitAnswer(paper)} disabled={!file || !!uploadingFor}>{uploadingFor === paper.id ? "Uploading…" : "Submit for review"}</button>
-                  </details>
+                  </details> : <button className="text-link" onClick={onSignIn}>Sign in to contribute a model answer</button>}
                 </div>
               </article>
             );
