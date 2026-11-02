@@ -110,12 +110,11 @@ test("keyboard search shortcut and skip link are available to keyboard users", a
   await expect(page.getByRole("textbox", { name: "Search Ace Student" })).toBeFocused();
 });
 
-test("tablet navigation collapses to an accessible icon rail without horizontal overflow", async ({ page }) => {
+test("tablet navigation compresses without horizontal overflow", async ({ page }) => {
   await page.setViewportSize({ width: 820, height: 980 });
   await page.goto("/");
   await expect(page.locator(".side")).toBeVisible();
   await expect(page.locator(".navitem").first()).toHaveAttribute("aria-label", "Overview");
-  const railWidth = await page.locator(".side").evaluate((element) => element.getBoundingClientRect().width);
   expect(await page.locator(".side").evaluate((element) => element.getBoundingClientRect().height)).toBe(68);
   await expect(page.locator(".navitem").first()).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
