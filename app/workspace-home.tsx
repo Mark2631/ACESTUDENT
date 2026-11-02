@@ -7,6 +7,7 @@ import {
   Search, Sparkles, Users, Wrench
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import LearningProgress from "./learning-progress";
 import { FALLBACK_AREAS, FALLBACK_SUBJECTS } from "./learning-catalog-fallback";
 import type { User } from "@supabase/supabase-js";
 
@@ -178,6 +179,8 @@ export default function WorkspaceHome({
         <div><span>Study cards</span><strong>{user ? notebookCardCount : "—"}</strong><small>{user ? "Across your latest four notebooks" : "Built from your own material"}</small></div>
         <div><span>Subjects followed</span><strong>{user ? followed.length : "—"}</strong><small>Areas you want to explore</small></div>
       </section>
+
+      {user && <LearningProgress user={user} onPractice={onPractice} />}
 
       <div className="home-columns">
         <div className="home-primary-column">
