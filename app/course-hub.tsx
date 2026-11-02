@@ -5,6 +5,7 @@ import {ArrowLeft,ArrowRight,BookOpen,CalendarDays,CheckCircle2,ClipboardList,Do
 import {supabase} from "@/lib/supabase";
 import ReportAction from "./report-action";
 import CourseExamPapers from "./course-exam-papers";
+import CourseQuestionBoard from "./course-questions";
 import type {User} from "@supabase/supabase-js";
 type Unit={code:string;title:string;year_of_study:number|null;semester:number|null;pathway:string};
 type Lesson={id:string;slug:string;title:string;subject_label:string;summary:string;reading_minutes:number};
@@ -53,13 +54,14 @@ export default function CourseHub({user,code,onBack,onQuiz,onUpload,onSpaces,onS
   {loading?<div className="home-loading">Loading your course…</div>:<>
    <div className="course-overview"><div className="panel"><BookOpen size={21}/><b>{lessons.length+studentMaterials.length}</b><span>Readings & documents</span></div><div className="panel"><ClipboardList size={21}/><b>{quizzes.length}</b><span>Practice quizzes</span></div><div className="panel"><CheckCircle2 size={21}/><b>{completed}</b><span>Quizzes completed</span></div></div>
    <div className="row section"><h2><BookOpen size={19}/> Read and understand</h2><Link href="/library" className="text-link">All Ace lessons <ArrowRight size={14}/></Link></div>
-   <p className="muted">Original lessons available entirely inside Ace. General introductory lessons appear when a course-specific reading is unavailable.</p>
+   <p className="muted">Ace-authored concept lessons matched to this unit. If no relevant lesson is mapped yet, this page does not substitute unrelated material.</p>
    {lessons.length?<div className="open-grid">{lessons.map(l=><article className="panel open-card" key={l.id}><span className="eyebrow">{l.subject_label} · {l.reading_minutes} min</span><h3>{l.title}</h3><p className="muted">{l.summary}</p><Link className="btn secondary" href={"/library?lesson="+encodeURIComponent(l.slug)}>Read lesson <ArrowRight size={15}/></Link></article>)}</div>:<div className="home-loading">Lessons for this subject are being prepared.</div>}
    <div className="row section"><h2><FileText size={19}/> Shared study materials</h2><button className="text-link" onClick={()=>onUpload(code,title)}>Share your notes <ArrowRight size={14}/></button></div>
    {studentMaterials.length?<div className="open-grid">{studentMaterials.map(m=><article key={m.id} className="panel open-card"><span className="eyebrow">{m.kind} · Student document</span><h3>{m.title}</h3><p className="muted">{m.description??"Reviewed student learning material."}</p><div className="resource-actions"><Link href={"/read/"+encodeURIComponent(m.id)} className="btn secondary">Read PDF</Link><button className="btn secondary" onClick={()=>void download(m)} disabled={!!downloading}><Download size={15}/>{downloading===m.id?"Preparing…":"Download"}</button></div><ReportAction target={{document_id:m.id}}/></article>)}</div>:<div className="home-loading">No student-contributed PDFs for this course yet. Your own study notebook is available above.</div>}
    <CourseExamPapers user={user} code={code} courseTitle={title}/>
    <div className="row section"><h2><Trophy size={19}/> Check your knowledge</h2></div>
    {quizzes.length?<div className="course-quiz-list">{quizzes.map(q=><article className="panel course-quiz" key={q.id}><div><h3>{q.title}</h3><p className="muted">{q.description}</p>{done.includes(q.id)&&<span className="completed"><CheckCircle2 size={15}/> Completed</span>}</div><button className="btn secondary" onClick={()=>onQuiz(code,q.id)}>{done.includes(q.id)?"Review":"Start quiz"} <ArrowRight size={15}/></button></article>)}</div>:<div className="home-loading">Verified practice questions for this course are being prepared. You can still revise in Study Studio.</div>}
+   <CourseQuestionBoard user={user} code={code} courseTitle={title}/>
    <div className="row section"><h2><Users size={19}/> Study spaces</h2><button className="text-link" onClick={()=>onSpaces(code)}>Explore spaces <ArrowRight size={14}/></button></div>
    {spaces.length?<div className="course-quiz-list">{spaces.map(space=><article className="panel course-quiz" key={space.id}><div><h3>{space.title}</h3><p className="muted">{space.description||"Discussion and shared study resources"}</p></div><button className="btn secondary" onClick={()=>onSpaces(code,space.id)}>Open space <ArrowRight size={15}/></button></article>)}</div>:<div className="home-loading">No study group has started for this course yet. You can create the first discussion.</div>}
   </>}
