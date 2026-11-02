@@ -187,7 +187,7 @@ export default function LearningProgress({
   const studyMinutes = summary.studyMinutes === null || summary.studyMinutes === 0
     ? "—"
     : summary.studyMinutes + " min";
-  const hasActivity = (summary.attemptCount ?? 0) > 0 || (summary.studyMinutes ?? 0) > 0;
+  const noActivity = summary.attemptCount === 0 && summary.studyMinutes === 0 && summary.xp === 0;
 
   return (
     <section className="ace-progress" aria-labelledby="ace-progress-title">
@@ -234,7 +234,7 @@ export default function LearningProgress({
               detail="Finished Study Studio sessions · last 7 days"
             />
           </div>
-          {!hasActivity && !loading && (
+          {noActivity && !loading && (
             <div className="ace-progress-empty">
               No study activity has been recorded yet. Start with a course quiz or a Study Studio session.
               <button type="button" onClick={onPractice}>Go to practice</button>
