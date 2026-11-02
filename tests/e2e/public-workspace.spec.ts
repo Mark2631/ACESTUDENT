@@ -100,3 +100,32 @@ test("the legacy Groups route redirects to Study groups", async ({ page }) => {
  await expect(page).toHaveURL(/spaces$/);
  await expect(page.getByRole("heading", { name: "Study with your peers" })).toBeVisible();
 });
+
+
+test("keyboard search shortcut and skip link are available to keyboard users", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "Skip to content" })).toBeAttached();
+  await page.keyboard.press("/");
+  await expect(page.getByRole("textbox", { name: "Search Ace Student" })).toBeFocused();
+});
+
+test("tablet navigation collapses to an accessible icon rail without horizontal overflow", async ({ page }) => {
+  await page.setViewportSize({ width: 820, height: 980 });
+  await page.goto("/");
+  await expect(page.locator(".side")).toBeVisible();
+  await expect(page.locator(".navitem").first()).toHaveAttribute("aria-label", "Overview");
+  const railWidth = await page.locator(".side").evaluate((element) => element.getBoundingClientRect().width);
+  expect(railWidth).toBeLessThanOrEqual(90);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+});
+
+test("create action sheet closes with Escape and keeps its focus inside the dialog", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Create on Ace Student" }).click();
+  const dialog = page.getByRole("dialog", { name: "Create on Ace Student" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator("button").first()).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+});
