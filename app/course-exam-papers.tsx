@@ -23,7 +23,9 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
   async function load() {
     if (!supabase) { setIssue("Exam papers are unavailable while the library is disconnected."); setLoading(false); return; }
     setLoading(true); setIssue("");
-    const ownRequest = user ? supabase.from("ace_resources").select("id,title,storage_path,status,created_at,related_paper_id")\n        .eq("uploader_id", user.id).eq("kind", "Model answer").eq("course_code", code).eq("status", "pending").order("created_at", { ascending: false }) : Promise.resolve({ data: [], error: null });\n    const [paperRows, answerRows, ownRows] = await Promise.all([
+    const ownRequest = user ? supabase.from("ace_resources").select("id,title,storage_path,status,created_at,related_paper_id")
+        .eq("uploader_id", user.id).eq("kind", "Model answer").eq("course_code", code).eq("status", "pending").order("created_at", { ascending: false }) : Promise.resolve({ data: [], error: null });
+    const [paperRows, answerRows, ownRows] = await Promise.all([
       supabase.from("ace_open_resources").select("id,title,subject,provider,url,attribution,description")
         .eq("hidden", false).eq("kind", "Past paper").contains("related_codes", [code]).order("title"),
       supabase.from("ace_resources").select("id,title,storage_path,status,created_at,related_paper_id")
