@@ -9,7 +9,6 @@ type Unit = { code: string; title: string; year_of_study: number | null; semeste
 type Quiz = { id: string; course_code: string };
 type Paper = { id: string; title: string; subject: string; kind: string; provider: string; url: string; description: string | null; related_codes: string[] };
 
-const PROGRAMME_ID = "b93bfd2c-ce49-479e-8c17-e12b321e9dd9";
 const COHORT_FOCUS = new Set(["BFB3200", "BFB3201", "BFB3202", "BFB3203", "BFB3205", "BFC3227"]);
 
 export default function BbaPilot({
@@ -154,7 +153,7 @@ export default function BbaPilot({
           </div>
         ) : <div className="bba-state">No units are mapped for this year, semester and pathway yet. Check the programme structure or choose another pathway.</div>}
         {issue && <p className="bba-error" role="alert">{issue} <button onClick={() => window.location.reload()}>Refresh</button></p>}
-        <p className="bba-source-note">Course mapping is based on the MUST School of Business & Economics published BBA structure and the existing Ace catalogue. The public structure is historical; confirm current unit registration with the department. Finance & Accounting and Project Management options are separated from common units.</p><div className="bba-official-links"><a href="https://www.must.ac.ke/sbe/comment-page-1/" target="_blank" rel="noopener noreferrer">MUST published BBA structure</a><a href="https://exampapers.must.ac.ke/" target="_blank" rel="noopener noreferrer">Official MUST examination archive</a><a href="https://library.must.ac.ke/wp-content/uploads/2025/04/How-to-Access-Past-papers-compressed.pdf" target="_blank" rel="noopener noreferrer">MUST Library past-paper access guide</a></div>
+        <p className="bba-source-note">Pilot boundary: Meru University of Science and Technology, School of Business & Economics. The current in-app catalogue maps BBA only; other SBE programmes are not presented as supported until their current unit structures are verified. Course mapping is based on the published BBA structure and the Ace catalogue. The public structure is historical, so confirm current registration with your department. Finance & Accounting and Project Management options are separated from common units.</p><div className="bba-official-links"><a href="https://www.must.ac.ke/sbe/comment-page-1/" target="_blank" rel="noopener noreferrer">MUST published BBA structure</a><a href="https://exampapers.must.ac.ke/" target="_blank" rel="noopener noreferrer">Official MUST examination archive</a><a href="https://library.must.ac.ke/wp-content/uploads/2025/04/How-to-Access-Past-papers-compressed.pdf" target="_blank" rel="noopener noreferrer">MUST Library past-paper access guide</a></div>
       </section>
     </div>
   );
