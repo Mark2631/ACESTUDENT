@@ -26,7 +26,7 @@ export function OpenLibrary({query,user,onSignIn,initialResourceId}:{query:strin
    if(!supabase)throw new Error("The resource directory is not connected.");
    const programme=await supabase.from("ace_programmes").select("id")
     .eq("name","Bachelor of Business Administration")
-    .eq("school","School of Business and Economics").maybeSingle().abortSignal(controller.signal);
+    .eq("school","School of Business and Economics").abortSignal(controller.signal).maybeSingle();
    if(programme.error||!programme.data)throw new Error("The MUST BBA resource catalogue is unavailable.");
    const catalogue=await supabase.from("ace_course_catalog").select("code")
     .eq("programme_id",programme.data.id).abortSignal(controller.signal);
