@@ -30,8 +30,7 @@ export default function CourseExamPapers({ user, code, courseTitle, onSignIn }: 
         .eq("hidden", false).eq("kind", "Past paper").eq("provider", "MUST examination archive").contains("related_codes", [code]).order("title"),
       supabase.from("ace_resources").select("id,title,storage_path,status,created_at,related_paper_id")
         .eq("status", "approved").eq("kind", "Model answer").eq("course_code", code).order("created_at", { ascending: false }),
-      supabase.from("ace_resources").select("id,title,storage_path,status,created_at,related_paper_id")
-        .eq("uploader_id", user.id).eq("kind", "Model answer").eq("course_code", code).eq("status", "pending").order("created_at", { ascending: false })
+      ownRequest
     ]);
     if (paperRows.error) setIssue("Past papers could not be loaded. Try again.");
     else setPapers((paperRows.data ?? []) as Paper[]);
