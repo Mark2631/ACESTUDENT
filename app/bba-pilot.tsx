@@ -49,7 +49,7 @@ export default function BbaPilot({
           .eq("programme_id", PROGRAMME_ID).order("code").abortSignal(controller.signal),
         supabase.from("ace_quizzes").select("id,course_code").eq("status", "published").abortSignal(controller.signal),
         supabase.from("ace_open_resources").select("id,title,subject,kind,provider,url,description,related_codes")
-          .eq("hidden", false).eq("kind", "Past paper").abortSignal(controller.signal),
+          .eq("hidden", false).eq("kind", "Past paper").eq("provider", "MUST examination archive").abortSignal(controller.signal),
         user ? supabase.from("ace_student_profiles").select("year_of_study,programme,institution")
           .eq("user_id", user.id).maybeSingle().abortSignal(controller.signal) : Promise.resolve({ data: null, error: null })
       ]);
