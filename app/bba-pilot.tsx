@@ -111,7 +111,7 @@ export default function BbaPilot({
   const totalPapers = semesterUnits.reduce((sum, unit) => sum + (papersByCode.get(unit.code) ?? 0), 0);
 
   return (
-    <div className="bba-pilot">
+    <div className="ace-bba-home bba-pilot">
       <header className="bba-pilot-header">
         <div>
           <span className="bba-eyebrow">MERU UNIVERSITY · SCHOOL OF BUSINESS & ECONOMICS</span>
