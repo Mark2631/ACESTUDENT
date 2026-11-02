@@ -1,0 +1,1 @@
+create index if not exists ace_individual_study_sessions_notebook_owner_idx on public.ace_individual_study_sessions (notebook_id, user_id);

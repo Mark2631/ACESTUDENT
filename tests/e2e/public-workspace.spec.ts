@@ -1,18 +1,40 @@
 import {test,expect} from "@playwright/test";
-test("visitors see actual learning before an account wall",async({page})=>{
+test("the homepage is a focused MUST BBA course map",async({page})=>{
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"Your learning, organized."})).toBeVisible();
- await expect(page.getByRole("heading",{name:"Explore courses"})).toBeVisible();
- await page.getByRole("button",{name:"Library",exact:true}).first().click();
- await expect(page).toHaveURL(/\/library$/);
- await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
- await expect(page.getByRole("heading",{name:/Free learning resources/})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Your BBA study desk"})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Bachelor of Business Administration"})).toBeVisible();
+ await expect(page.getByText("School of Business & Economics")).toBeVisible();
+ await expect(page.locator(".bba-unit-card").filter({hasText:"BFB3200"})).toBeVisible();
+ await expect(page.getByText("YOUR 2026 Y2S1 TIMETABLE").first()).toBeVisible();
+ await expect(page.locator(".bba-unit-current")).toHaveCount(6);
+ await expect(page.getByText("CONFIRM CURRENT REGISTRATION")).toBeVisible();
+ await expect(page.getByLabel("Year")).toHaveValue("2");
+ await expect(page.getByLabel("Semester")).toHaveValue("1");
+});
+test("a BBA unit opens its official past-paper workspace without sign-in",async({page})=>{
+ await page.goto("/");
+ await page.locator(".bba-unit-card").filter({hasText:"BFB3201"}).getByRole("button",{name:"Open unit"}).click();
+ await expect(page.getByRole("heading",{name:"Business Law"})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Past papers & model answers"})).toBeVisible();
+ await expect(page.getByText("Business Law, January 2026")).toBeVisible();
+ await expect(page.getByText("MUST examination archive").first()).toBeVisible();
+});
+test("students can select another semester and see only the mapped BBA units",async({page})=>{
+ await page.goto("/");
+ await page.getByLabel("Semester").selectOption("2");
+ await expect(page.locator(".bba-unit-card").filter({hasText:"BFB3250"})).toBeVisible();
+ await expect(page.locator(".bba-unit-card").filter({hasText:"BFB3200"})).toHaveCount(0);
+});
+test("the practice shortcut opens the exam practice arena",async({page})=>{
+ await page.goto("/");
+ await page.locator(".bba-action-grid").getByRole("button",{name:/Practise for exams/}).click();
+ await expect(page.getByRole("heading",{name:"Practice what you're studying"})).toBeVisible();
 });
 test("major URLs load directly without losing their destination",async({page})=>{
  await page.goto("/library");
- await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Shared student documents"})).toBeVisible();
  await page.reload();
- await expect(page.getByRole("heading",{name:"Learning materials"})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Shared student documents"})).toBeVisible();
  await page.goto("/practice");
  await expect(page.getByRole("heading",{name:"Practice what you're studying"})).toBeVisible();
  await page.goto("/spaces");
@@ -25,22 +47,122 @@ test("public course deep links work without authentication",async({page})=>{
  await expect(page.getByText("EXPLORE A COURSE")).toBeVisible();
  await expect(page.getByRole("heading",{name:"Open learning resources"})).toBeVisible();
 });
+test("all six initial BBA units have matching in-app concept lessons",async({page})=>{
+ const lessons=[
+  ["BFB3200","Human resource management: from workforce planning to performance"],
+  ["BFB3201","Business law: agreements, contracts and remedies in Kenya"],
+  ["BFB3202","Entrepreneurship: test an opportunity before investing"],
+  ["BFB3203","Leadership: influence, decisions and team performance"],
+  ["BFB3205","Public relations: build trust with planned communication"],
+  ["BFC3227","Cost accounting: classify costs and support decisions"]
+ ];
+ for(const [code,title] of lessons){
+  await page.goto("/courses/"+code);
+  await expect(page.getByRole("heading",{name:title})).toBeVisible();
+ }
+});
+test("desktop and phone use deliberately different navigation layouts",async({page})=>{
+ await page.setViewportSize({width:1440,height:900});
+ await page.goto("/");
+ await expect(page.locator(".side")).toBeVisible();
+ await expect(page.locator(".bottom")).toBeHidden();
+ await expect(page.locator(".ace-bba-home")).toBeVisible();
+ await expect(page.locator(".bba-unit-grid")).toBeVisible();
+ await page.setViewportSize({width:390,height:844});
+ await expect(page.locator(".side")).toBeVisible();
+ await expect(page.locator(".bottom")).toBeVisible();
+});
 test("the workspace has no sideways overflow on a narrow phone",async({page})=>{
  await page.setViewportSize({width:360,height:780});
  await page.goto("/");
- await expect(page.getByRole("heading",{name:"Your learning, organized."})).toBeVisible();
+ await expect(page.getByRole("heading",{name:"Your BBA study desk"})).toBeVisible();
+ await expect(page.locator(".side")).toBeVisible();
+ await expect(page.locator(".bottom")).toBeVisible();
+ await expect(page.getByRole("button",{name:"Create on Ace Student"})).toBeVisible();
+ await page.getByRole("button",{name:"Create on Ace Student"}).click();
+ await expect(page.getByRole("dialog",{name:"Create on Ace Student"})).toBeVisible();
+ await expect(page.getByRole("button",{name:"Upload learning material"})).toBeVisible();
  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth+1)).toBe(true);
 });
 
-test("guest practice exposes a real subject-specific quiz",async({page})=>{
- await page.goto("/practice");
- await page.getByRole("button",{name:"Mathematics"}).click();
- await expect(page.getByText("If 3x + 5 = 20, what is x?")).toBeVisible();
- await page.getByRole("button",{name:"Business & economics"}).click();
- await expect(page.getByText("What does opportunity cost measure?")).toBeVisible();
- await expect(page.getByRole("button",{name:/Check answers/})).toBeDisabled();
+test("students can read all six BBA unit lessons and reveal recall answers inside Ace",async({page})=>{
+ test.skip(!process.env.NEXT_PUBLIC_SUPABASE_URL||!process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,"Requires configured Supabase credentials and seeded lesson data");
+ await page.goto("/library");
+ await expect(page.getByRole("heading",{name:"Learn something. Understand it."})).toBeVisible();
+ await expect(page.locator(".ace-lesson-card").first()).toBeVisible();
+ const lessonCount=await page.locator(".ace-lesson-card").count();
+ expect(lessonCount).toBe(6);
+ await expect(page.getByText("Javascript state, events and user interactions")).toHaveCount(0);
+ await expect(page.getByText("How to design a fair experiment")).toHaveCount(0);
+ await page.locator(".ace-lesson-card").first().click();
+ await expect(page.locator(".ace-reader-article")).toBeVisible();
+ await expect(page.getByText("RETRIEVAL PRACTICE")).toBeVisible();
+ await page.locator(".ace-recall-row button").first().click();
+ await expect(page.locator(".ace-recall-row p").first()).toBeVisible();
+ await page.getByRole("button",{name:"Mark lesson complete"}).click();
+ await expect(page.getByRole("button",{name:"Lesson completed"})).toBeVisible();
+ await page.getByRole("button",{name:"All lessons"}).click();
+ await expect(page.locator(".ace-lesson-card").first()).toBeVisible();
 });
-test("legacy Groups URL resolves to the Groups destination",async({page})=>{
+
+
+test("guest practice exposes only BBA business and quantitative foundations",async({page})=>{
+ await page.goto("/practice");
+ const subjects=page.locator(".guest-practice .chips button");
+ await expect(subjects).toHaveCount(2);
+ await expect(subjects.filter({hasText:"Business & economics"})).toBeVisible();
+ await expect(subjects.filter({hasText:"Business mathematics & statistics"})).toBeVisible();
+ await expect(subjects.filter({hasText:"Biology"})).toHaveCount(0);
+ await expect(subjects.filter({hasText:"Computer science"})).toHaveCount(0);
+});
+
+test("only the six verified BBA concept lessons are exposed in the pilot library",async({page})=>{
+ await page.goto("/library");
+ await expect(page.locator(".ace-lesson-card")).toHaveCount(6);
+ await expect(page.getByText("Business law: agreements, contracts and remedies in Kenya")).toBeVisible();
+ await expect(page.getByText("Cost accounting: classify costs and support decisions")).toBeVisible();
+});
+
+test("visitors can try the sample practice session before signing in", async ({ page }) => {
+ await page.goto("/practice");
+ await expect(page.getByText("TRY A QUICK SESSION · NO ACCOUNT REQUIRED")).toBeVisible();
+ await expect(page.getByRole("heading", { name: "Practice what you're studying" })).toBeVisible();
+ const firstOption = page.locator(".guest-questions .quiz-options button").first();
+ await firstOption.click();
+ await expect(firstOption).toHaveAttribute("aria-pressed", "true");
+ await expect(page.getByText(/Sample practice questions for exploration/)).toBeVisible();
+});
+test("the legacy Groups route redirects to Study groups", async ({ page }) => {
  await page.goto("/groups");
- await expect(page).toHaveURL(new RegExp("/spaces$"));
+ await expect(page).toHaveURL(/spaces$/);
+ await expect(page.getByRole("heading", { name: "Study with your peers" })).toBeVisible();
+});
+
+
+test("keyboard search shortcut and skip link are available to keyboard users", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.getByRole("link", { name: "Skip to content" })).toBeAttached();
+  await page.keyboard.press("/");
+  await expect(page.getByRole("textbox", { name: "Search Ace Student" })).toBeFocused();
+});
+
+test("tablet navigation compresses without horizontal overflow", async ({ page }) => {
+  await page.setViewportSize({ width: 820, height: 980 });
+  await page.goto("/");
+  await expect(page.locator(".side")).toBeVisible();
+  await expect(page.locator(".navitem").first()).toHaveAttribute("aria-label", "Overview");
+  expect(await page.locator(".side").evaluate((element) => element.getBoundingClientRect().height)).toBe(68);
+  await expect(page.locator(".navitem").first()).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+});
+
+test("create action sheet closes with Escape and keeps its focus inside the dialog", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Create on Ace Student" }).click();
+  const dialog = page.getByRole("dialog", { name: "Create on Ace Student" });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator("button").first()).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
 });

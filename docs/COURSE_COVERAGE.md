@@ -1,4 +1,14 @@
-# Academic content coverage · 30 October 2026
+# Academic content coverage · 2 November 2026
+
+## Updated focused-pilot implementation · 2 November 2026
+
+The user-facing pilot has been narrowed to **MUST School of Business & Economics → Bachelor of Business Administration (BBA)**. The home screen now opens directly into the BBA year/semester/pathway course map rather than presenting unrelated disciplines. The initial Y2S1 cohort highlights the six units from the supplied 2026 timetable: BFB3200, BFB3201, BFB3202, BFB3203, BFB3205 and BFC3227. BFB3204 Business English remains in the existing BBA catalogue snapshot and is visibly flagged for current-registration confirmation because it is not on that supplied timetable. The current SBE undergraduate page confirms the BBA programme but does not publish a full semester-level unit map.
+
+Six original, in-app concept lessons have been added for those six initial units: Human Resource Management, Business Law (Kenyan context), Entrepreneurship, Leadership, Public Relations and Cost Accounting. Each has 4–5 sections, learning outcomes and three retrieval questions. These are Ace-authored introductory guides, not lecturer-approved notes. They are available through the existing in-app reader and can be imported into Study Studio for note-taking, cards and FSRS review.
+
+The unit page now includes official MUST examination-archive papers and a model-answer workflow. The user can upload one PDF against one exact paper; it uses the existing private ace-submissions bucket and ace_resources review queue. The related_paper_id field preserves the exact paper-to-answer relationship. Pending answers remain private. A moderator approving a file is not the same as an academic validation; only a lecturer/department confirmation should earn an official memorandum label. The initial Y2S1 common-unit catalogue currently has 11 official MUST paper links, 13 published quizzes and six in-app concept lessons (Business English has one quiz but no new lesson in this first content batch).
+
+The unit page includes a course-specific question board. Students can post concept, calculation, case-study, exam-style and discussion questions with screenshot attachments; peers can submit written or image answers. Each answer remains unreviewed until the question owner or an assigned reviewer evaluates it as Correct, Partly correct or Needs revision and may add feedback. The review is human/peer evaluation, not AI grading. Question links can be shared to classmates; text or screenshots can be handed off to a chosen AI app. Existing quiz competitions use published quizzes, fresh per-event attempts, server-side grading and standings. Study Studio Find remains source-grounded retrieval from the student's own material; there is no generative model provider configured inside Ace Student yet.
 
 ## Pilot: Meru University Bachelor of Business Administration
 

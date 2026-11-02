@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { ArrowLeft, ArrowRight, CheckCircle2, RotateCcw, Sparkles } from "lucide-react";
+import { ArrowRight, CheckCircle2, RotateCcw, Sparkles } from "lucide-react";
 
 type Question = { prompt: string; options: string[]; answer: number; explanation: string };
 const banks: Record<string, Question[]> = {
@@ -11,48 +11,90 @@ const banks: Record<string, Question[]> = {
     {prompt:"Which is an example of a variable cost in a bakery?",options:["Annual rent","Monthly insurance","Flour used for each cake","Business licence"],answer:2,explanation:"Flour usage changes with the volume of cakes produced, making it a variable cost."},
     {prompt:"What is the main purpose of a cash-flow statement?",options:["Show profitability only","Explain cash inflows and outflows","List shareholders","Calculate market share"],answer:1,explanation:"A cash-flow statement reports cash generated and used by operating, investing and financing activities."}
   ],
-  "Mathematics": [
-    {prompt:"If 3x + 5 = 20, what is x?",options:["3","5","8","15"],answer:1,explanation:"Subtract 5 from both sides to get 3x = 15, then divide by 3."},
-    {prompt:"What is the derivative of x²?",options:["x","2x","x³","2"],answer:1,explanation:"Using the power rule, d(xⁿ)/dx = nxⁿ⁻¹, so the derivative is 2x."},
-    {prompt:"What is 15% of 240?",options:["24","30","36","40"],answer:2,explanation:"0.15 × 240 = 36."},
-    {prompt:"What is the probability of rolling an even number on a fair six-sided die?",options:["1/6","1/3","1/2","2/3"],answer:2,explanation:"There are three even outcomes (2, 4, 6) among six equally likely outcomes."},
-    {prompt:"Solve: 2(x − 4) = 10.",options:["1","5","9","14"],answer:2,explanation:"Divide by 2: x − 4 = 5, so x = 9."}
-  ],
-  "Biology": [
-    {prompt:"Which organelle is the primary site of aerobic respiration?",options:["Ribosome","Mitochondrion","Golgi apparatus","Nucleus"],answer:1,explanation:"Mitochondria generate most cellular ATP through aerobic respiration."},
-    {prompt:"Which molecule carries genetic information in most living organisms?",options:["ATP","DNA","Glucose","Cellulose"],answer:1,explanation:"DNA stores hereditary information in its nucleotide sequence."},
-    {prompt:"What is the main function of red blood cells?",options:["Clot blood","Produce hormones","Transport oxygen","Digest pathogens"],answer:2,explanation:"Haemoglobin in red blood cells binds and transports oxygen."},
-    {prompt:"Which process produces genetically varied gametes?",options:["Mitosis","Meiosis","Binary fission","Budding"],answer:1,explanation:"Meiosis halves chromosome number and generates variation through recombination and independent assortment."},
-    {prompt:"What is the basic structural and functional unit of life?",options:["Tissue","Organ","Cell","Organ system"],answer:2,explanation:"The cell is the smallest unit capable of carrying out the processes of life."}
-  ],
-  "Computer science": [
-    {prompt:"What is the time complexity of binary search on a sorted array?",options:["O(1)","O(log n)","O(n)","O(n²)"],answer:1,explanation:"Binary search halves the remaining search interval on each comparison."},
-    {prompt:"Which HTTP method is conventionally used to retrieve a resource?",options:["POST","PATCH","GET","DELETE"],answer:2,explanation:"GET requests a representation of a resource and should not mutate server state."},
-    {prompt:"What does a primary key guarantee in a relational table?",options:["Rows are sorted","Each row has a unique identifier","All columns are numeric","The table is encrypted"],answer:1,explanation:"A primary key uniquely identifies each row and cannot contain NULL values."},
-    {prompt:"Which data structure follows last-in, first-out order?",options:["Queue","Stack","Tree","Graph"],answer:1,explanation:"A stack removes the most recently added item first."},
-    {prompt:"What is the purpose of input validation?",options:["Make pages load faster","Reject malformed or unsafe input","Replace authentication","Compress database rows"],answer:1,explanation:"Validation checks that incoming data meets expected rules before it is processed."}
+  "Business mathematics & statistics": [
+    {prompt:"A unit sells 120 items at KSh 250 each. What is its total sales revenue?",options:["KSh 3,000","KSh 30,000","KSh 25,000","KSh 120,250"],answer:1,explanation:"Sales revenue equals selling price multiplied by quantity: 250 × 120 = KSh 30,000."},
+    {prompt:"A product sells for KSh 800 and has a variable cost of KSh 500. What is its contribution per unit?",options:["KSh 300","KSh 500","KSh 800","KSh 1,300"],answer:0,explanation:"Contribution per unit is selling price less variable cost: 800 − 500 = KSh 300."},
+    {prompt:"A student scores 60, 70 and 80 in three tests. What is the arithmetic mean?",options:["65","70","75","210"],answer:1,explanation:"The mean is the sum divided by the number of observations: (60 + 70 + 80) ÷ 3 = 70."},
+    {prompt:"If fixed costs are KSh 24,000 and contribution is KSh 400 per unit, what is the break-even output?",options:["40 units","50 units","60 units","80 units"],answer:2,explanation:"Break-even quantity equals fixed costs divided by contribution per unit: 24,000 ÷ 400 = 60 units."},
+    {prompt:"A KSh 2,000 item is discounted by 10%. What is the new price?",options:["KSh 1,600","KSh 1,700","KSh 1,800","KSh 1,900"],answer:2,explanation:"Ten per cent of 2,000 is 200, so the discounted price is KSh 1,800."}
   ]
 };
-export default function GuestPractice(){
- const [subject,setSubject]=useState("Business & economics");
- const [answers,setAnswers]=useState<Record<number,number>>({});
- const [submitted,setSubmitted]=useState(false);
- const questions=useMemo(()=>banks[subject],[subject]);
- const score=questions.reduce((n,q,i)=>n+(answers[i]===q.answer?1:0),0);
- function changeSubject(value:string){setSubject(value);setAnswers({});setSubmitted(false)}
- return <section className="guest-practice">
-  <div className="eyebrow">TRY A QUICK SESSION · NO ACCOUNT REQUIRED</div>
-  <div className="row"><div><h1>Practice what you're studying</h1><p className="muted">Choose a subject. Work through five sample questions and review the reasoning.</p></div><span className="kind">5 QUESTIONS</span></div>
-  <div className="chips" aria-label="Choose a subject">{Object.keys(banks).map(name=><button key={name} className={subject===name?"chip selected":"chip"} onClick={()=>changeSubject(name)}>{name}</button>)}</div>
-  {!submitted ? <div className="guest-questions">{questions.map((q,i)=><article className="panel quiz-question" key={q.prompt}>
-    <div className="row"><span className="eyebrow">QUESTION {i+1} OF 5</span><span className="small">{answers[i]===undefined?"Not answered":"Answer selected"}</span></div>
-    <h3>{q.prompt}</h3><div className="quiz-options">{q.options.map((option,j)=><button key={option} className={answers[i]===j?"selected":""} aria-pressed={answers[i]===j} onClick={()=>setAnswers(old=>({...old,[i]:j}))}><span>{String.fromCharCode(65+j)}</span>{option}</button>)}</div>
-  </article>)}
-  <div className="row guest-submit"><span className="muted">{Object.keys(answers).length} of 5 answered</span><button className="btn" disabled={Object.keys(answers).length!==5} onClick={()=>setSubmitted(true)}>Check answers <ArrowRight size={16}/></button></div></div>
-  : <div className="panel guest-results"><div className="result-score"><Sparkles size={25}/><b>{score}/5</b><span>{score===5?"Excellent work":score>=3?"Good progress":"Keep practising"}</span></div>
-    {questions.map((q,i)=><article className="answer-review" key={q.prompt}><h3>{i+1}. {q.prompt}</h3><p className={answers[i]===q.answer?"correct":"muted"}>{answers[i]===q.answer?"Correct":"Your answer: "+q.options[answers[i]]}</p><p><b>Answer: {q.options[q.answer]}</b></p><p className="muted">{q.explanation}</p></article>)}
-    <button className="btn" onClick={()=>{setAnswers({});setSubmitted(false)}}><RotateCcw size={16}/> Try again</button>
-  </div>}
-  <p className="small">Sample practice questions for exploration. They are not official institutional examination questions. Sign in to access published quizzes and save graded progress.</p>
- </section>;
+
+export default function GuestPractice() {
+  const categories = useMemo(() => Object.keys(banks).filter((name) => name.toLowerCase().includes("business")), []);
+  const [category, setCategory] = useState(categories[0] ?? "Business & economics");
+  const questions = banks[category] ?? [];
+  const [index, setIndex] = useState(0);
+  const [selected, setSelected] = useState<number | null>(null);
+  const [score, setScore] = useState(0);
+  const [finished, setFinished] = useState(false);
+  const question = questions[index];
+
+  function chooseCategory(value: string) {
+    setCategory(value);
+    setIndex(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  }
+
+  function next() {
+    if (selected === null) return;
+    if (index >= questions.length - 1) { setFinished(true); return; }
+    setIndex((value) => value + 1);
+    setSelected(null);
+  }
+
+  function restart() {
+    setIndex(0);
+    setSelected(null);
+    setScore(0);
+    setFinished(false);
+  }
+
+  return (
+    <section className="guest-practice" aria-label="BBA sample practice">
+      <header className="guest-practice-heading">
+        <span className="guest-practice-kicker"><Sparkles size={13}/> TRY A QUICK SESSION · NO ACCOUNT REQUIRED</span>
+        <h2>Practice what you're studying</h2>
+        <p>Try a short business-focused sample before creating an account. These are practice questions, not official MUST examination questions.</p><p className="guest-practice-sample-note">Sample practice questions for exploration — not official exam questions.</p>
+      </header>
+      <div className="guest-practice-categories" role="group" aria-label="Practice topic">
+        {categories.map((name) => <button type="button" key={name} className={category === name ? "active" : ""} onClick={() => chooseCategory(name)}>{name}</button>)}
+      </div>
+      {finished ? (
+        <div className="guest-practice-result" role="status" aria-live="polite">
+          <span className="guest-practice-result-icon"><CheckCircle2 size={22}/></span>
+          <span className="guest-practice-kicker">SAMPLE COMPLETE</span>
+          <h3>{score} out of {questions.length} correct</h3>
+          <p>Sign in to access the full BBA unit quizzes, save attempts and review missed questions.</p>
+          <button type="button" className="guest-practice-next" onClick={restart}><RotateCcw size={14}/> Try again</button>
+        </div>
+      ) : question ? (
+        <div className="guest-practice-card guest-questions">
+          <div className="guest-practice-progress">
+            <span>QUESTION {index + 1} OF {questions.length}</span>
+            <span>{score} correct so far</span>
+          </div>
+          <div className="guest-practice-progress-track"><span style={{width: ((index + 1) / questions.length * 100) + "%"}}/></div>
+          <h3>{question.prompt}</h3>
+          <div className="guest-practice-options quiz-options">
+            {question.options.map((option, optionIndex) => {
+              const isCorrect = optionIndex === question.answer;
+              const isSelected = selected === optionIndex;
+              return <button type="button" key={option} disabled={selected !== null} aria-pressed={isSelected} className={selected !== null && isCorrect ? "correct" : isSelected ? "incorrect" : ""} onClick={() => {setSelected(optionIndex);if(isCorrect)setScore((value)=>value+1);}}>
+                <span>{String.fromCharCode(65 + optionIndex)}</span>{option}
+                {selected !== null && isCorrect && <CheckCircle2 size={15}/>}
+              </button>;
+            })}
+          </div>
+          {selected !== null && <div className={"guest-practice-feedback " + (selected === question.answer ? "correct" : "incorrect")} role="status" aria-live="polite">
+            <strong>{selected === question.answer ? "Correct" : "Not quite"}</strong>
+            <p>{question.explanation}</p>
+          </div>}
+          <button type="button" className="guest-practice-next" disabled={selected === null} onClick={next}>{index === questions.length - 1 ? "See my result" : "Next question"} <ArrowRight size={14}/></button>
+        </div>
+      ) : <p className="muted">No sample questions are available for this topic yet.</p>}
+    </section>
+  );
 }
