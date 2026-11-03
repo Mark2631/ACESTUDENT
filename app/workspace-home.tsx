@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
-import {ArrowRight,ArrowUpRight,BookOpen,CalendarDays,FileText,GraduationCap,Search,Users,PlayCircle,LibraryBig,Sparkles,Video,Trophy,MessageCircle,Bookmark,Clock3,Flame} from "lucide-react";
+import {ArrowRight,ArrowUpRight,FileText,GraduationCap,Search,PlayCircle,LibraryBig,Sparkles,Video,Trophy,MessageCircle,Bookmark,Clock3,Flame} from "lucide-react";
 import {supabase} from "@/lib/supabase";
 import {UpcomingSessions} from "./study-sessions";
 import type {User} from "@supabase/supabase-js";
@@ -63,7 +63,7 @@ export default function WorkspaceHome({user,name,studyYear,onCourse,onLibrary,on
      <div className="section-heading"><div><span className="section-overline">KEEP THE MOMENTUM</span><h2>Learning that stays connected</h2><p>Useful materials and upcoming ways to learn with other students.</p></div></div>
      <div className="connected-grid">
        <div className="connected-resources"><div className="connected-title"><div><Bookmark size={18}/><strong>Picked for your courses</strong></div><button onClick={onLibrary}>All materials <ArrowRight size={15}/></button></div>
-         {recommended.length?recommended.map(m=><article className="connected-resource" key={m.id}><span className="connected-file"><FileText size={18}/></span><span><small>{m.kind} · {m.provider}</small><strong>{m.title}</strong><em>{m.subject}</em></span><ArrowUpRight size={16}/></article>):<div className="connected-empty"><LibraryBig size={21}/><span>Explore the Study Vault for open resources linked to your courses.</span><button onClick={onLibrary}>Browse materials</button></div>}
+         {recommended.length?recommended.map(m=><button className="connected-resource" key={m.id} onClick={onLibrary}><span className="connected-file"><FileText size={18}/></span><span><small>{m.kind} · {m.provider}</small><strong>{m.title}</strong><em>{m.subject}</em></span><ArrowUpRight size={16}/></button>):<div className="connected-empty"><LibraryBig size={21}/><span>Explore the Study Vault for open resources linked to your courses.</span><button onClick={onLibrary}>Browse materials</button></div>}
        </div>
        <div className="connected-sessions"><div className="connected-title"><div><Clock3 size={18}/><strong>Upcoming study sessions</strong></div><button onClick={()=>onLive()}>All rooms <ArrowRight size={15}/></button></div><UpcomingSessions onVisit={spaceId=>onLive(spaceId)}/></div>
      </div>
