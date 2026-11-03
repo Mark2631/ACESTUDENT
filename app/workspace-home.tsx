@@ -1,6 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
-import {ArrowRight,ArrowUpRight,FileText,GraduationCap,Search,PlayCircle,LibraryBig,Sparkles,Video,Trophy,MessageCircle,Bookmark,Clock3,Flame} from "lucide-react";
+import {ArrowRight,ArrowUpRight,BookOpen,FileText,GraduationCap,Search,PlayCircle,LibraryBig,Sparkles,Video,Trophy,MessageCircle,Bookmark,Clock3,Flame} from "lucide-react";
 import {supabase} from "@/lib/supabase";
 import {UpcomingSessions} from "./study-sessions";
 import type {User} from "@supabase/supabase-js";
