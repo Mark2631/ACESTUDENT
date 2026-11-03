@@ -390,3 +390,32 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 @media(prefers-reduced-motion:reduce) {
   .module-card { transition:none; }
 }
+
+
+/* Module identity across desktop and mobile navigation */
+.navitem.library-nav.active,.bottom .library-nav.active { color:var(--vault); background:rgba(16,185,129,.11); box-shadow:inset 2px 0 0 var(--vault); }
+.navitem.live-nav.active,.bottom .live-nav.active { color:var(--live); background:rgba(22,135,255,.11); box-shadow:inset 2px 0 0 var(--live); }
+.navitem.practice-nav.active,.bottom .practice-nav.active { color:var(--arena); background:rgba(155,114,245,.12); box-shadow:inset 2px 0 0 var(--arena); }
+.navitem.spaces-nav.active,.bottom .spaces-nav.active { color:var(--forum); background:rgba(249,115,22,.11); box-shadow:inset 2px 0 0 var(--forum); }
+.bottom .library-nav.active,.bottom .live-nav.active,.bottom .practice-nav.active,.bottom .spaces-nav.active { box-shadow:none; }
+.course-module-nav { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin:20px 0 25px; }
+.course-module-nav button { display:flex; align-items:center; gap:9px; min-width:0; padding:12px 13px; border:1px solid var(--line); border-radius:12px; background:var(--surface); color:var(--ink); text-align:left; font-size:11px; font-weight:800; }
+.course-module-nav button span { flex:1; }
+.course-module-nav button svg:first-child { flex:0 0 auto; }
+.course-module-nav button svg:last-child { flex:0 0 auto; color:var(--muted); }
+.course-nav-vault svg:first-child { color:var(--vault); }
+.course-nav-live svg:first-child { color:var(--live); }
+.course-nav-arena svg:first-child { color:var(--arena); }
+.course-nav-forum svg:first-child { color:var(--forum); }
+.course-module-nav button:hover { border-color:var(--accent); background:var(--surface-raised); }
+.connected-resource { width:100%; border:0; background:transparent; color:var(--ink); text-align:left; cursor:pointer; }
+.connected-resource:hover strong { color:var(--accent); }
+@media(max-width:700px) {
+  .course-module-nav { grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; margin:16px 0 22px; }
+  .course-module-nav button { padding:10px; font-size:10px; }
+  .bottom button { font-size:9px; }
+}
+@media(max-width:370px) {
+  .bottom button { font-size:8px; }
+  .course-module-nav button { font-size:9px; }
+}
