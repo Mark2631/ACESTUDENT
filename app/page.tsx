@@ -59,16 +59,16 @@ function syncRoute(){
  else if(path==="/account")setTab("account");
  else if(path==="/notes")setTab("notes");
  else if(path==="/planner")setTab("planner");
- else if(path==="/live"||path.startsWith("/live/")){setTab("live");if(path.startsWith("/live/"))setSpaceId(path.split("/")[2]||"")}else if(path==="/forum"||path.startsWith("/forum/")||path==="/spaces"||path.startsWith("/spaces/")){setTab("spaces");if(path.startsWith("/forum/")||path.startsWith("/spaces/"))setSpaceId(path.split("/")[2]||"")}
+ else if(path==="/spaces"||path.startsWith("/spaces/")){const mode=new URLSearchParams(window.location.search).get("mode");setTab(mode==="live"?"live":"spaces");if(path.startsWith("/spaces/"))setSpaceId(path.split("/")[2]||"");else setSpaceId("")}
  else if(path.startsWith("/courses/")){setSelectedCourse(path.slice("/courses/".length));setTab("course")}
  else setTab("home");
 }
 function go(id:string,code?:string){
- const path=id==="library"?"/library":id==="practice"?"/practice":id==="live"?(code?"/live/"+encodeURIComponent(code):"/live"):id==="spaces"?(code?"/forum/"+encodeURIComponent(code):"/forum"):id==="upload"?"/create":id==="account"?"/account":id==="notes"?"/notes":id==="planner"?"/planner":id==="course"&&code?"/courses/"+encodeURIComponent(code):"/";
+ const path=id==="library"?"/library":id==="practice"?"/practice":id==="live"?(code?"/spaces/"+encodeURIComponent(code)+"?mode=live":"/spaces?mode=live"):id==="spaces"?(code?"/spaces/"+encodeURIComponent(code)+"?mode=forum":"/spaces?mode=forum"):id==="upload"?"/create":id==="account"?"/account":id==="notes"?"/notes":id==="planner"?"/planner":id==="course"&&code?"/courses/"+encodeURIComponent(code):"/";
  window.history.pushState(null,"",path);
  setTab(id);
  if(id==="course"&&code)setSelectedCourse(code);
- if(id==="spaces"&&code)setSpaceId(code);
+ if((id==="spaces"||id==="live")&&code)setSpaceId(code);
  setNotice("");setCreateOpen(false);
 }
 useEffect(()=>{syncRoute();const handler=()=>syncRoute();window.addEventListener("popstate",handler);return()=>window.removeEventListener("popstate",handler)},[]);
