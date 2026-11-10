@@ -92,6 +92,7 @@ create table if not exists public.ace_documents (
   description text check (description is null or char_length(description) <= 1200),
   document_type text not null check (document_type in ('note','past_paper','summary')),
   storage_path text not null unique,
+  uploader_name text not null default 'Student',
   mime_type text not null,
   file_size bigint not null check (file_size > 0 and file_size <= 15728640),
   status text not null default 'pending' check (status in ('pending','approved','flagged')),
@@ -248,3 +249,28 @@ end
 $$;
 revoke all on function public.ace_record_download(uuid) from public,anon;
 grant execute on function public.ace_record_download(uuid) to authenticated;
+
+
+-- Snapshot a public display name onto the document; private profile rows remain self-only.
+create or replace function public.ace_set_document_uploader_name()
+returns trigger
+language plpgsql
+security definer
+set search_path=''
+as $$
+begin
+  select nullif(trim(p.full_name),'')
+  into new.uploader_name
+  from public.ace_student_profiles p
+  where p.user_id=new.uploader_id;
+  if new.uploader_name is null then
+    new.uploader_name := 'Student';
+  end if;
+  return new;
+end
+$$;
+revoke all on function public.ace_set_document_uploader_name() from public,anon,authenticated;
+drop trigger if exists ace_documents_uploader_name on public.ace_documents;
+create trigger ace_documents_uploader_name
+before insert on public.ace_documents
+for each row execute function public.ace_set_document_uploader_name();

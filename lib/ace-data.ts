@@ -58,7 +58,7 @@ export async function getDocuments(options?:{query?:string;type?:DocumentKind|"a
   const supabase=await createClient();
   if(!supabase)return {data:[],issue:"missing-config",message:"Connect the Supabase project to load the library."};
   let request=supabase.from("ace_documents")
-    .select("id,title,description,document_type,storage_path,mime_type,file_size,upvotes,downloads,created_at,uploader_id,course_id,status")
+    .select("id,title,description,document_type,storage_path,uploader_name,mime_type,file_size,upvotes,downloads,created_at,uploader_id,course_id,status")
     .order("created_at",{ascending:false}).limit(options?.limit??24);
   if(options?.uploaderId)request=request.eq("uploader_id",options.uploaderId);
   else request=request.eq("status","approved");
@@ -73,15 +73,11 @@ export async function getDocuments(options?:{query?:string;type?:DocumentKind|"a
 
   const courseIds=Array.from(new Set(rows.map(row=>String(row.course_id))));
   const uploaderIds=Array.from(new Set(rows.map(row=>String(row.uploader_id))));
-  const [coursesResult,profilesResult]=await Promise.all([
-    supabase.from("ace_courses").select("id,name,code,school_id").in("id",courseIds),
-    supabase.from("ace_student_profiles").select("user_id,full_name").in("user_id",uploaderIds)
-  ]);
+  const coursesResult=await supabase.from("ace_courses").select("id,name,code,school_id").in("id",courseIds);
   const courses=new Map((coursesResult.data??[]).map(row=>[String(row.id),row]));
   const schoolIds=Array.from(new Set(Array.from(courses.values()).map(row=>String(row.school_id))));
   const schoolsResult=schoolIds.length?await supabase.from("ace_schools").select("id,name").in("id",schoolIds):{data:[],error:null};
   const schools=new Map((schoolsResult.data??[]).map(row=>[String(row.id),String(row.name)]));
-  const profiles=new Map((profilesResult.data??[]).map(row=>[String(row.user_id),String(row.full_name||"Student")]));
   const documents:AppDocument[]=rows.map(row=>{
     const course=courses.get(String(row.course_id));
     return {
@@ -89,7 +85,7 @@ export async function getDocuments(options?:{query?:string;type?:DocumentKind|"a
       course_name:course?.name??"Course",
       course_code:course?.code??null,
       school_name:course?schools.get(String(course.school_id))??"School":"School",
-      uploader_name:profiles.get(String(row.uploader_id))??"Student"
+      uploader_name:String(row.uploader_name??"Student")
     } as AppDocument;
   });
   return {data:documents,issue:"ready"};
@@ -103,12 +99,9 @@ export async function getDocument(id:string):Promise<DataResult<{document:AppDoc
     .eq("id",id).maybeSingle();
   if(error)return {data:null,issue:isSchemaError(error)?"schema-not-ready":"error",message:error.message};
   if(!row)return {data:null,issue:"ready"};
-  const [courseResult,profileResult]=await Promise.all([
-    supabase.from("ace_courses").select("id,name,code,school_id").eq("id",row.course_id).maybeSingle(),
-    supabase.from("ace_student_profiles").select("full_name").eq("user_id",row.uploader_id).maybeSingle()
-  ]);
+  const courseResult=await supabase.from("ace_courses").select("id,name,code,school_id").eq("id",row.course_id).maybeSingle();
   const schoolResult=courseResult.data?.school_id?await supabase.from("ace_schools").select("name").eq("id",courseResult.data.school_id).maybeSingle():{data:null,error:null};
-  const document:AppDocument={...row,course_name:courseResult.data?.name??"Course",course_code:courseResult.data?.code??null,school_name:schoolResult.data?.name??"School",uploader_name:profileResult.data?.full_name??"Student"} as AppDocument;
+  const document:AppDocument={...row,course_name:courseResult.data?.name??"Course",course_code:courseResult.data?.code??null,school_name:schoolResult.data?.name??"School",uploader_name:String(row.uploader_name??"Student")} as AppDocument;
   const {data:signed,error:signError}=await supabase.storage.from("ace-documents").createSignedUrl(document.storage_path,3600);
   if(signError||!signed?.signedUrl)return {data:null,issue:"error",message:signError?.message};
   return {data:{document,previewUrl:signed.signedUrl},issue:"ready"};
