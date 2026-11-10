@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Brand } from "@/components/brand";
+import { Brand } from "@/components/app-shell";
 import { createClient } from "@/lib/supabase/client";
 
 export function AuthForm({mode}:{mode:"sign-in"|"sign-up"}){
