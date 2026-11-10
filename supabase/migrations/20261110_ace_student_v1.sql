@@ -27,6 +27,28 @@ create table if not exists public.ace_courses (
   unique (school_id, name, level_or_year)
 );
 
+-- Import the existing verified university directory without modifying the legacy tables.
+insert into public.ace_schools(name,education_level,country,status)
+select distinct i.name,'university',coalesce(nullif(i.country,''),'Kenya'),'approved'
+from public.ace_institutions i
+on conflict (normalized_name,education_level,country) do nothing;
+
+insert into public.ace_courses(school_id,name,code,programme_name,education_level,level_or_year,status)
+select s.id,cc.title,cc.code,p.name,'university',
+       nullif(concat_ws(' · ',
+         case when cc.year_of_study is not null then 'Year '||cc.year_of_study end,
+         case when cc.semester is not null then 'Semester '||cc.semester end
+       ),''),
+       'approved'
+from public.ace_course_catalog cc
+join public.ace_programmes p on p.id=cc.programme_id
+join public.ace_institutions i on i.id=p.institution_id
+join public.ace_schools s
+  on s.normalized_name=lower(regexp_replace(trim(i.name),'\\s+',' ','g'))
+ and s.education_level='university'
+ and s.country=coalesce(nullif(i.country,''),'Kenya')
+on conflict (school_id,name,level_or_year) do nothing;
+
 create table if not exists public.ace_student_courses (
   user_id uuid not null references auth.users(id) on delete cascade,
   course_id uuid not null references public.ace_courses(id) on delete cascade,
