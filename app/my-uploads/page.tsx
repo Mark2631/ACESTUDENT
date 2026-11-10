@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AppShell, PageHeader, SetupNotice } from "@/components/app-shell";
 import { DocumentCard } from "@/components/document-card";
