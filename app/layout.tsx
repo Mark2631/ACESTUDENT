@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
-import "docx-preview/dist/docx-preview.css";
 
 export const metadata: Metadata = {
   title: { default: "Ace Student — Learn together. Get ahead.", template: "%s · Ace Student" },
