@@ -1,0 +1,5 @@
+.choice-card{display:flex;align-items:flex-start;gap:10px;min-height:72px;padding:12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:12px;cursor:pointer}
+.choice-card:has(input:checked){border-color:#8bb0c8;background:#f0f6fa}
+.choice-card input{flex:0 0 auto;margin-top:3px;accent-color:var(--blue)}
+.choice-card strong{display:block;margin-bottom:3px;color:#344553;font-size:12px}
+.choice-card span span{display:block;color:var(--muted);font-size:10px;line-height:1.45}
