@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CalendarDays, FileText, GraduationCap } from "lucide-react";
+import { ArrowUp, CalendarDays, Download, FileText, GraduationCap } from "lucide-react";
 import type { AppDocument } from "@/lib/ace-data";
 
 function dateLabel(value:string){const date=new Date(value);return Number.isNaN(date.getTime())?"Recently":new Intl.DateTimeFormat("en",{day:"numeric",month:"short",year:"numeric"}).format(date)}
@@ -10,5 +10,5 @@ export function DocumentCard({document}:{document:AppDocument}){
   <Link className="document-title" href={"/library/"+document.id}>{document.title}</Link>
   {document.description&&<p className="document-description">{document.description}</p>}
   <div className="document-meta"><span className="document-kind">{kindLabel(document.document_type)}</span><span><GraduationCap/>{document.course_code?document.course_code+" · ":""}{document.course_name}</span><span><CalendarDays/>{dateLabel(document.created_at)}</span><span>By {document.uploader_name}</span></div>
- </div></article>
+ </div><div className="document-counts" aria-label="Document activity"><span title="Helpful votes"><ArrowUp aria-hidden="true"/>{document.upvotes}</span><span title="Downloads"><Download aria-hidden="true"/>{document.downloads}</span></div></article>;
 }

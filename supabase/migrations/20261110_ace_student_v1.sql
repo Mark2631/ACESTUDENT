@@ -62,8 +62,7 @@ alter table public.ace_student_profiles
   add column if not exists education_level text check (education_level in ('university','secondary')),
   add column if not exists school_id uuid references public.ace_schools(id) on delete set null,
   add column if not exists grade_or_year text,
-  add column if not exists onboarding_completed boolean not null default false,
-  add column if not exists karma_points integer not null default 0;
+  add column if not exists onboarding_completed boolean not null default false;
 
 create table if not exists public.ace_documents (
   id uuid primary key default gen_random_uuid(),
@@ -244,11 +243,6 @@ begin
     insert into public.ace_karma_ledger(user_id,event_type,reference_id,points)
     values(new.uploader_id,'upload_approved',new.id,10)
     on conflict (user_id,event_type,reference_id) do nothing;
-    if found then
-      update public.ace_student_profiles
-      set karma_points=coalesce(karma_points,0)+10
-      where user_id=new.uploader_id;
-    end if;
   end if;
   return new;
 end

@@ -18,6 +18,8 @@ The first migration creates ace_schools, ace_courses, ace_student_courses, ace_d
 
 The follow-up migration adds ace_document_flags and permits read access to approved documents in the new bucket.
 
+The reputation ledger is the only source of truth for karma. Students can read their own ledger entries but cannot write or edit points. The profile total is calculated from ledger rows; it is not stored in the editable profile record.
+
 ## Important boundary
 
 These migrations are committed to GitHub but have not been executed. The connected database has not been modified by this rebuild. Review the SQL and confirm the exact Supabase project before applying either migration.
