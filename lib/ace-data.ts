@@ -64,7 +64,7 @@ export async function getDocuments(options?:{query?:string;type?:DocumentKind|"a
   else request=request.eq("status","approved");
   if(options?.type&&options.type!=="all")request=request.eq("document_type",options.type);
   if(options?.courseIds){if(options.courseIds.length===0)return {data:[],issue:"ready"};request=request.in("course_id",options.courseIds);}
-  const q=(options?.query??"").replace(/[(),%]/g," ").replace(/\\s+/g," ").trim().slice(0,80);
+  const q=(options?.query??"").replace(/[^a-zA-Z0-9\s-]/g," ").replace(/\s+/g," ").trim().slice(0,80);
   if(q)request=request.or("title.ilike.%"+q+"%,description.ilike.%"+q+"%");
   const {data,error}=await request;
   if(error)return {data:[],issue:isSchemaError(error)?"schema-not-ready":"error",message:error.message};
