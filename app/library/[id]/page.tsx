@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Download, FileText } from "lucide-react";
 import { AppShell, PageHeader, SetupNotice } from "@/components/app-shell";
 import { DocumentActions } from "@/components/document-actions";
+import { DocxViewer } from "@/components/docx-viewer";
 import { getDocument, getProfile } from "@/lib/ace-data";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,7 +24,7 @@ export default async function DocumentPage({params}:{params:Promise<{id:string}>
   {document&&fileUrl&&<div className="viewer-panel">
    <div className="viewer-toolbar"><div><span className="document-kind">{document.document_type==="past_paper"?"Past paper":document.document_type==="summary"?"Summary":"Notes"}</span><p className="text-small muted" style={{margin:"7px 0 0"}}>Shared by {document.uploader_name} · {(document.file_size/1024/1024).toFixed(2)} MB</p></div><a className="button button-primary" href={fileUrl} target="_blank" rel="noreferrer"><Download/>Open / download file</a></div>
    <div className="viewer-stage">
-    {pdf?<iframe className="pdf-viewer" src={fileUrl+"#toolbar=1&navpanes=0"} title={document.title+" PDF preview"}/>:image?<img className="image-viewer" src={fileUrl} alt={document.title}/>:<div className="viewer-unavailable"><div className="empty-icon"><FileText/></div><h2>Preview not available for this file type</h2><p>Download the original file to open it in a compatible application. The original document is kept unchanged.</p><a className="button button-primary" href={fileUrl} target="_blank" rel="noreferrer"><Download/>Download file</a></div>}
+    {pdf?<iframe className="pdf-viewer" src={fileUrl+"#toolbar=1&navpanes=0"} title={document.title+" PDF preview"}/>:image?<img className="image-viewer" src={fileUrl} alt={document.title}/>:document.mime_type==="application/vnd.openxmlformats-officedocument.wordprocessingml.document"?<DocxViewer url={fileUrl} title={document.title}/>:<div className="viewer-unavailable"><div className="empty-icon"><FileText/></div><h2>Preview not available for this file type</h2><p>Download the original file to open it in a compatible application. The original document is kept unchanged.</p><a className="button button-primary" href={fileUrl} target="_blank" rel="noreferrer"><Download/>Download file</a></div>}
    </div>
   </div>}
   {document&&<section className="panel section"><div className="panel-header"><div><h2>About this document</h2><p>{document.description||"No description was added."}</p></div></div><div className="document-meta"><span>{document.course_code?document.course_code+" · ":""}{document.course_name}</span><span>{document.school_name}</span></div><div className="divider"/><DocumentActions documentId={document.id} initialVotes={document.upvotes} userId={user?.id??null}/></section>}
