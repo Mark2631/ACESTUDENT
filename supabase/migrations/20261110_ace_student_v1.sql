@@ -49,27 +49,7 @@ join public.ace_schools s
  and s.country=coalesce(nullif(i.country,''),'Kenya')
 on conflict (school_id,name,level_or_year) do nothing;
 
--- Import the existing university directory without modifying its legacy source tables.
-insert into public.ace_schools(name,education_level,country,status)
-select distinct i.name,'university',coalesce(nullif(i.country,''),'Kenya'),'approved'
-from public.ace_institutions i
-on conflict (normalized_name,education_level,country) do nothing;
 
-insert into public.ace_courses(school_id,name,code,programme_name,education_level,level_or_year,status)
-select s.id,cc.title,cc.code,p.name,'university',
-       nullif(concat_ws(' · ',
-         case when cc.year_of_study is not null then 'Year '||cc.year_of_study end,
-         case when cc.semester is not null then 'Semester '||cc.semester end
-       ),''),
-       'approved'
-from public.ace_course_catalog cc
-join public.ace_programmes p on p.id=cc.programme_id
-join public.ace_institutions i on i.id=p.institution_id
-join public.ace_schools s
-  on s.normalized_name=lower(regexp_replace(trim(i.name),'\\s+',' ','g'))
- and s.education_level='university'
- and s.country=coalesce(nullif(i.country,''),'Kenya')
-on conflict (school_id,name,level_or_year) do nothing;
 
 create table if not exists public.ace_student_courses (
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -82,7 +62,8 @@ alter table public.ace_student_profiles
   add column if not exists education_level text check (education_level in ('university','secondary')),
   add column if not exists school_id uuid references public.ace_schools(id) on delete set null,
   add column if not exists grade_or_year text,
-  add column if not exists onboarding_completed boolean not null default false;
+  add column if not exists onboarding_completed boolean not null default false,
+  add column if not exists karma_points integer not null default 0;
 
 create table if not exists public.ace_documents (
   id uuid primary key default gen_random_uuid(),
@@ -250,6 +231,33 @@ $$;
 revoke all on function public.ace_record_download(uuid) from public,anon;
 grant execute on function public.ace_record_download(uuid) to authenticated;
 
+
+-- Award contribution points only when a moderator approves a document.
+create or replace function public.ace_award_karma_on_approval()
+returns trigger
+language plpgsql
+security definer
+set search_path=''
+as $
+begin
+  if new.status='approved' and old.status is distinct from 'approved' then
+    insert into public.ace_karma_ledger(user_id,event_type,reference_id,points)
+    values(new.uploader_id,'upload_approved',new.id,10)
+    on conflict (user_id,event_type,reference_id) do nothing;
+    if found then
+      update public.ace_student_profiles
+      set karma_points=coalesce(karma_points,0)+10
+      where user_id=new.uploader_id;
+    end if;
+  end if;
+  return new;
+end
+$;
+revoke all on function public.ace_award_karma_on_approval() from public,anon,authenticated;
+drop trigger if exists ace_documents_approval_karma on public.ace_documents;
+create trigger ace_documents_approval_karma
+after update of status on public.ace_documents
+for each row execute function public.ace_award_karma_on_approval();
 
 -- Snapshot a public display name onto the document; private profile rows remain self-only.
 create or replace function public.ace_set_document_uploader_name()
