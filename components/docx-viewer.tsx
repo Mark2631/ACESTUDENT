@@ -17,7 +17,7 @@ export function DocxViewer({url,title}:{url:string;title:string}){
     if(!response.ok)throw new Error("The document could not be loaded for preview.");
     const blob=await response.blob();
     if(cancelled)return;
-    await renderAsync(blob,target,null,{className:"docx",inWrapper:true,ignoreWidth:false,ignoreHeight:false,breakPages:true});
+    await renderAsync(blob,target,undefined,{className:"docx",inWrapper:true,ignoreWidth:false,ignoreHeight:false,breakPages:true});
     if(!cancelled)setLoading(false);
    }catch(reason){
     if(!cancelled){setError(reason instanceof Error?reason.message:"Document preview failed.");setLoading(false);}
