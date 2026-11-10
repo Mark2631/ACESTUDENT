@@ -52,7 +52,7 @@ export function OnboardingForm({schools,courses,initialName,initialEducationLeve
    }else schoolId=createdSchool.id;
   }
 
-  let courseIds=[...selected];
+  const courseIds=[...selected];
   if(newCourse.trim()){
    const {data:createdCourse,error:courseError}=await supabase.from("ace_courses")
     .insert({school_id:schoolId,name:newCourse.trim(),programme_name:level==="university"?programme.trim():null,education_level:level,level_or_year:year,created_by:user.id})
