@@ -4,7 +4,7 @@ export type EducationLevel = "university" | "secondary";
 export type DocumentKind = "note" | "past_paper" | "summary";
 export type School = { id:string; name:string; education_level:EducationLevel; country:string };
 export type Course = { id:string; school_id:string; name:string; code:string|null; programme_name:string|null; level_or_year:string|null; education_level:EducationLevel };
-export type Profile = { user_id:string; full_name:string; education_level:EducationLevel|null; school_id:string|null; grade_or_year:string|null; programme:string|null; onboarding_completed:boolean; school_name?:string|null };
+export type Profile = { user_id:string; full_name:string; education_level:EducationLevel|null; school_id:string|null; grade_or_year:string|null; programme:string|null; onboarding_completed:boolean; karma_points:number; school_name?:string|null };
 export type AppDocument = {
   id:string;title:string;description:string|null;document_type:DocumentKind;storage_path:string;
   mime_type:string;file_size:number;upvotes:number;downloads:number;created_at:string;uploader_id:string;
@@ -23,7 +23,7 @@ export async function getProfile(userId:string):Promise<DataResult<Profile|null>
   const supabase=await createClient();
   if(!supabase)return {data:null,issue:"missing-config"};
   const {data,error}=await supabase.from("ace_student_profiles")
-    .select("user_id,full_name,education_level,school_id,grade_or_year,programme,onboarding_completed")
+    .select("user_id,full_name,education_level,school_id,grade_or_year,programme,onboarding_completed,karma_points")
     .eq("user_id",userId).maybeSingle();
   if(error)return {data:null,issue:isSchemaError(error)?"schema-not-ready":"error",message:error.message};
   if(!data)return {data:null,issue:"ready"};
@@ -32,7 +32,7 @@ export async function getProfile(userId:string):Promise<DataResult<Profile|null>
     const {data:school}=await supabase.from("ace_schools").select("name").eq("id",data.school_id).maybeSingle();
     schoolName=school?.name??null;
   }
-  return {data:{...data,education_level:data.education_level as EducationLevel|null,onboarding_completed:Boolean(data.onboarding_completed),school_name:schoolName},issue:"ready"};
+  return {data:{...data,education_level:data.education_level as EducationLevel|null,onboarding_completed:Boolean(data.onboarding_completed),karma_points:Number(data.karma_points??0),school_name:schoolName},issue:"ready"};
 }
 
 export async function getCatalog():Promise<DataResult<{schools:School[];courses:Course[]}>> {
@@ -72,7 +72,6 @@ export async function getDocuments(options?:{query?:string;type?:DocumentKind|"a
   if(!rows.length)return {data:[],issue:"ready"};
 
   const courseIds=Array.from(new Set(rows.map(row=>String(row.course_id))));
-  const uploaderIds=Array.from(new Set(rows.map(row=>String(row.uploader_id))));
   const coursesResult=await supabase.from("ace_courses").select("id,name,code,school_id").in("id",courseIds);
   const courses=new Map((coursesResult.data??[]).map(row=>[String(row.id),row]));
   const schoolIds=Array.from(new Set(Array.from(courses.values()).map(row=>String(row.school_id))));
@@ -95,7 +94,7 @@ export async function getDocument(id:string):Promise<DataResult<{document:AppDoc
   const supabase=await createClient();
   if(!supabase)return {data:null,issue:"missing-config"};
   const {data:row,error}=await supabase.from("ace_documents")
-    .select("id,title,description,document_type,storage_path,mime_type,file_size,upvotes,downloads,created_at,uploader_id,course_id,status")
+    .select("id,title,description,document_type,storage_path,uploader_name,mime_type,file_size,upvotes,downloads,created_at,uploader_id,course_id,status")
     .eq("id",id).maybeSingle();
   if(error)return {data:null,issue:isSchemaError(error)?"schema-not-ready":"error",message:error.message};
   if(!row)return {data:null,issue:"ready"};
