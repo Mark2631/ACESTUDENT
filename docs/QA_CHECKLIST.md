@@ -41,7 +41,8 @@
 - [ ] Confirm a successful approval adds one 10-point karma ledger row only once.
 - [ ] Confirm the profile karma total comes from the read-only ledger.
 - [ ] Open PDF, image and DOCX previews.
-- [ ] Download a file and confirm the download counter increments for a signed-in student.
+- [ ] Download a file and confirm the unique-download counter increments for a signed-in student.
+- [ ] Download the same file twice from one account and confirm the count increments only once.
 - [ ] Mark another student's approved document as helpful.
 - [ ] Submit a report and confirm duplicate reports from the same student are rejected.
 - [ ] Confirm related course material appears beneath the document.
