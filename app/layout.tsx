@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, statusBarStyle: "default", title: "Ace Student" }
 };
 
-export const viewport: Viewport = { themeColor: "#f6f8fa", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#0f141a", width: "device-width", initialScale: 1 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en"><body>{children}</body></html>;

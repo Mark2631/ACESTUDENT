@@ -10,6 +10,17 @@ const MAX_FILE_SIZE=15*1024*1024;
 const allowedExtensions=["pdf","jpg","jpeg","png","webp","docx"];
 const mimeByExtension:Record<string,string>={pdf:"application/pdf",jpg:"image/jpeg",jpeg:"image/jpeg",png:"image/png",webp:"image/webp",docx:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"};
 
+
+async function hasValidSignature(file:File,extension:string):Promise<boolean>{
+ const bytes=new Uint8Array(await file.slice(0,16).arrayBuffer());
+ if(extension==="pdf")return new TextDecoder().decode(bytes.slice(0,5))==="%PDF-";
+ if(extension==="jpg"||extension==="jpeg")return bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff;
+ if(extension==="png")return bytes[0]===0x89&&bytes[1]===0x50&&bytes[2]===0x4e&&bytes[3]===0x47&&bytes[4]===0x0d&&bytes[5]===0x0a&&bytes[6]===0x1a&&bytes[7]===0x0a;
+ if(extension==="webp")return new TextDecoder().decode(bytes.slice(0,4))==="RIFF"&&new TextDecoder().decode(bytes.slice(8,12))==="WEBP";
+ if(extension==="docx")return bytes[0]===0x50&&bytes[1]===0x4b&&bytes[2]===0x03&&bytes[3]===0x04;
+ return false;
+}
+
 export function UploadForm({courses}:{courses:Course[]}){
  const router=useRouter();const [file,setFile]=useState<File|null>(null);const [title,setTitle]=useState("");
  const [description,setDescription]=useState("");const [courseId,setCourseId]=useState(courses[0]?.id??"");
@@ -24,7 +35,17 @@ export function UploadForm({courses}:{courses:Course[]}){
   const extension=file.name.split(".").pop()?.toLowerCase()??"";
   if(!allowedExtensions.includes(extension)){setError("Upload a PDF, JPG, PNG, WebP or DOCX file.");return}
   const mimeType=mimeByExtension[extension];
-  if(file.type&&file.type!==mimeType){setError("The file type does not match its extension.");return}
+  let signatureMatches=false;
+  try{
+   signatureMatches=await hasValidSignature(file,extension);
+  }catch{
+   setError("The file could not be inspected. Choose it again and retry.");
+   return;
+  }
+  if(!signatureMatches){
+   setError("The file content does not match its extension. Choose the original document.");
+   return;
+  }
   setBusy(true);setProgress("Checking your account…");
   const supabase=createClient();
   if(!supabase){setError("The Supabase connection is not configured.");setBusy(false);return}
