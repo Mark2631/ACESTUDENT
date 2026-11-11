@@ -126,7 +126,15 @@ create policy ace_courses_insert on public.ace_courses for insert to authenticat
 drop policy if exists ace_student_courses_self on public.ace_student_courses;
 create policy ace_student_courses_self on public.ace_student_courses for select to authenticated using (user_id=(select auth.uid()));
 drop policy if exists ace_student_courses_add on public.ace_student_courses;
-create policy ace_student_courses_add on public.ace_student_courses for insert to authenticated with check (user_id=(select auth.uid()));
+create policy ace_student_courses_add on public.ace_student_courses for insert to authenticated with check (
+  user_id=(select auth.uid()) and exists(
+    select 1
+    from public.ace_courses c
+    join public.ace_student_profiles p on p.user_id=(select auth.uid())
+    where c.id=ace_student_courses.course_id
+      and c.school_id=p.school_id
+  )
+);
 drop policy if exists ace_student_courses_remove on public.ace_student_courses;
 create policy ace_student_courses_remove on public.ace_student_courses for delete to authenticated using (user_id=(select auth.uid()));
 
@@ -143,6 +151,11 @@ drop policy if exists ace_documents_submit on public.ace_documents;
 create policy ace_documents_submit on public.ace_documents for insert to authenticated with check (
   uploader_id=(select auth.uid()) and status='pending' and reviewed_at is null
   and split_part(storage_path,'/',1)=(select auth.uid())::text
+  and exists(
+    select 1 from public.ace_student_courses sc
+    where sc.user_id=(select auth.uid())
+      and sc.course_id=ace_documents.course_id
+  )
 );
 drop policy if exists ace_documents_vote_read on public.ace_document_votes;
 create policy ace_documents_vote_read on public.ace_document_votes for select to authenticated using (user_id=(select auth.uid()));
