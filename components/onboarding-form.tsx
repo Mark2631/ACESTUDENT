@@ -80,11 +80,11 @@ export function OnboardingForm({
           school_id:schoolId,name:newCourse.trim(),
           code:level==="university"?newCourseCode.trim()||null:null,
           programme_name:level==="university"?programme.trim():null,
-          education_level:level,level_or_year:year,created_by:user.id
+          education_level:level,level_or_year:level==="university"?"Year "+year:year,created_by:user.id
         }).select("id").single();
       if(courseError){
         const {data:existing}=await supabase.from("ace_courses")
-          .select("id").eq("school_id",schoolId).eq("education_level",level).ilike("name",newCourse.trim()).maybeSingle();
+          .select("id").eq("school_id",schoolId).eq("education_level",level).eq("level_or_year",level==="university"?"Year "+year:year).ilike("name",newCourse.trim()).maybeSingle();
         if(!existing){setError(courseError.message);setBusy(false);return;}
         courseIds.push(existing.id);
       }else courseIds.push(createdCourse.id);
