@@ -83,6 +83,13 @@ create table if not exists public.ace_documents (
   constraint ace_documents_path_owner check (split_part(storage_path,'/',1)=uploader_id::text)
 );
 
+create table if not exists public.ace_document_download_events (
+  document_id uuid not null references public.ace_documents(id) on delete cascade,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (document_id,user_id)
+);
+
 create table if not exists public.ace_document_votes (
   document_id uuid not null references public.ace_documents(id) on delete cascade,
   user_id uuid not null references auth.users(id) on delete cascade,
@@ -105,12 +112,14 @@ create index if not exists ace_courses_school_idx on public.ace_courses(school_i
 create index if not exists ace_documents_feed_idx on public.ace_documents(status,created_at desc);
 create index if not exists ace_documents_course_idx on public.ace_documents(course_id,status,created_at desc);
 create index if not exists ace_documents_uploader_idx on public.ace_documents(uploader_id,created_at desc);
+create index if not exists ace_download_events_user_idx on public.ace_document_download_events(user_id,created_at desc);
 
 alter table public.ace_schools enable row level security;
 alter table public.ace_courses enable row level security;
 alter table public.ace_student_courses enable row level security;
 alter table public.ace_documents enable row level security;
 alter table public.ace_document_votes enable row level security;
+alter table public.ace_document_download_events enable row level security;
 alter table public.ace_karma_ledger enable row level security;
 
 drop policy if exists ace_schools_read on public.ace_schools;
@@ -266,10 +275,21 @@ language plpgsql
 security definer
 set search_path=''
 as $$
-declare v_count integer;
+declare
+  v_user uuid:=auth.uid();
+  v_count integer;
+  v_inserted integer;
 begin
-  if auth.uid() is null then raise exception 'Sign in required'; end if;
-  update public.ace_documents set downloads=downloads+1 where id=p_document and status='approved' returning downloads into v_count;
+  if v_user is null then raise exception 'Sign in required'; end if;
+  insert into public.ace_document_download_events(document_id,user_id)
+  select p_document,v_user
+  where exists(select 1 from public.ace_documents where id=p_document and status='approved')
+  on conflict do nothing;
+  get diagnostics v_inserted = row_count;
+  update public.ace_documents
+  set downloads=downloads+v_inserted
+  where id=p_document and status='approved'
+  returning downloads into v_count;
   if v_count is null then raise exception 'Document unavailable'; end if;
   return v_count;
 end
