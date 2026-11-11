@@ -4,7 +4,7 @@ create extension if not exists pgcrypto;
 create table if not exists public.ace_schools (
   id uuid primary key default gen_random_uuid(),
   name text not null check (char_length(trim(name)) between 2 and 140),
-  normalized_name text generated always as (lower(regexp_replace(trim(name), '\s+', ' ', 'g'))) stored,
+  normalized_name text generated always as (lower(regexp_replace(trim(name), '[[:space:]]+', ' ', 'g'))) stored,
   education_level text not null check (education_level in ('university','secondary')),
   country text not null default 'Kenya',
   created_by uuid references auth.users(id) on delete set null,
@@ -44,7 +44,7 @@ from public.ace_course_catalog cc
 join public.ace_programmes p on p.id=cc.programme_id
 join public.ace_institutions i on i.id=p.institution_id
 join public.ace_schools s
-  on s.normalized_name=lower(regexp_replace(trim(i.name),'\\s+',' ','g'))
+  on s.normalized_name=lower(regexp_replace(trim(i.name),'[[:space:]]+',' ','g'))
  and s.education_level='university'
  and s.country=coalesce(nullif(i.country,''),'Kenya')
 on conflict (school_id,name,level_or_year) do nothing;
@@ -197,7 +197,7 @@ returns integer
 language plpgsql
 security definer
 set search_path=''
-as $
+as $$
 declare
   v_user uuid:=auth.uid();
   v_count integer;
@@ -221,7 +221,7 @@ begin
   if v_count is null then raise exception 'Document unavailable'; end if;
   return v_count;
 end
-$;
+$$;
 revoke all on function public.ace_vote_document(uuid) from public,anon;
 grant execute on function public.ace_vote_document(uuid) to authenticated;
 
