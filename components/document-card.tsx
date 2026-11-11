@@ -6,7 +6,7 @@ function dateLabel(value:string){const date=new Date(value);return Number.isNaN(
 function kindLabel(kind:string){return kind==="past_paper"?"Past paper":kind==="summary"?"Summary":"Notes"}
 
 export function DocumentCard({document}:{document:AppDocument}){
- return <article className="document-card"><div className="document-icon"><FileText aria-hidden="true"/></div><div className="document-main">
+ return <article className="document-card" data-kind={document.document_type}><div className="document-icon"><FileText aria-hidden="true"/></div><div className="document-main">
   <Link className="document-title" href={"/library/"+document.id}>{document.title}</Link>
   {document.description&&<p className="document-description">{document.description}</p>}
   <div className="document-meta"><span className="document-kind">{kindLabel(document.document_type)}</span><span><GraduationCap/>{document.course_code?document.course_code+" · ":""}{document.course_name}</span><span><CalendarDays/>{dateLabel(document.created_at)}</span><span>By {document.uploader_name}</span></div>

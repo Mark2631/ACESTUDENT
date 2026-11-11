@@ -19,7 +19,7 @@ export default async function MyCoursesPage({searchParams}:{searchParams:Promise
  const docs=await getDocuments({courseIds:selected?[selected.id]:ids,limit:50});
  return <AppShell active="courses" user={user} profile={profile.data}>
   <PageHeader eyebrow="Your coursework" title="My Courses" description="Learning material grouped around the subjects and courses you selected."/>
-  <section className="panel"><div className="panel-header"><div><h2>Selected courses</h2><p>Update these from your academic profile.</p></div><Library color="#557b96" size={18}/></div>
+  <section className="panel"><div className="panel-header"><div><h2>Selected courses</h2><p>Update these from your academic profile.</p></div><Library color="var(--blue)" size={18}/></div>
    <div className="course-pills">{courses.length?courses.map(c=><Link className="course-pill" href={"/courses?course="+c.id} key={c.id}>{c.name}{c.code&&<span>{c.code}</span>}</Link>):<span className="muted text-small">No courses selected.</span>}</div>
   </section>
   <section className="section"><div className="section-heading"><div><h2>{selected?selected.name:"Course materials"}</h2><p>{selected?"Approved material for this course.":"Approved documents from all your selected courses."}</p></div></div>
