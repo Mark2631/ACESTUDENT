@@ -32,7 +32,10 @@ export async function getProfile(userId:string):Promise<DataResult<Profile|null>
     const {data:school}=await supabase.from("ace_schools").select("name").eq("id",data.school_id).maybeSingle();
     schoolName=school?.name??null;
   }
-  return {data:{...data,education_level:data.education_level as EducationLevel|null,onboarding_completed:Boolean(data.onboarding_completed),karma_points:Number(data.karma_points??0),school_name:schoolName},issue:"ready"};
+  const {data:karmaRows,error:karmaError}=await supabase.from("ace_karma_ledger").select("points").eq("user_id",userId);
+  if(karmaError)return {data:null,issue:isSchemaError(karmaError)?"schema-not-ready":"error",message:karmaError.message};
+  const karmaPoints=(karmaRows??[]).reduce((total,row)=>total+Number(row.points??0),0);
+  return {data:{...data,education_level:data.education_level as EducationLevel|null,onboarding_completed:Boolean(data.onboarding_completed),karma_points:karmaPoints,school_name:schoolName},issue:"ready"};
 }
 
 export async function getCatalog():Promise<DataResult<{schools:School[];courses:Course[]}>> {
