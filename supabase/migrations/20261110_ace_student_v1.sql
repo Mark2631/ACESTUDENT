@@ -93,7 +93,7 @@ create table if not exists public.ace_document_votes (
 create table if not exists public.ace_karma_ledger (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
-  event_type text not null check (event_type in ('upload_approved','document_helpful')),
+  event_type text not null check (event_type in ('upload_approved','document_helpful','helpful_answer','quiz_won')),
   reference_id uuid,
   points integer not null check (points > 0),
   created_at timestamptz not null default now(),
@@ -158,7 +158,8 @@ create policy ace_karma_self_read on public.ace_karma_ledger for select to authe
 grant select on public.ace_schools,public.ace_courses to anon,authenticated;
 grant insert on public.ace_schools,public.ace_courses to authenticated;
 grant select,insert,delete on public.ace_student_courses to authenticated;
-grant select,insert on public.ace_documents to anon,authenticated;
+grant select on public.ace_documents to anon,authenticated;
+grant insert on public.ace_documents to authenticated;
 grant select,insert,delete on public.ace_document_votes to authenticated;
 grant select on public.ace_karma_ledger to authenticated;
 grant select,insert,update on public.ace_student_profiles to authenticated;
@@ -196,20 +197,31 @@ returns integer
 language plpgsql
 security definer
 set search_path=''
-as $$
-declare v_user uuid:=auth.uid();v_count integer;
+as $
+declare
+  v_user uuid:=auth.uid();
+  v_count integer;
+  v_inserted integer;
 begin
   if v_user is null then raise exception 'Sign in required'; end if;
+  if not exists(
+    select 1 from public.ace_documents
+    where id=p_document and status='approved' and uploader_id<>v_user
+  ) then
+    raise exception 'This document cannot be voted on';
+  end if;
   insert into public.ace_document_votes(document_id,user_id)
-  select p_document,v_user where exists(
-    select 1 from public.ace_documents where id=p_document and status='approved' and uploader_id<>v_user
-  )
+  values(p_document,v_user)
   on conflict do nothing;
-  if not found then raise exception 'This document cannot be voted on'; end if;
-  update public.ace_documents set upvotes=upvotes+1 where id=p_document returning upvotes into v_count;
+  get diagnostics v_inserted = row_count;
+  update public.ace_documents
+  set upvotes=upvotes+v_inserted
+  where id=p_document and status='approved'
+  returning upvotes into v_count;
+  if v_count is null then raise exception 'Document unavailable'; end if;
   return v_count;
 end
-$$;
+$;
 revoke all on function public.ace_vote_document(uuid) from public,anon;
 grant execute on function public.ace_vote_document(uuid) to authenticated;
 
@@ -237,7 +249,7 @@ returns trigger
 language plpgsql
 security definer
 set search_path=''
-as $
+as $$
 begin
   if new.status='approved' and old.status is distinct from 'approved' then
     insert into public.ace_karma_ledger(user_id,event_type,reference_id,points)
@@ -246,7 +258,7 @@ begin
   end if;
   return new;
 end
-$;
+$$;
 revoke all on function public.ace_award_karma_on_approval() from public,anon,authenticated;
 drop trigger if exists ace_documents_approval_karma on public.ace_documents;
 create trigger ace_documents_approval_karma
