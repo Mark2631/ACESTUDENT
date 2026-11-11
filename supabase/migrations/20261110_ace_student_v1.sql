@@ -148,7 +148,7 @@ create policy ace_student_courses_remove on public.ace_student_courses for delet
 drop policy if exists ace_profiles_v1_self_read on public.ace_student_profiles;
 create policy ace_profiles_v1_self_read on public.ace_student_profiles for select to authenticated using (user_id=(select auth.uid()));
 drop policy if exists ace_profiles_v1_self_insert on public.ace_student_profiles;
-create policy ace_profiles_v1_self_insert as restrictive on public.ace_student_profiles for insert to authenticated with check (
+create policy ace_profiles_v1_self_insert on public.ace_student_profiles as restrictive for insert to authenticated with check (
   user_id=(select auth.uid()) and (
     school_id is null or exists(
       select 1 from public.ace_schools s
@@ -158,7 +158,7 @@ create policy ace_profiles_v1_self_insert as restrictive on public.ace_student_p
   )
 );
 drop policy if exists ace_profiles_v1_self_update on public.ace_student_profiles;
-create policy ace_profiles_v1_self_update as restrictive on public.ace_student_profiles for update to authenticated
+create policy ace_profiles_v1_self_update on public.ace_student_profiles as restrictive for update to authenticated
 using (user_id=(select auth.uid()))
 with check (
   user_id=(select auth.uid()) and (
