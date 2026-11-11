@@ -23,7 +23,7 @@ export async function getProfile(userId:string):Promise<DataResult<Profile|null>
   const supabase=await createClient();
   if(!supabase)return {data:null,issue:"missing-config"};
   const {data,error}=await supabase.from("ace_student_profiles")
-    .select("user_id,full_name,education_level,school_id,grade_or_year,programme,onboarding_completed,karma_points")
+    .select("user_id,full_name,education_level,school_id,grade_or_year,programme,onboarding_completed")
     .eq("user_id",userId).maybeSingle();
   if(error)return {data:null,issue:isSchemaError(error)?"schema-not-ready":"error",message:error.message};
   if(!data)return {data:null,issue:"ready"};
