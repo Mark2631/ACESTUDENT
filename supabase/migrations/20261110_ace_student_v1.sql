@@ -185,11 +185,7 @@ create policy ace_documents_submit on public.ace_documents for insert to authent
 drop policy if exists ace_documents_vote_read on public.ace_document_votes;
 create policy ace_documents_vote_read on public.ace_document_votes for select to authenticated using (user_id=(select auth.uid()));
 drop policy if exists ace_documents_vote_insert on public.ace_document_votes;
-create policy ace_documents_vote_insert on public.ace_document_votes for insert to authenticated with check (
-  user_id=(select auth.uid()) and exists(select 1 from public.ace_documents d where d.id=document_id and d.status='approved' and d.uploader_id<>(select auth.uid()))
-);
 drop policy if exists ace_documents_vote_delete on public.ace_document_votes;
-create policy ace_documents_vote_delete on public.ace_document_votes for delete to authenticated using (user_id=(select auth.uid()));
 drop policy if exists ace_karma_self_read on public.ace_karma_ledger;
 create policy ace_karma_self_read on public.ace_karma_ledger for select to authenticated using (user_id=(select auth.uid()));
 
@@ -198,7 +194,8 @@ grant insert on public.ace_schools,public.ace_courses to authenticated;
 grant select,insert,delete on public.ace_student_courses to authenticated;
 grant select on public.ace_documents to anon,authenticated;
 grant insert on public.ace_documents to authenticated;
-grant select,insert,delete on public.ace_document_votes to authenticated;
+revoke insert,delete on public.ace_document_votes from anon,authenticated;
+grant select on public.ace_document_votes to authenticated;
 grant select on public.ace_karma_ledger to authenticated;
 grant select,insert,update on public.ace_student_profiles to authenticated;
 
