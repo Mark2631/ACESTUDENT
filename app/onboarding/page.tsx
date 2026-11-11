@@ -15,13 +15,14 @@ export default async function OnboardingPage(){
   return <AppShell active="profile" user={user} profile={profile.data}>
     <PageHeader eyebrow="Academic setup" title={profile.data?.onboarding_completed?"Update your studies":"Connect your studies"}
       description="Your school and course choices organise the library. You can update them later."/>
-    <OnboardingForm schools={catalog.data.schools} courses={catalog.data.courses}
-      initialName={profile.data?.full_name||user.user_metadata?.full_name||""}
-      initialEducationLevel={profile.data?.education_level||"university"}
-      initialSchoolName={profile.data?.school_name||""}
-      initialProgramme={profile.data?.programme||""}
-      initialYear={profile.data?.grade_or_year||""}
-      initialCourseIds={courseIds}/>
-    <div style={{marginTop:14}}><SetupNotice issue={catalog.issue} message={catalog.message}/></div>
+    {catalog.issue==="ready"
+      ?<OnboardingForm schools={catalog.data.schools} courses={catalog.data.courses}
+        initialName={profile.data?.full_name||user.user_metadata?.full_name||""}
+        initialEducationLevel={profile.data?.education_level||"university"}
+        initialSchoolName={profile.data?.school_name||""}
+        initialProgramme={profile.data?.programme||""}
+        initialYear={profile.data?.grade_or_year||""}
+        initialCourseIds={courseIds}/>
+      :<SetupNotice issue={catalog.issue} message={catalog.message}/>} 
   </AppShell>;
 }
