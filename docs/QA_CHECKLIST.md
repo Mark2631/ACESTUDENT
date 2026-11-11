@@ -4,7 +4,7 @@
 
 - [ ] Use a non-production Supabase project or a reviewed change window.
 - [ ] Confirm the project reference before applying either migration.
-- [ ] Apply 20261110_ace_student_v1.sql, then 20261110_ace_student_reports.sql.
+- [ ] Apply 20261110_ace_student_v1.sql, then 20261111_ace_student_reports.sql.
 - [ ] Confirm the legacy ace-submissions bucket and the old Ace tables still exist.
 - [ ] Confirm the new ace-documents bucket is private and accepts only the declared file types and size.
 - [ ] Configure the site URL and email redirect URLs for /auth/callback.

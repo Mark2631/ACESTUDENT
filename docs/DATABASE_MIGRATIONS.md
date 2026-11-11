@@ -12,7 +12,7 @@ The fresh app adds its own v1 objects. It does not rename or drop any legacy obj
 ## New migration order
 
 1. 20261110_ace_student_v1.sql
-2. 20261110_ace_student_reports.sql
+2. 20261111_ace_student_reports.sql
 
 The first migration creates ace_schools, ace_courses, ace_student_courses, ace_documents, ace_document_votes and ace_karma_ledger; adds new columns to ace_student_profiles; and creates the separate private ace-documents bucket.
 
