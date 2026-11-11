@@ -44,3 +44,6 @@ The migration is not applied. No Supabase data, tables, policies or Storage obje
 - npm run build
 
 GitHub Actions runs all three checks on pushes and pull requests. This branch does not intentionally deploy to production.
+## Moderation
+
+The current v1 review process is manual and operated by a trusted project administrator. See [docs/MODERATION_OPERATIONS.md](docs/MODERATION_OPERATIONS.md) for the review and approval steps. An in-app moderation queue is a later milestone.
