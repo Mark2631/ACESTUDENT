@@ -121,7 +121,13 @@ create policy ace_schools_insert on public.ace_schools for insert to authenticat
 drop policy if exists ace_courses_read on public.ace_courses;
 create policy ace_courses_read on public.ace_courses for select to anon,authenticated using (true);
 drop policy if exists ace_courses_insert on public.ace_courses;
-create policy ace_courses_insert on public.ace_courses for insert to authenticated with check (created_by=(select auth.uid()));
+create policy ace_courses_insert on public.ace_courses for insert to authenticated with check (
+  created_by=(select auth.uid()) and exists(
+    select 1 from public.ace_schools s
+    where s.id=ace_courses.school_id
+      and s.education_level=ace_courses.education_level
+  )
+);
 
 drop policy if exists ace_student_courses_self on public.ace_student_courses;
 create policy ace_student_courses_self on public.ace_student_courses for select to authenticated using (user_id=(select auth.uid()));
@@ -133,6 +139,7 @@ create policy ace_student_courses_add on public.ace_student_courses for insert t
     join public.ace_student_profiles p on p.user_id=(select auth.uid())
     where c.id=ace_student_courses.course_id
       and c.school_id=p.school_id
+      and c.education_level=p.education_level
   )
 );
 drop policy if exists ace_student_courses_remove on public.ace_student_courses;
@@ -141,9 +148,27 @@ create policy ace_student_courses_remove on public.ace_student_courses for delet
 drop policy if exists ace_profiles_v1_self_read on public.ace_student_profiles;
 create policy ace_profiles_v1_self_read on public.ace_student_profiles for select to authenticated using (user_id=(select auth.uid()));
 drop policy if exists ace_profiles_v1_self_insert on public.ace_student_profiles;
-create policy ace_profiles_v1_self_insert on public.ace_student_profiles for insert to authenticated with check (user_id=(select auth.uid()));
+create policy ace_profiles_v1_self_insert on public.ace_student_profiles for insert to authenticated with check (
+  user_id=(select auth.uid()) and (
+    school_id is null or exists(
+      select 1 from public.ace_schools s
+      where s.id=ace_student_profiles.school_id
+        and s.education_level=ace_student_profiles.education_level
+    )
+  )
+);
 drop policy if exists ace_profiles_v1_self_update on public.ace_student_profiles;
-create policy ace_profiles_v1_self_update on public.ace_student_profiles for update to authenticated using (user_id=(select auth.uid())) with check (user_id=(select auth.uid()));
+create policy ace_profiles_v1_self_update on public.ace_student_profiles for update to authenticated
+using (user_id=(select auth.uid()))
+with check (
+  user_id=(select auth.uid()) and (
+    school_id is null or exists(
+      select 1 from public.ace_schools s
+      where s.id=ace_student_profiles.school_id
+        and s.education_level=ace_student_profiles.education_level
+    )
+  )
+);
 
 drop policy if exists ace_documents_public_or_owner_read on public.ace_documents;
 create policy ace_documents_public_or_owner_read on public.ace_documents for select to anon,authenticated using (status='approved' or uploader_id=(select auth.uid()));
