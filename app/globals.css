@@ -17,3 +17,16 @@
 @media(max-width:520px){body{font-size:13px}.topbar{gap:10px}.topbar-search{width:auto;flex:1;max-width:230px}.topbar-actions>.button{width:39px;min-width:39px;padding:0;font-size:0}.topbar-actions>.button svg{width:17px;height:17px}.content{padding:21px 14px 91px}h1{font-size:26px}.welcome-panel{padding:22px 18px;border-radius:14px}.welcome-panel h1{font-size:27px}.content-grid>aside{grid-template-columns:1fr}.document-card{gap:10px;padding:12px}.document-icon{width:37px;height:41px}.document-counts{display:none}.panel{padding:15px}.form-card{padding:20px 16px}.form-row{grid-template-columns:1fr}.form-actions{align-items:stretch;flex-direction:column-reverse}.form-actions .button{width:100%}.auth-page{grid-template-columns:1fr}.auth-aside{display:none}.auth-main{min-height:100vh;padding:28px 22px}.auth-mobile-brand{display:flex}.viewer-toolbar{align-items:flex-start;flex-direction:column}.viewer-stage{min-height:350px;padding:8px}.pdf-viewer{height:70vh}}
 
 .docx-preview-stage{width:100%;max-height:78vh;overflow:auto;padding:18px;background:#edf0f2}.docx-preview-stage .docx-wrapper{padding:20px;background:#edf0f2}.docx-preview-stage .docx{margin:0 auto;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+
+/* Route loading, error and keyboard states */
+:focus-visible{outline:3px solid rgba(40,91,130,.38);outline-offset:2px}
+.skeleton{border-radius:9px;background:#e8edf1;animation:ace-skeleton-pulse 1.35s ease-in-out infinite}
+.skeleton-nav{height:42px;margin:0 0 6px;border-radius:10px}
+.skeleton-line{height:10px;margin:0 0 9px}
+.skeleton-title{width:min(470px,80%);height:34px;margin:12px 0}
+.skeleton-search{width:250px;height:38px;border-radius:10px;background:#e8edf1;animation:ace-skeleton-pulse 1.35s ease-in-out infinite}
+.skeleton-hero{background:#edf1f4;border-color:#e6eaee}
+.skeleton-section-title{width:190px;height:19px;margin:0 0 14px;border-radius:6px;background:#e8edf1;animation:ace-skeleton-pulse 1.35s ease-in-out infinite}
+.skeleton-card{height:88px;border:1px solid #e9edf0;border-radius:13px;background:#edf1f4;animation:ace-skeleton-pulse 1.35s ease-in-out infinite}
+@keyframes ace-skeleton-pulse{0%,100%{opacity:.58}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){.skeleton,.skeleton-search,.skeleton-section-title,.skeleton-card{animation:none;opacity:.72}}
